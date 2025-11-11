@@ -9,8 +9,16 @@ import { Switch } from "@/components/ui/switch";
 import { Clock, Plus, Trash2, Edit } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
+import { z } from "zod";
 
 const DIAS_SEMANA = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+
+const scheduleSchema = z.object({
+  hora: z.number().int().min(0, { message: "La hora debe ser entre 0 y 23" }).max(23, { message: "La hora debe ser entre 0 y 23" }),
+  minuto: z.number().int().min(0, { message: "El minuto debe ser entre 0 y 59" }).max(59, { message: "El minuto debe ser entre 0 y 59" }),
+  duracion: z.number().int().min(1, { message: "La duración debe ser al menos 1 minuto" }).max(120, { message: "La duración no puede exceder 120 minutos" }),
+  diasSeleccionados: z.array(z.number()).min(1, { message: "Debe seleccionar al menos un día" }),
+});
 
 const Horarios = () => {
   const [horarios, setHorarios] = useState<any[]>([]);
@@ -47,11 +55,29 @@ const Horarios = () => {
     e.preventDefault();
     if (!user) return;
 
-    const horarioData = {
+    // Validate input
+    const validation = scheduleSchema.safeParse({
       hora: parseInt(hora),
       minuto: parseInt(minuto),
-      duracion_segundos: parseInt(duracion) * 60,
-      dias_semana: diasSeleccionados,
+      duracion: parseInt(duracion),
+      diasSeleccionados,
+    });
+
+    if (!validation.success) {
+      const firstError = validation.error.errors[0];
+      toast({
+        title: "Error de validación",
+        description: firstError.message,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const horarioData = {
+      hora: validation.data.hora,
+      minuto: validation.data.minuto,
+      duracion_segundos: validation.data.duracion * 60,
+      dias_semana: validation.data.diasSeleccionados,
       created_by: user.id,
     };
 
@@ -199,10 +225,14 @@ const Horarios = () => {
                   id="duracion"
                   type="number"
                   min="1"
+                  max="120"
                   value={duracion}
                   onChange={(e) => setDuracion(e.target.value)}
                   required
                 />
+                <p className="text-xs text-muted-foreground">
+                  Máximo 120 minutos
+                </p>
               </div>
               <div className="space-y-2">
                 <Label>Días de la semana</Label>

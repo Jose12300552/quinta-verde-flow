@@ -8,6 +8,23 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Droplets } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { z } from "zod";
+
+const signUpSchema = z.object({
+  email: z.string().trim().email({ message: "Correo electrónico inválido" }).max(255, { message: "Correo electrónico demasiado largo" }),
+  password: z.string()
+    .min(8, { message: "La contraseña debe tener al menos 8 caracteres" })
+    .max(72, { message: "La contraseña es demasiado larga" })
+    .regex(/[A-Z]/, { message: "La contraseña debe contener al menos una mayúscula" })
+    .regex(/[a-z]/, { message: "La contraseña debe contener al menos una minúscula" })
+    .regex(/[0-9]/, { message: "La contraseña debe contener al menos un número" }),
+  nombre: z.string().trim().min(1, { message: "El nombre es requerido" }).max(100, { message: "El nombre es demasiado largo" }),
+});
+
+const signInSchema = z.object({
+  email: z.string().trim().email({ message: "Correo electrónico inválido" }).max(255, { message: "Correo electrónico demasiado largo" }),
+  password: z.string().min(1, { message: "La contraseña es requerida" }),
+});
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -35,10 +52,19 @@ const Auth = () => {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password || !nombre) {
+
+    // Validate input
+    const validation = signUpSchema.safeParse({
+      email: email.trim(),
+      password,
+      nombre: nombre.trim(),
+    });
+
+    if (!validation.success) {
+      const firstError = validation.error.errors[0];
       toast({
-        title: "Error",
-        description: "Por favor completa todos los campos",
+        title: "Error de validación",
+        description: firstError.message,
         variant: "destructive",
       });
       return;
@@ -47,10 +73,10 @@ const Auth = () => {
     setLoading(true);
     try {
       const { error } = await supabase.auth.signUp({
-        email,
-        password,
+        email: validation.data.email,
+        password: validation.data.password,
         options: {
-          data: { nombre },
+          data: { nombre: validation.data.nombre },
           emailRedirectTo: `${window.location.origin}/dashboard`,
         },
       });
@@ -74,10 +100,18 @@ const Auth = () => {
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !password) {
+
+    // Validate input
+    const validation = signInSchema.safeParse({
+      email: email.trim(),
+      password,
+    });
+
+    if (!validation.success) {
+      const firstError = validation.error.errors[0];
       toast({
-        title: "Error",
-        description: "Por favor completa todos los campos",
+        title: "Error de validación",
+        description: firstError.message,
         variant: "destructive",
       });
       return;
@@ -86,8 +120,8 @@ const Auth = () => {
     setLoading(true);
     try {
       const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+        email: validation.data.email,
+        password: validation.data.password,
       });
 
       if (error) throw error;
@@ -186,8 +220,11 @@ const Auth = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    minLength={6}
+                    minLength={8}
                   />
+                  <p className="text-xs text-muted-foreground">
+                    Mínimo 8 caracteres, una mayúscula, una minúscula y un número
+                  </p>
                 </div>
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? "Registrando..." : "Registrarse"}
