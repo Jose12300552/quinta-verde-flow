@@ -50,6 +50,15 @@ Cochabamba — Bolivia
 - CAPÍTULO IV — CONCLUSIONES Y RECOMENDACIONES
 - BIBLIOGRAFÍA
 
+## ÍNDICE DE FIGURAS
+
+- Figura 1. Diagrama de Casos de Uso del Sistema SARQUE
+- Figura 2. Diagrama de Componentes del Sistema SARQUE
+- Figura 3. Modelo Entidad-Relación de la Base de Datos SARQUE
+- Figura 4. Arquitectura General del Sistema SARQUE
+- Figura 5. Diagrama de Secuencia — Ciclo de Riego Automático
+- Figura 6. Esquema Eléctrico del Nodo ESP32
+
 ---
 
 ## RESUMEN
@@ -469,6 +478,10 @@ Con SARQUE, el proceso de riego pasa a operar de la siguiente manera:
 
 ### 3.2.2. Diagramas de Casos de Uso
 
+![Figura 1. Diagrama de Casos de Uso del Sistema SARQUE](diagramas/CasosDeUso_SARQUE.png)
+
+*Figura 1. Diagrama de Casos de Uso del Sistema SARQUE. Fuente: Elaboración propia, 2026.*
+
 Los casos de uso principales del sistema SARQUE son:
 
 **Tabla 9. Descripción de Casos de Uso**
@@ -486,6 +499,10 @@ Los casos de uso principales del sistema SARQUE son:
 
 ### 3.2.3. Diagrama de Componentes del Sistema
 
+![Figura 2. Diagrama de Componentes del Sistema SARQUE](diagramas/Componentes_SARQUE.png)
+
+*Figura 2. Diagrama de Componentes del Sistema SARQUE. Fuente: Elaboración propia, 2026.*
+
 **Tabla 10. Descripción de Componentes SARQUE**
 
 | Componente | Tecnología | Función |
@@ -499,6 +516,10 @@ Los casos de uso principales del sistema SARQUE son:
 | Electroválvulas | K-Rain BSPT 9V DC | Actuadores hídricos en las 41 estaciones |
 
 ### 3.2.4. Diseño de la Base de Datos
+
+![Figura 3. Modelo Entidad-Relación de la Base de Datos SARQUE](diagramas/ClasesBD_SARQUE.png)
+
+*Figura 3. Modelo Entidad-Relación de la Base de Datos SARQUE. Fuente: Elaboración propia, 2026.*
 
 La base de datos de SARQUE en Supabase/PostgreSQL comprende las siguientes tablas:
 
@@ -585,6 +606,10 @@ La base de datos de SARQUE en Supabase/PostgreSQL comprende las siguientes tabla
 
 ### 3.2.5. Arquitectura de Software
 
+![Figura 4. Arquitectura General del Sistema SARQUE](diagramas/Arquitectura_SARQUE.png)
+
+*Figura 4. Arquitectura General del Sistema SARQUE — distribución de 6 controladores BL-KR y 41 estaciones. Fuente: Elaboración propia, 2026.*
+
 **Tabla 18. Arquitectura de Capas — SARQUE**
 
 | Capa | Tecnología | Responsabilidad |
@@ -621,7 +646,15 @@ Dado que K-Rain Manufacturing Corporation no publica las especificaciones del pr
 
 *Nota: Los UUIDs exactos se documentan en el Anexo A del prototipo tras la validación en campo.*
 
-### 3.3.2. Nodo Sensor ESP32 — Puente BLE-WiFi
+### 3.3.2. Diagrama de Secuencia — Ciclo de Riego Automático
+
+![Figura 5. Diagrama de Secuencia del Ciclo de Riego Automático](diagramas/Secuencia_SARQUE.png)
+
+*Figura 5. Diagrama de Secuencia — Ciclo de Riego Automático en SARQUE. Fuente: Elaboración propia, 2026.*
+
+El diagrama de secuencia describe el flujo completo del sistema desde la programación inicial del horario hasta el registro del evento de riego en la base de datos y su visualización en el dashboard web.
+
+### 3.3.3. Nodo Sensor ESP32 — Puente BLE-WiFi
 
 El nodo ESP32 constituye el elemento central de la arquitectura SARQUE desde el punto de vista de la integración hardware-software. Sus responsabilidades son:
 
@@ -655,6 +688,10 @@ El nodo ESP32 constituye el elemento central de la arquitectura SARQUE desde el 
 ## 3.4. Desarrollo del Prototipo
 
 ### 3.4.1. Hardware del Prototipo
+
+![Figura 6. Esquema Eléctrico del Nodo ESP32](diagramas/CircuitoESP32_SARQUE.png)
+
+*Figura 6. Esquema Eléctrico del Nodo ESP32 — Conexiones del prototipo BLE-WiFi Gateway. Fuente: Elaboración propia, 2026.*
 
 El prototipo de SARQUE se implementó con los siguientes componentes físicos:
 
