@@ -1,0 +1,60 @@
+@startuml CasosDeUso_SARQUE
+skinparam backgroundColor #FFFFFF
+skinparam actor {
+  BackgroundColor #E3F2FD
+  BorderColor #1976D2
+}
+skinparam usecase {
+  BackgroundColor #FFF3E0
+  BorderColor #F57C00
+  ArrowColor #424242
+}
+skinparam packageStyle rectangle
+skinparam shadowing false
+
+title <b>Diagrama de Casos de Uso — SARQUE</b>\n<i>Sistema Automatizado de Riego — Parque Quinta Estación</i>
+
+left to right direction
+
+actor "Administrador" as Admin
+actor "Operador\n(Jardinero)" as Op
+actor "Nodo ESP32" as ESP <<sistema>>
+actor "Controlador\nBL-KR" as BLKR <<dispositivo>>
+
+rectangle "Sistema SARQUE" {
+  usecase "CU01\nIniciar sesión" as CU01
+  usecase "CU02\nVer dashboard" as CU02
+  usecase "CU03\nCrear horario\nde riego" as CU03
+  usecase "CU04\nActivar/desactivar\nhorario" as CU04
+  usecase "CU05\nControl manual\nde electroválvula" as CU05
+  usecase "CU06\nVer historial\nde riegos" as CU06
+  usecase "CU07\nGenerar\nreporte" as CU07
+  usecase "CU08\nRegistrar\nevento de riego" as CU08
+  usecase "CU09\nGestionar\nsectores" as CU09
+  usecase "CU10\nMonitorear\nestado BLE" as CU10
+}
+
+Admin --> CU01
+Admin --> CU02
+Admin --> CU03
+Admin --> CU04
+Admin --> CU05
+Admin --> CU06
+Admin --> CU07
+Admin --> CU09
+
+Op --> CU01
+Op --> CU02
+Op --> CU05
+Op --> CU06
+
+ESP --> CU08
+ESP --> CU10
+ESP ..> BLKR : conecta vía BLE
+
+CU02 ..> CU10 : <<include>>
+CU07 ..> CU06 : <<include>>
+CU05 ..> CU01 : <<include>>
+CU03 ..> CU01 : <<include>>
+
+@enduml

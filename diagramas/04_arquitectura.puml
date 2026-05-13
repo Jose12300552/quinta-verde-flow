@@ -1,0 +1,81 @@
+@startuml Arquitectura_SARQUE
+skinparam backgroundColor #FFFFFF
+skinparam node {
+  BackgroundColor #E8EAF6
+  BorderColor #283593
+}
+skinparam cloud {
+  BackgroundColor #FFF8E1
+  BorderColor #F57F17
+}
+skinparam shadowing false
+skinparam linetype ortho
+
+title <b>Arquitectura General del Sistema SARQUE</b>\n<i>Parque Ecoturístico Quinta Estación — 5 hectáreas</i>
+
+cloud "Internet / Nube" as Internet {
+  rectangle "**Supabase**\n• PostgreSQL\n• Auth (JWT)\n• REST API\n• Realtime WebSocket\n• Row Level Security" as SB #FFE0B2
+}
+
+node "Caseta de Bomba" as Caseta #C5E1A5 {
+  rectangle "**Nodo ESP32**\n• WiFi 2.4 GHz\n• BLE Central\n• Firmware NimBLE" as ESP
+  rectangle "**Bomba de Pozo**\n4.2 L/s\n(control manual)" as Bomba
+}
+
+node "Sector 1\n(BL-KR9)" as S1 #FFCCBC {
+  rectangle "BL-KR9 #1\n9 estaciones" as BK1
+  rectangle "9 Electroválvulas\nBSPT 9V DC" as EV1
+  BK1 --> EV1
+}
+
+node "Sector 2\n(BL-KR9)" as S2 #FFCCBC {
+  rectangle "BL-KR9 #2\n9 estaciones" as BK2
+  rectangle "9 Electroválvulas\nBSPT 9V DC" as EV2
+  BK2 --> EV2
+}
+
+node "Sector 3\n(BL-KR9)" as S3 #FFCCBC {
+  rectangle "BL-KR9 #3\n9 estaciones" as BK3
+  rectangle "9 Electroválvulas\nBSPT 9V DC" as EV3
+  BK3 --> EV3
+}
+
+node "Sector 4\n(BL-KR4)" as S4 #FFCCBC {
+  rectangle "BL-KR4 #1\n4 estaciones" as BK4
+  rectangle "4 Electroválvulas\nBSPT 9V DC" as EV4
+  BK4 --> EV4
+}
+
+node "Sector 5\n(BL-KR4)" as S5 #FFCCBC {
+  rectangle "BL-KR4 #2\n4 estaciones" as BK5
+  rectangle "4 Electroválvulas\nBSPT 9V DC" as EV5
+  BK5 --> EV5
+}
+
+node "Sector 6\n(BL-KR6)" as S6 #FFCCBC {
+  rectangle "BL-KR6\n6 estaciones" as BK6
+  rectangle "6 Electroválvulas\nBSPT 9V DC" as EV6
+  BK6 --> EV6
+}
+
+actor "Administrador" as Admin
+actor "Operadores\n(6 Jardineros)" as Op
+
+rectangle "**App Web SARQUE**\n• Dashboard\n• Horarios\n• Historial\n• Reportes" as Web #B3E5FC
+
+Admin --> Web
+Op --> Web
+Web <--> SB : HTTPS/WSS
+
+ESP <--> SB : HTTPS REST
+ESP ..> BK1 : BLE
+ESP ..> BK2 : BLE
+ESP ..> BK3 : BLE
+ESP ..> BK4 : BLE
+ESP ..> BK5 : BLE
+ESP ..> BK6 : BLE
+
+note bottom of Caseta : **Total: 41 estaciones**\n3×9 + 2×4 + 1×6 = 41
+note right of Web : Acceso desde\nPC, tablet o\nmóvil
+
+@enduml

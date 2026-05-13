@@ -1,0 +1,65 @@
+@startuml Componentes_SARQUE
+skinparam backgroundColor #FFFFFF
+skinparam component {
+  BackgroundColor #E8F5E9
+  BorderColor #2E7D32
+  ArrowColor #424242
+}
+skinparam database {
+  BackgroundColor #E3F2FD
+  BorderColor #1565C0
+}
+skinparam cloud {
+  BackgroundColor #FFF3E0
+  BorderColor #E65100
+}
+skinparam node {
+  BackgroundColor #F3E5F5
+  BorderColor #6A1B9A
+}
+skinparam shadowing false
+
+title <b>Diagrama de Componentes — SARQUE</b>
+
+node "Cliente Web (Navegador)" as Cliente {
+  component "App Web SARQUE\n(React + TypeScript + Vite)" as App
+  component "Tailwind + shadcn/ui" as UI
+  component "React Query" as RQ
+  component "Zod\n(validación)" as Zod
+  App --> UI
+  App --> RQ
+  App --> Zod
+}
+
+cloud "Supabase (Nube)" as Supabase {
+  component "Supabase Auth\n(JWT)" as Auth
+  database "PostgreSQL\n+ Row Level Security" as DB
+  component "Supabase Realtime\n(WebSocket)" as RT
+  component "REST API\n(PostgREST)" as API
+
+  API --> DB
+  RT --> DB
+  Auth --> DB
+}
+
+node "Caseta de Bomba" as Caseta {
+  component "Firmware ESP32\n(Arduino + NimBLE)" as FW
+  component "WiFi Client" as WiFi
+  component "BLE Central" as BLE
+  FW --> WiFi
+  FW --> BLE
+}
+
+node "Sectores del Parque" as Parque {
+  component "Controladores\nK-Rain BL-KR" as BLKR
+  component "41 Electroválvulas\nBSPT 9V DC" as EV
+  BLKR --> EV : pulso DC
+}
+
+App --> API : HTTPS/REST
+App --> RT : WebSocket
+App --> Auth : Login JWT
+FW --> API : HTTPS/POST eventos
+BLE ..> BLKR : Bluetooth Low Energy
+
+@enduml

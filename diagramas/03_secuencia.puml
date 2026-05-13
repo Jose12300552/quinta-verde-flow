@@ -1,0 +1,87 @@
+@startuml Secuencia_SARQUE
+skinparam backgroundColor #FFFFFF
+skinparam sequence {
+  ArrowColor #424242
+  LifeLineBorderColor #1976D2
+  LifeLineBackgroundColor #E3F2FD
+  ParticipantBorderColor #1565C0
+  ParticipantBackgroundColor #BBDEFB
+  ParticipantFontStyle bold
+  ActorBorderColor #2E7D32
+  ActorBackgroundColor #C8E6C9
+}
+skinparam shadowing false
+
+title <b>Diagrama de Secuencia — Ciclo de Riego Automático</b>\n<i>SARQUE — Activación de electroválvula y registro</i>
+
+actor "Administrador" as Admin
+participant "App Web\nSARQUE" as Web
+participant "Supabase\n(PostgreSQL)" as DB
+participant "Controlador\nBL-KR" as BLKR
+participant "Electroválvula" as EV
+participant "Nodo ESP32" as ESP
+
+== Programación inicial ==
+
+Admin -> Web : Crear horario\n(sector, hora, duración)
+activate Web
+Web -> Web : Validar con Zod
+Web -> DB : INSERT horarios_riego
+DB --> Web : OK
+Web --> Admin : Horario guardado
+deactivate Web
+
+Admin -> BLKR : Programar vía\napp K-RainBL
+activate BLKR
+BLKR --> Admin : Programa cargado
+deactivate BLKR
+
+== Ejecución del riego (automático) ==
+
+note over BLKR : Llega la hora programada
+
+BLKR -> EV : Pulso DC (+) [apertura]
+activate EV
+EV --> BLKR : Estado: abierta
+deactivate EV
+
+BLKR -->> ESP : Notificación BLE\n(GATT Notify)
+activate ESP
+ESP -> ESP : Decodificar payload\n(estación, evento)
+
+ESP -> DB : POST /historial_riego\n{sector, inicio, tipo: "automatico"}
+activate DB
+DB --> ESP : 201 Created
+deactivate DB
+
+DB -->> Web : Realtime push
+activate Web
+Web -> Web : Actualizar dashboard\n(estado: "Regando")
+Web --> Admin : Visualización en tiempo real
+deactivate Web
+
+deactivate ESP
+
+== Fin del ciclo de riego ==
+
+note over BLKR : Termina duración programada
+
+BLKR -> EV : Pulso DC (-) [cierre]
+activate EV
+EV --> BLKR : Estado: cerrada
+deactivate EV
+
+BLKR -->> ESP : Notificación BLE\n(cierre)
+activate ESP
+ESP -> DB : PATCH /historial_riego\n{fin, duracion_real, volumen_litros}
+activate DB
+DB --> ESP : 200 OK
+deactivate DB
+
+DB -->> Web : Realtime push
+activate Web
+Web --> Admin : Riego completado
+deactivate Web
+deactivate ESP
+
+@enduml

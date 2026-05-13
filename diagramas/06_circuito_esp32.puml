@@ -1,0 +1,82 @@
+@startuml CircuitoESP32_SARQUE
+skinparam backgroundColor #FFFFFF
+skinparam rectangle {
+  BackgroundColor<<esp>> #4CAF50
+  FontColor<<esp>> #FFFFFF
+  BorderColor<<esp>> #1B5E20
+
+  BackgroundColor<<led>> #FFEB3B
+  BorderColor<<led>> #F57F17
+
+  BackgroundColor<<res>> #E0E0E0
+  BorderColor<<res>> #424242
+
+  BackgroundColor<<power>> #F44336
+  FontColor<<power>> #FFFFFF
+  BorderColor<<power>> #B71C1C
+
+  BackgroundColor<<gnd>> #424242
+  FontColor<<gnd>> #FFFFFF
+
+  BackgroundColor<<wifi>> #2196F3
+  FontColor<<wifi>> #FFFFFF
+}
+skinparam shadowing false
+
+title <b>Esquema Eléctrico del Nodo ESP32 — SARQUE</b>\n<i>Conexiones del prototipo BLE-WiFi Gateway</i>
+
+rectangle "Fuente 5V DC\n2A" as PSU <<power>>
+rectangle "**ESP32 DevKit V1**\n──────────────────\nWiFi 2.4 GHz\nBluetooth BLE 5.0\n240 MHz dual-core\n520 KB SRAM" as ESP <<esp>>
+
+rectangle "LED Rojo\n(WiFi OFF)" as LED_R <<led>>
+rectangle "R1 = 220Ω\n1/4 W" as R1 <<res>>
+
+rectangle "LED Verde\n(WiFi ON)" as LED_G <<led>>
+rectangle "R2 = 220Ω\n1/4 W" as R2 <<res>>
+
+rectangle "LED Azul\n(BLE Activo)" as LED_B <<led>>
+rectangle "R3 = 220Ω\n1/4 W" as R3 <<res>>
+
+rectangle "Router WiFi\n2.4 GHz" as WIFI <<wifi>>
+rectangle "Controlador\nK-Rain BL-KR" as BLKR
+
+rectangle "GND" as GND1 <<gnd>>
+rectangle "GND" as GND2 <<gnd>>
+rectangle "GND" as GND3 <<gnd>>
+rectangle "GND" as GND4 <<gnd>>
+
+PSU -down-> ESP : VIN (5V)
+PSU -down-> GND1 : GND
+
+ESP -right-> R1 : GPIO 25
+R1 -right-> LED_R
+LED_R -down-> GND2
+
+ESP -right-> R2 : GPIO 26
+R2 -right-> LED_G
+LED_G -down-> GND3
+
+ESP -right-> R3 : GPIO 27
+R3 -right-> LED_B
+LED_B -down-> GND4
+
+ESP <..> WIFI : 2.4 GHz\nIEEE 802.11 b/g/n
+ESP <..> BLKR : Bluetooth Low Energy\n(GATT Central)
+
+note bottom of ESP
+  **Pinout utilizado:**
+  • VIN  → 5V DC entrada
+  • GND  → Tierra común
+  • GPIO 25 → LED Rojo (estado WiFi OFF)
+  • GPIO 26 → LED Verde (estado WiFi ON)
+  • GPIO 27 → LED Azul (estado BLE)
+  • Antena integrada PCB → WiFi + BLE
+end note
+
+note right of PSU
+  Caja de protección IP44
+  para instalación en
+  caseta de bomba
+end note
+
+@enduml
