@@ -34,32 +34,25 @@ node "Cliente Web (Navegador)" as Cliente {
 cloud "Supabase (Nube)" as Supabase {
   component "Supabase Auth\n(JWT)" as Auth
   database "PostgreSQL\n+ Row Level Security" as DB
-  component "Supabase Realtime\n(WebSocket)" as RT
   component "REST API\n(PostgREST)" as API
-
   API --> DB
-  RT --> DB
   Auth --> DB
 }
 
-node "Caseta de Bomba" as Caseta {
-  component "Firmware ESP32\n(Arduino + NimBLE)" as FW
-  component "WiFi Client" as WiFi
-  component "BLE Central" as BLE
-  FW --> WiFi
-  FW --> BLE
+node "Smartphone Administrador" as Phone {
+  component "App K-RainBL\n(K-Rain oficial)" as KApp
 }
 
 node "Sectores del Parque" as Parque {
-  component "Controladores\nK-Rain BL-KR" as BLKR
-  component "41 Electroválvulas\nBSPT 9V DC" as EV
+  component "6 Controladores\nK-Rain BL-KR\n(2 BL-KR2 + 3 BL-KR4 + 1 BL-KR6)" as BLKR
+  component "22 Electroválvulas\nBSPT 9V DC" as EV
   BLKR --> EV : pulso DC
 }
 
 App --> API : HTTPS/REST
-App --> RT : WebSocket
 App --> Auth : Login JWT
-FW --> API : HTTPS/POST eventos
-BLE ..> BLKR : Bluetooth Low Energy
+KApp ..> BLKR : Bluetooth Low Energy
 
+note bottom of Cliente : Plataforma de gestión\ny documentación digital
+note bottom of Phone : Control efectivo de\nlos riegos automáticos
 @enduml

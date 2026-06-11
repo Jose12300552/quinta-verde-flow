@@ -1,0 +1,64 @@
+@startuml FlujoOperativo_SARQUE
+skinparam backgroundColor #FFFFFF
+skinparam activity {
+  BackgroundColor #E3F2FD
+  BorderColor #1565C0
+  ArrowColor #424242
+  StartColor #2E7D32
+  EndColor #C62828
+  DiamondBackgroundColor #FFF3E0
+  DiamondBorderColor #F57C00
+}
+skinparam shadowing false
+
+title <b>Diagrama de Flujo Operativo — Riego Automatizado SARQUE</b>
+
+start
+:Administrador revisa\npronóstico al inicio del día;
+
+if (¿Llovió o se pronostica lluvia?) then (Sí)
+  :Suspender programas en\nlos controladores BL-KR\n(función ON/OFF\nen app K-RainBL);
+  stop
+else (No)
+endif
+
+:Sistema en operación normal;
+
+:Esperar siguiente horario\nprogramado en cronograma;
+
+partition "**Controlador BL-KR**" {
+  :Llega la hora programada\n(p.ej. 10:00 Lunes\nestación 1);
+  :Envía pulso DC (+)\nal solenoide;
+}
+
+partition "**Electroválvula**" {
+  :Solenoide abre la\nelectroválvula;
+  :Agua fluye desde\nmatriz 2" hacia el sector;
+}
+
+partition "**Sector regado**" {
+  :Riego durante 2 horas\n(o tiempo programado);
+}
+
+partition "**Controlador BL-KR**" {
+  :Termina duración programada;
+  :Envía pulso DC (-)\nal solenoide;
+}
+
+partition "**Electroválvula**" {
+  :Solenoide cierra la\nelectroválvula;
+  :Corte de flujo;
+}
+
+:Bomba detecta caída de demanda\ny se apaga al alcanzar 4.0 bar\n(presostato + tanque hidroneumático);
+
+if (¿Quedan más horarios\nen el día?) then (Sí)
+  -> volver a esperar;
+  :Esperar siguiente horario;
+  detach
+else (No)
+endif
+
+stop
+
+@enduml

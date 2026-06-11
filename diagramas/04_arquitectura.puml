@@ -14,11 +14,10 @@ skinparam linetype ortho
 title <b>Arquitectura General del Sistema SARQUE</b>\n<i>Parque Ecoturístico Quinta Estación — 5 hectáreas</i>
 
 cloud "Internet / Nube" as Internet {
-  rectangle "**Supabase**\n• PostgreSQL\n• Auth (JWT)\n• REST API\n• Realtime WebSocket\n• Row Level Security" as SB #FFE0B2
+  rectangle "**Supabase**\n• PostgreSQL\n• Auth (JWT)\n• REST API\n• Row Level Security" as SB #FFE0B2
 }
 
 node "Caseta de Bomba" as Caseta #C5E1A5 {
-  rectangle "**Nodo ESP32**\n(alcance académico)\n• WiFi 2.4 GHz\n• BLE Central\n• Firmware NimBLE" as ESP
   rectangle "**Bomba Grundfos**\nSumergible 5 HP\nTrifásica\nPozo 50 m\n4.2 L/s @ 3.5 bar\nTanque hidroneumático" as Bomba
 }
 
@@ -61,21 +60,24 @@ node "Sector F\n(BL-KR6)" as S6 #FFCCBC {
 actor "Administrador\n(Eliana Soria)" as Admin
 actor "Operadores\n(6 Jardineros)" as Op
 
-rectangle "**App Web SARQUE**\n• Dashboard\n• Horarios\n• Historial\n• Reportes" as Web #B3E5FC
+rectangle "**App Web SARQUE**\n• Sectores\n• Controladores\n• Cronograma\n• Usuarios" as Web #B3E5FC
+
+rectangle "**App K-RainBL**\n(Smartphone\nadministrador)" as KApp #D1C4E9
 
 Admin --> Web
 Op --> Web
 Web <--> SB : HTTPS/WSS
 
-ESP <--> SB : HTTPS REST
-ESP ..> BK1 : BLE
-ESP ..> BK2 : BLE
-ESP ..> BK3 : BLE
-ESP ..> BK4 : BLE
-ESP ..> BK5 : BLE
-ESP ..> BK6 : BLE
+Admin --> KApp : programa
+KApp ..> BK1 : BLE
+KApp ..> BK2 : BLE
+KApp ..> BK3 : BLE
+KApp ..> BK4 : BLE
+KApp ..> BK5 : BLE
+KApp ..> BK6 : BLE
 
 note bottom of Caseta : **Total: 22 estaciones**\n2×2 + 3×4 + 1×6 = 22\n(optimizado para cable ≤30 m\npor solenoide)
-note right of Web : Acceso desde\nPC, tablet o\nmóvil
+note right of Web : Documentación digital\ny planificador
+note right of KApp : Control efectivo\n(K-Rain oficial)
 
 @enduml

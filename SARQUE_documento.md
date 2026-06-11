@@ -7,7 +7,7 @@
 
 **(SARQUE)**
 
-*Trabajo de Grado para optar al Título de Técnico Superior en Informática Industrial*
+*Trabajo Dirigido para optar al Título de Técnico Superior en Informática Industrial*
 
 **Postulante:**
 Jose Neyer Arnez Aguilar
@@ -32,41 +32,36 @@ Cochabamba — Bolivia
 - CAPÍTULO II — MARCO TEÓRICO Y CONCEPTUAL
   - 2.1. Métodos de Recolección de Información
   - 2.2. Ingeniería de Software
-  - 2.3. Metodología de Diseño de Hardware
-  - 2.4. Comunicación Inalámbrica BLE
-  - 2.5. Programación Frontend
-  - 2.6. Plataforma Backend y Base de Datos
-  - 2.7. Desarrollo de Hardware
-  - 2.8. Actuadores e Instrumentación
-  - 2.9. Normativa
+  - 2.3. Sistemas de Riego Automatizados
+  - 2.4. Controladores Bluetooth K-Rain BL-KR
+  - 2.5. Actuadores e Instrumentación Hidráulica
+  - 2.6. Programación Frontend
+  - 2.7. Plataforma Backend y Base de Datos
+  - 2.8. Normativa
 - CAPÍTULO III — PROPUESTA DE INNOVACIÓN
   - 3.1. Modelado de Negocio Actual y Alternativo
-  - 3.2. Diseño e Implementación del Módulo de Autenticación y Gestión
-  - 3.3. Diseño e Implementación del Módulo BLE y Controladores
-  - 3.4. Desarrollo del Prototipo
-  - 3.5. Diseño e Implementación de la Interfaz y Reportería
-  - 3.6. Pruebas Realizadas
-  - 3.7. Análisis de Resultados
+  - 3.2. Diseño e Implementación de la Plataforma Web SARQUE
+  - 3.3. Diseño e Implementación del Sistema de Riego en Campo
+  - 3.4. Pruebas Realizadas
+  - 3.5. Análisis de Resultados
 - CAPÍTULO IV — CONCLUSIONES Y RECOMENDACIONES
 - BIBLIOGRAFÍA
 - ANEXO A — ESPECIFICACIONES TÉCNICAS DETALLADAS
 - ANEXO B — GALERÍA FOTOGRÁFICA DE LA INSTALACIÓN
-- ANEXO C — CONFIGURACIÓN INICIAL DE LOS CONTROLADORES
 
 ## ÍNDICE DE FIGURAS
 
-- Figura 1. Diagrama de Casos de Uso del Sistema SARQUE
-- Figura 2. Diagrama de Componentes del Sistema SARQUE
+- Figura 1. Diagrama de Casos de Uso de la Plataforma SARQUE
+- Figura 2. Diagrama de Componentes de la Plataforma SARQUE
 - Figura 3. Modelo Entidad-Relación de la Base de Datos SARQUE
-- Figura 4. Arquitectura General del Sistema SARQUE
-- Figura 5. Diagrama de Secuencia — Ciclo de Riego Automático
-- Figura 6. Esquema Eléctrico del Nodo ESP32
+- Figura 4. Arquitectura General del Sistema de Riego SARQUE
+- Figura 5. Diagrama de Flujo Operativo del Riego Automatizado
 
 ---
 
 ## RESUMEN
 
-SARQUE es un sistema de automatización y monitoreo de riego desarrollado para el Parque Ecoturístico Quinta Estación, un espacio verde de 5 hectáreas ubicado en Cochabamba, Bolivia, con más de 20 sectores de vegetación diferenciada. El sistema integra controladores de riego Bluetooth K-Rain BL-KR con electroválvulas de 9 V DC de acción latente, reemplazando el control manual de 22 electroválvulas (que centralizan el control de la red original de 41 puntos) distribuidas en el parque por un conjunto de 6 controladores programados que operan según un cronograma semanal predefinido. Un nodo ESP32 actúa como puente BLE-WiFi, capturando los eventos de activación y desactivación de electroválvulas mediante el protocolo Bluetooth Low Energy (BLE) y transmitiéndolos a la plataforma en la nube Supabase. Una aplicación web desarrollada en React + TypeScript expone historial de riegos, estadísticas de consumo hídrico, programación de horarios y estado en tiempo real de cada controlador, permitiendo a la administración del parque gestionar el riego sin necesidad de desplazamientos físicos a campo. El prototipo funcional valida la integración entre el controlador BL-KR2, el nodo ESP32 y la plataforma web, demostrando la viabilidad técnica del sistema para su escalado a los 6 controladores y 22 estaciones del parque completo. El costo operativo se reduce al eliminar el tiempo de caminata diaria del personal (mínimo 30 minutos por jornada) y al prevenir las fugas y el mal riego causados por el olvido en la apertura o cierre de llaves de paso.
+SARQUE es un sistema automatizado de riego desarrollado para el Parque Ecoturístico Quinta Estación, un espacio verde de 5 hectáreas ubicado en Cochabamba, Bolivia, que comprende más de 20 sectores de vegetación diferenciada. El sistema integra 6 controladores Bluetooth K-Rain BL-KR (2 unidades BL-KR2, 3 unidades BL-KR4 y 1 unidad BL-KR6, totalizando 22 estaciones) con electroválvulas K-Rain BSPT de 9 V DC tipo latching, una bomba sumergible Grundfos de 5 HP con tanque hidroneumático y una red hidráulica de tuberías PVC de 2" y 1 ½". El sistema reemplaza el control manual de 41 puntos de riego dispersos en el parque por 22 electroválvulas distribuidas estratégicamente, programadas a través de la aplicación móvil K-RainBL mediante conexión Bluetooth Low Energy. Como componente complementario académico, se desarrolló una plataforma web SARQUE en React + TypeScript con backend en Supabase, que centraliza la documentación digital del sistema: catálogo de sectores, registro de los 6 controladores y sus 22 estaciones asignadas, y cronograma semanal de riego, reemplazando el documento físico utilizado anteriormente por la administración del parque. El trabajo se desarrolló bajo la modalidad de Trabajo Dirigido, con implementación física en el predio del parque bajo la dirección de la propietaria Sra. Eliana Soria Yapur y el equipo de 6 jardineros, integrando los conceptos centrales de la Carrera de Informática Industrial: automatización de procesos, instrumentación de actuadores hidráulicos, redes inalámbricas de corto alcance e ingeniería de software.
 
 ---
 
@@ -74,15 +69,15 @@ SARQUE es un sistema de automatización y monitoreo de riego desarrollado para e
 
 El manejo eficiente del agua en espacios verdes de gran extensión constituye uno de los desafíos centrales para la gestión de parques ecoturísticos en Bolivia. La adopción de sistemas de automatización basados en controladores electrónicos y actuadores hidráulicos permite reducir el consumo hídrico, optimizar los tiempos del personal y garantizar que cada sector vegetal reciba el riego adecuado en el momento correcto.
 
-El Parque Ecoturístico Quinta Estación, ubicado en Cochabamba, Bolivia, posee una superficie de 5 hectáreas con una diversidad de especies vegetales —árboles frutales, plantas ornamentales, laberintos, zonas de suculentas, huertos orgánicos, lagunas y áreas de camping, entre otros— distribuidas en más de 20 sectores diferenciados, cada uno con requerimientos hídricos específicos y un calendario de riego semanal propio.
+El Parque Ecoturístico Quinta Estación, propiedad de la Sra. Eliana Soria Yapur, está ubicado en la ciudad de Cochabamba, Bolivia, y posee una superficie de 5 hectáreas con una diversidad de especies vegetales —árboles frutales, plantas ornamentales, laberintos de wisterias, zonas de suculentas, huertos orgánicos, lagunas y áreas de camping, entre otros— distribuidas en más de 20 sectores diferenciados, cada uno con requerimientos hídricos específicos y un calendario de riego semanal propio.
 
-En la actualidad, el proceso de riego es ejecutado manualmente por 6 jardineros que deben recorrer las 5 hectáreas para abrir y cerrar las llaves de paso que alimentan cada sector desde la bomba de agua del pozo. Este proceso implica un tiempo mínimo de 30 minutos diarios en desplazamientos, sin contar el tiempo efectivo de riego de aproximadamente 2 horas por sector, y presenta un riesgo operativo crítico documentado: el olvido de una llave de paso abierta provoca fugas en las cañerías o riego excesivo en sectores ya atendidos; el olvido de una llave cerrada implica que una zona no recibe riego en el día correspondiente, comprometiendo la salud de las especies vegetales.
+En la actualidad, el proceso de riego es ejecutado manualmente por 6 jardineros que deben recorrer las 5 hectáreas para abrir y cerrar las llaves de paso que alimentan cada sector desde la bomba sumergible Grundfos de 5 HP instalada en el pozo del parque. Este proceso implica un tiempo mínimo de 30 minutos diarios en desplazamientos, sin contar el tiempo efectivo de riego (aproximadamente 2 horas por sector), y presenta un riesgo operativo crítico documentado: el olvido de una llave de paso abierta provoca fugas en las cañerías o riego excesivo en sectores ya atendidos; el olvido de una llave cerrada implica que una zona no recibe riego en el día correspondiente, comprometiendo la salud de las especies vegetales.
 
-El presente Trabajo de Grado describe el diseño, desarrollo e implementación de SARQUE, un sistema que integra controladores de riego Bluetooth K-Rain BL-KR, electroválvulas de 9 V DC de acción latente, un nodo de monitoreo basado en ESP32 con conectividad WiFi, y una aplicación web de gestión desarrollada en React + TypeScript con backend en Supabase. El sistema automatiza la apertura y cierre de las 22 estaciones de riego del parque conforme a un cronograma semanal programado y genera reportes históricos de consumo hídrico para la toma de decisiones administrativas.
+El presente Trabajo Dirigido describe el diseño, instalación y puesta en marcha de SARQUE, un sistema que integra controladores de riego Bluetooth K-Rain BL-KR, electroválvulas K-Rain BSPT de 9 V DC tipo latching, una red hidráulica de tuberías PVC dimensionada al caudal de la bomba existente, y una plataforma web complementaria desarrollada en React + TypeScript con backend en Supabase para la documentación digital del sistema. Los controladores BL-KR se programan mediante la aplicación oficial K-RainBL del fabricante (disponible para iOS y Android), eliminando la necesidad de personal en campo durante los ciclos de riego programados.
 
-El trabajo se desarrolló bajo la Metodología de Desarrollo Rápido de Aplicaciones (DRA), que permitió iterar el sistema en fases cortas con retroalimentación directa de la administración del parque.
+El trabajo se desarrolló bajo la Metodología de Desarrollo Rápido de Aplicaciones (DRA) en su componente de software y bajo la metodología de Diseño Top-Down en su componente hidráulico-eléctrico, permitiendo iterar el sistema en fases cortas con retroalimentación directa de la administración del parque.
 
-El documento está organizado en cuatro capítulos: el Capítulo I establece el diagnóstico situacional, la justificación, el planteamiento del problema, los objetivos y el enfoque metodológico. El Capítulo II desarrolla el marco teórico y conceptual que sustenta las decisiones técnicas adoptadas. El Capítulo III presenta la propuesta de innovación con el modelado de negocio, el diseño e implementación de cada módulo del sistema, las pruebas realizadas y el análisis de resultados. Finalmente, el Capítulo IV expone las conclusiones y recomendaciones derivadas del trabajo.
+El documento está organizado en cuatro capítulos: el Capítulo I establece el diagnóstico situacional, la justificación, el planteamiento del problema, los objetivos y el enfoque metodológico. El Capítulo II desarrolla el marco teórico y conceptual que sustenta las decisiones técnicas adoptadas. El Capítulo III presenta la propuesta de innovación con el modelado de negocio, el diseño e implementación del sistema de riego en campo y de la plataforma web complementaria, las pruebas realizadas y el análisis de resultados. Finalmente, el Capítulo IV expone las conclusiones y recomendaciones derivadas del trabajo.
 
 ---
 
@@ -94,29 +89,29 @@ El documento está organizado en cuatro capítulos: el Capítulo I establece el 
 
 #### 1.1.1.1. Antecedentes Generales
 
-La automatización de sistemas de riego mediante tecnologías electrónicas e inalámbricas es un área activa de investigación e implementación a nivel mundial, impulsada por la necesidad de optimizar el uso del agua en espacios agrícolas y ornamentales ante la creciente escasez hídrica global.
+La automatización de sistemas de riego mediante controladores electrónicos y actuadores hidráulicos es un área activa de implementación a nivel mundial, impulsada por la necesidad de optimizar el uso del agua en espacios agrícolas y ornamentales ante la creciente escasez hídrica global.
 
-Pérez et al. (2022) desarrollaron un sistema de riego automatizado para cultivos hortícolas en México utilizando microcontroladores ESP32, sensores de humedad del suelo y válvulas solenoides controladas remotamente. El sistema redujo el consumo de agua en un 34 % respecto al riego manual, al aplicar agua únicamente cuando los sensores detectaban déficit hídrico real en el suelo. (Pérez, Ramírez y Torres, 2022)
+Pérez et al. (2022) desarrollaron un sistema de riego automatizado para cultivos hortícolas en México utilizando controladores programables y electroválvulas solenoide. El sistema redujo el consumo de agua en un 34 % respecto al riego manual al permitir la programación precisa de duración y frecuencia por zona. (Pérez, Ramírez y Torres, 2022)
 
-García y López (2023) implementaron un sistema de control de riego por zonas para un parque urbano en España, empleando controladores de riego programables con conectividad WiFi y electroválvulas de 24 V AC. El estudio destacó que la programación por zonas horarias permite reducir el tiempo de trabajo del personal de mantenimiento entre un 40 % y un 60 %, al eliminar la necesidad de supervisión presencial durante los ciclos de riego. (García y López, 2023)
+García y López (2023) implementaron un sistema de control de riego por zonas para un parque urbano en España, empleando controladores de riego programables y electroválvulas de acción latente. El estudio destacó que la programación por zonas horarias permite reducir el tiempo de trabajo del personal de mantenimiento entre un 40 % y un 60 %, al eliminar la necesidad de supervisión presencial durante los ciclos de riego. (García y López, 2023)
 
-En el ámbito latinoamericano, Castillo (2021) documentó el diseño e implementación de un sistema IoT para el control de riego en jardines botánicos de Colombia, integrando nodos de sensores de humedad, temperatura y luminosidad con una plataforma de visualización web accesible desde dispositivos móviles. El trabajo concluyó que la automatización del riego en espacios verdes de más de 2 hectáreas requiere una arquitectura distribuida con múltiples controladores zonales coordinados desde un sistema central. (Castillo, 2021)
+En el ámbito latinoamericano, Castillo (2021) documentó el diseño e implementación de un sistema de control de riego en jardines botánicos de Colombia, concluyendo que la automatización del riego en espacios verdes de más de 2 hectáreas requiere una arquitectura distribuida con múltiples controladores zonales que operen coordinadamente. (Castillo, 2021)
 
-Estos antecedentes evidencian una tendencia global hacia la sustitución del riego manual por sistemas automatizados con capacidad de programación, monitoreo remoto y generación de reportes, especialmente en contextos donde la extensión del área verde supera la capacidad de supervisión presencial del personal disponible.
+Estos antecedentes evidencian una tendencia global hacia la sustitución del riego manual por sistemas automatizados con capacidad de programación por zonas, especialmente en contextos donde la extensión del área verde supera la capacidad de supervisión presencial del personal disponible.
 
 #### 1.1.1.2. Antecedentes Específicos
 
-La búsqueda de antecedentes específicos orientada a sistemas automatizados de riego con controladores Bluetooth K-Rain y monitoreo web en Bolivia y en el ITSa Sacaba no arrojó proyectos documentados previamente. No se encontraron tesis, prototipos ni sistemas instalados en parques ecoturísticos de la región que aborden la integración de controladores BL-KR con plataformas de gestión web para el monitoreo y reporte del consumo hídrico.
+La búsqueda de antecedentes específicos orientada a sistemas automatizados de riego con controladores Bluetooth K-Rain BL-KR en Bolivia y en el ITSa Sacaba no arrojó proyectos documentados previamente. No se encontraron tesis, prototipos ni sistemas instalados en parques ecoturísticos de la región que aborden la integración de controladores BL-KR con electroválvulas BSPT para automatizar el riego de espacios de 5 hectáreas o más.
 
-Este vacío confirma la originalidad del proyecto SARQUE en el contexto local y evidencia la necesidad de desarrollar una solución adaptada a las condiciones específicas del Parque Ecoturístico Quinta Estación: infraestructura de red WiFi 2.4 GHz disponible en el predio, alimentación hídrica desde pozo propio con bomba de 4.2 L/s, operación con múltiples controladores de riego Bluetooth distribuidos en 5 hectáreas y presupuesto limitado que excluye soluciones comerciales de telemetría industrial.
+Este vacío confirma la originalidad del proyecto SARQUE en el contexto local y evidencia la necesidad de desarrollar una solución adaptada a las condiciones específicas del Parque Ecoturístico Quinta Estación: alimentación hídrica desde pozo propio con bomba sumergible Grundfos de 5 HP, distribución por gravedad con 41 puntos de riego históricos consolidados en 22 estaciones controladas, cobertura desigual de señal WiFi en el predio (lo que descarta soluciones cloud en tiempo real) y presupuesto limitado que excluye soluciones comerciales de telemetría industrial.
 
 #### 1.1.1.3. Diagnóstico del Problema en el Parque
 
-El Parque Ecoturístico Quinta Estación, propiedad de Eliana Soria Yapur, está ubicado en la ciudad de Cochabamba, Bolivia, y cuenta con una superficie de 5 hectáreas distribuidas en más de 20 sectores de vegetación diferenciada, entre los que se incluyen: Quinta Avenida, Laberinto de Wisterias, Laguna Cuadrada, Laguna de Carpas, Mil y una Flor, Rotonda, Torre de Abajo, Reservorio de Agua, Curvas Cromáticas Norte, Curvas Cromáticas Chirimoyas, Huerto Orgánico, Cactáreo Izquierdo, Cactáreo Derecho, Paseo de Olivos, Jardín de Suculentas, Área Frutales, Mediterráneo, Jardín de Camping, entre otros.
+El Parque Ecoturístico Quinta Estación, propiedad de la Sra. Eliana Soria Yapur, está ubicado en la ciudad de Cochabamba, Bolivia, y cuenta con una superficie de 5 hectáreas distribuidas en más de 20 sectores de vegetación diferenciada, entre los que se incluyen: Quinta Avenida, Laberinto de Wisterias, Laguna Cuadrada, Laguna de Carpas, Mil y una Flor, Rotonda, Torre de Abajo, Reservorio de Agua, Curvas Cromáticas Norte, Curvas Cromáticas Chirimoyas, Huerto Orgánico, Cactáreo Izquierdo, Cactáreo Derecho, Paseo de Olivos, Jardín de Suculentas, Área Frutales, Mediterráneo, Jardín de Camping, entre otros.
 
-El parque emplea a 6 jardineros y 1 administrador, bajo la dirección de la propietaria. El sistema de riego actual funciona mediante una bomba de agua de pozo con un caudal medido de 4.2 litros por segundo, capaz de mantener activa una sola zona de riego a la vez. El agua se distribuye a través de una red de cañerías que alimenta 22 electroválvulas distribuidas estratégicamente sobre una red original de 41 puntos de riego distribuidas en el predio —representadas en el Plano General a escala 1:250 como puntos de color dorado—, cada una de las cuales debe ser abierta y cerrada manualmente por el personal en cada ciclo de riego.
+El parque emplea a 6 jardineros y 1 administrador, bajo la dirección de la propietaria. El sistema de riego actual funciona mediante una bomba sumergible Grundfos de 5 HP trifásica instalada en un pozo de 50 metros de profundidad, con un caudal medido de 4.2 litros por segundo y un tanque hidroneumático que opera entre 3.5 y 4.0 bar. La bomba es capaz de mantener activa una sola zona de riego a la vez. El agua se distribuye desde la matriz principal de 2" en PVC a través de cuelleras de 1 ½" hacia 41 puntos de riego históricos distribuidos en el predio —representados en el Plano General a escala 1:250 como puntos de color dorado—, cada uno de los cuales debía ser abierto y cerrado manualmente por el personal en cada ciclo de riego.
 
-El cronograma de riego semanal es de alta complejidad: asigna entre 3 y 6 sectores por día, con turnos de 2 horas por sector distribuidos en franjas horarias de 8:00 a 20:00, variando los sectores asignados según el día de la semana. Este cronograma requiere que el jardinero de turno recuerde qué sectores corresponden cada día, a qué hora debe abrir cada llave y a qué hora debe cerrarla.
+El cronograma de riego semanal es de alta complejidad: asigna entre 3 y 6 sectores por día, con turnos de 2 horas por sector distribuidos en franjas horarias de 8:00 a 20:00, variando los sectores asignados según el día de la semana. Este cronograma se mantenía únicamente en un documento de papel que requería que el jardinero de turno recordara qué sectores corresponden a cada día, a qué hora debe abrir cada llave y a qué hora debe cerrarla.
 
 Mediante observación directa en el parque y entrevista no estructurada a la administración, se identificaron los siguientes problemas:
 
@@ -126,19 +121,21 @@ Mediante observación directa en el parque y entrevista no estructurada a la adm
 
 **c) Mal riego por olvido de apertura de llave.** De forma inversa, el olvido de apertura de una llave en el horario asignado implica que el sector correspondiente no recibe riego en esa jornada. Dado que algunos sectores solo se riegan 1 o 2 veces por semana según el cronograma, un olvido puede comprometer la salud de las especies vegetales de ese sector durante varios días.
 
-**d) Ausencia de registro histórico.** No existe ningún sistema de registro de los riegos realizados, tiempos de operación por sector, ni volumen de agua consumido. La administración no dispone de datos históricos para evaluar la eficiencia del riego, detectar sectores con problemas ni planificar el mantenimiento de la red hídrica.
+**d) Cronograma en papel sin respaldo digital.** El cronograma semanal de riego se encuentra únicamente en un documento físico que puede dañarse, perderse o desactualizarse sin que el resto del personal tenga acceso a la versión vigente. No existe documentación digital centralizada del sistema hídrico ni de la asignación de sectores por jardinero.
 
-**e) Imposibilidad de supervisión remota.** La administración no tiene visibilidad del estado de las llaves de paso desde ningún punto del parque ni desde fuera de él. La supervisión depende exclusivamente de la presencia física del jardinero en campo.
+**e) Imposibilidad de gestión centralizada.** La administración no dispone de una herramienta digital que permita visualizar el sistema completo, planificar modificaciones al cronograma, registrar la composición vegetal de cada sector ni delegar la consulta del cronograma al personal de campo desde dispositivos móviles.
 
 #### 1.1.1.4. Justificación
 
-**Justificación operativa.** Un olvido de apertura o cierre de llave de paso puede ocurrir en cualquiera de los 22 puntos del parque. Con 6 sectores diarios a gestionar en promedio, la probabilidad de error manual en un sistema completamente dependiente de la memoria humana es estadísticamente significativa. SARQUE reemplaza la decisión manual por una programación automática en los controladores BL-KR, garantizando que cada electroválvula se abra y cierre en el horario exacto configurado, independientemente de la presencia o atención del jardinero.
+**Justificación operativa.** Un olvido de apertura o cierre de llave de paso puede ocurrir en cualquiera de los 41 puntos del parque. Con 6 sectores diarios a gestionar en promedio, la probabilidad de error manual en un sistema completamente dependiente de la memoria humana es estadísticamente significativa. SARQUE reemplaza la decisión manual por una programación automática en los 6 controladores K-Rain BL-KR, garantizando que cada electroválvula se abra y cierre en el horario exacto configurado en la app K-RainBL, independientemente de la presencia o atención del jardinero.
 
-**Justificación hídrica.** La bomba del parque extrae agua de un pozo propio a un caudal de 4.2 L/s. Una llave de paso olvidada abierta durante 2 horas fuera de su horario desperdicia aproximadamente 30.240 litros de agua (4.2 L/s × 7.200 s). SARQUE elimina este riesgo al automatizar el cierre de electroválvulas al término exacto del ciclo programado.
+**Justificación hídrica.** La bomba sumergible Grundfos de 5 HP extrae agua de un pozo propio a un caudal de 4.2 L/s. Una llave de paso olvidada abierta durante 2 horas fuera de su horario desperdicia aproximadamente 30.240 litros de agua (4.2 L/s × 7.200 s). SARQUE elimina este riesgo al automatizar el cierre de electroválvulas al término exacto del ciclo programado en el controlador BL-KR.
 
-**Justificación laboral.** Con 30 minutos diarios de desplazamiento mínimo para el manejo de llaves, el personal invierte aproximadamente 182 horas anuales exclusivamente en caminatas de apertura y cierre de llaves. SARQUE libera ese tiempo para tareas de mayor valor: poda, abono, mantenimiento de instalaciones y atención a visitantes.
+**Justificación laboral.** Con 30 minutos diarios de desplazamiento mínimo para el manejo de llaves, el personal invierte aproximadamente 182 horas anuales exclusivamente en caminatas de apertura y cierre de llaves. SARQUE libera ese tiempo para tareas de mayor valor: poda, abono, mantenimiento de instalaciones y atención a visitantes del parque.
 
-**Justificación tecnológica.** El proyecto integra y aplica conceptos centrales de la Carrera de Informática Industrial del ITSa Sacaba: protocolos de comunicación inalámbrica BLE, microcontroladores ESP32 con conectividad WiFi, bases de datos relacionales en la nube, API REST, interfaces web responsivas y validación de datos. El prototipo funcional demuestra la viabilidad técnica de la solución con hardware de bajo costo disponible comercialmente en Bolivia.
+**Justificación de gestión.** La plataforma web SARQUE reemplaza el cronograma semanal en papel —vulnerable a pérdida, deterioro y desactualización— por una versión digital centralizada accesible desde cualquier dispositivo con acceso a internet, permitiendo a la administración modificar el cronograma, registrar nuevos sectores y mantener actualizada la documentación del sistema hídrico.
+
+**Justificación tecnológica.** El proyecto integra y aplica conceptos centrales de la Carrera de Informática Industrial del ITSa Sacaba: automatización de procesos hidráulicos con controladores Bluetooth, actuadores electromecánicos de acción latente, redes hidráulicas con bombas centrífugas y tanques hidroneumáticos, bases de datos relacionales en la nube, API REST, interfaces web responsivas y validación de datos. La solución es replicable en cualquier espacio verde de la región con condiciones similares y costo total accesible al sector privado boliviano.
 
 ---
 
@@ -151,25 +148,25 @@ Mediante observación directa en el parque y entrevista no estructurada a la adm
 | N° | Pregunta | Respuesta |
 |----|----------|-----------|
 | 1 | ¿Por qué se producen fugas y mal riego en el parque? | Porque las llaves de paso se olvidan abiertas o cerradas |
-| 2 | ¿Por qué se olvidan las llaves de paso? | Porque el control es 100% manual y depende de la memoria del jardinero |
-| 3 | ¿Por qué el control es manual? | Porque no existe un sistema de automatización para las 22 estaciones del parque |
+| 2 | ¿Por qué se olvidan las llaves de paso? | Porque el control es 100 % manual y depende de la memoria del jardinero |
+| 3 | ¿Por qué el control es manual? | Porque no existe un sistema de automatización para los 41 puntos del parque |
 | 4 | ¿Por qué no existe automatización? | Porque no se ha implementado ningún sistema de control electrónico para el riego |
-| 5 | ¿Por qué no se ha implementado? | Porque no existe un proyecto técnico adaptado a las condiciones del parque (5 ha, pozo, Bluetooth, WiFi) |
+| 5 | ¿Por qué no se ha implementado? | Porque no existe un proyecto técnico adaptado a las condiciones del parque (5 ha, pozo, BLE, sin WiFi completo) |
 
 **Árbol de Problemas:**
 
-- **Causa raíz:** Control de riego manual con 22 electroválvulas (que centralizan el control de la red original de 41 puntos) distribuidas en 5 hectáreas
+- **Causa raíz:** Control de riego manual con 41 llaves de paso distribuidas en 5 hectáreas y cronograma en papel
 - **Problema central:** Gestión ineficiente del agua en el Parque Ecoturístico Quinta Estación
 - **Efectos:**
   - Fugas en cañerías por llaves olvidadas abiertas
   - Sectores sin riego por llaves olvidadas cerradas
   - Tiempo improductivo del personal en desplazamientos
-  - Ausencia de datos históricos para la toma de decisiones
+  - Cronograma en papel vulnerable a pérdida o desactualización
   - Daño potencial a especies vegetales por déficit o exceso hídrico
 
 ### 1.2.2. Formulación del Problema
 
-¿De qué manera la implementación de un sistema automatizado de riego con electroválvulas y controladores de riego K-Rain BL-KR, integrado con una plataforma web de monitoreo y reportería desarrollada sobre ESP32 y Supabase, contribuye a la gestión eficiente del agua en el Parque Ecoturístico Quinta Estación?
+¿De qué manera la implementación de un sistema automatizado de riego con electroválvulas y controladores de riego K-Rain BL-KR programables mediante app móvil, complementado con una plataforma web de documentación digital, contribuye a la gestión eficiente del agua en el Parque Ecoturístico Quinta Estación?
 
 ---
 
@@ -177,34 +174,43 @@ Mediante observación directa en el parque y entrevista no estructurada a la adm
 
 ### 1.3.1. Objetivo General
 
-Diseñar, desarrollar e implementar un sistema automatizado de riego con electroválvulas y controladores de riego Bluetooth K-Rain BL-KR, integrado con una plataforma web de monitoreo y reportería basada en ESP32 y Supabase, para la gestión eficiente del recurso hídrico en el Parque Ecoturístico Quinta Estación de Cochabamba, Bolivia.
+Diseñar, implementar y poner en marcha un sistema automatizado de riego con electroválvulas y controladores Bluetooth K-Rain BL-KR programables mediante la aplicación móvil K-RainBL, complementado con una plataforma web de documentación digital basada en React y Supabase, para la gestión eficiente del recurso hídrico en el Parque Ecoturístico Quinta Estación de Cochabamba, Bolivia.
 
 ### 1.3.2. Objetivos Específicos
 
-1. Diagnosticar la situación actual del sistema de riego manual del Parque Ecoturístico Quinta Estación, identificando los sectores de riego, el cronograma semanal, el caudal disponible y los problemas operativos documentados.
+1. **Diagnosticar** la situación actual del sistema de riego manual del Parque Ecoturístico Quinta Estación, identificando los sectores de riego, el cronograma semanal vigente, el caudal disponible de la bomba sumergible Grundfos de 5 HP y los problemas operativos documentados.
 
-2. Diseñar la arquitectura del sistema SARQUE, definiendo la distribución de los 6 controladores K-Rain BL-KR, las 22 estaciones de electroválvulas, el nodo ESP32 como puente BLE-WiFi y la plataforma Supabase como backend de datos.
+2. **Diseñar** la arquitectura del sistema SARQUE, definiendo la consolidación de los 41 puntos de riego originales en 22 estaciones controladas distribuidas en 6 controladores K-Rain BL-KR (2 BL-KR2, 3 BL-KR4 y 1 BL-KR6), optimizando el tendido del cable monofilar 20 AWG para que ningún solenoide quede a más de 30 metros del controlador correspondiente.
 
-3. Implementar el firmware del nodo ESP32 como puente Bluetooth Low Energy — WiFi, capaz de conectarse a los controladores K-Rain BL-KR, capturar eventos de apertura y cierre de electroválvulas mediante ingeniería inversa del protocolo GATT, y transmitirlos a la base de datos Supabase.
+3. **Instalar** la infraestructura hidráulica y eléctrica del sistema en el predio del parque: red de tuberías PVC de 2" (matriz) y 1 ½" (cuelleras), excavación de zanjas a 20-25 cm de profundidad para el politubo de 3/4" que aloja el cable, montaje de electroválvulas K-Rain BSPT de 9 V DC tipo latching en cajas de hormigón de 40 × 40 × 30 cm y cableado de los solenoides hasta los controladores.
 
-4. Desarrollar la aplicación web SARQUE en React + TypeScript con módulos de dashboard en tiempo real, programación de horarios de riego, historial de eventos y reportería exportable, conectada a Supabase como backend.
+4. **Programar** los 6 controladores K-Rain BL-KR mediante la aplicación oficial K-RainBL del fabricante para reproducir el cronograma semanal de riego del parque, asignando a cada estación los días, horas y duración correspondientes.
 
-5. Validar el sistema mediante un prototipo funcional con el controlador BL-KR2 y electroválvulas K-Rain BSPT de 9 V DC, realizando pruebas unitarias, de integración y de aceptación que verifiquen el correcto funcionamiento de la cadena completa: programación → activación BLE → captura ESP32 → registro Supabase → visualización web.
+5. **Desarrollar** la plataforma web SARQUE en React + TypeScript con backend en Supabase, incluyendo módulos de autenticación, catálogo digital de sectores, catálogo de controladores BL-KR y sus estaciones asignadas, planificador visual del cronograma semanal y manual de usuario integrado.
+
+6. **Validar** el sistema completo mediante pruebas en campo del cronograma automatizado en al menos un controlador instalado y pruebas funcionales de la plataforma web con la administración del parque.
 
 ---
 
 ## 1.4. Enfoque Metodológico
 
-El proyecto se desarrolló bajo la **Metodología de Desarrollo Rápido de Aplicaciones (DRA / RAD)**, seleccionada por su capacidad de entregar prototipos funcionales en ciclos cortos de desarrollo con retroalimentación directa del usuario final. Esta metodología es adecuada para proyectos con requisitos parcialmente definidos al inicio y que evolucionan mediante la interacción con el cliente, como es el caso de SARQUE, donde la programación de horarios y la estructura de reportes fueron refinadas iterativamente con la administración del parque.
+El proyecto se desarrolló combinando dos metodologías complementarias:
+
+**Metodología de Desarrollo Rápido de Aplicaciones (DRA / RAD)** para el componente de software (plataforma web SARQUE), seleccionada por su capacidad de entregar prototipos funcionales en ciclos cortos con retroalimentación directa del usuario final.
+
+**Metodología de Diseño Top-Down** para el componente hidráulico-eléctrico (sistema de riego en campo), que parte de la definición del sistema en su nivel más alto (las 5 hectáreas a regar) y lo descompone progresivamente en zonas, sectores, estaciones y componentes individuales.
 
 **Tabla 2. Matriz Metodológica**
 
-| Fase DRA | Actividad en SARQUE | Duración estimada |
-|----------|--------------------|--------------------|
-| Planificación de requisitos | Entrevista y observación directa en el parque; definición del cronograma de riego y sectores | 2 semanas |
-| Diseño del usuario | Prototipado de la interfaz web; validación de flujos con la administración | 2 semanas |
-| Construcción del sistema | Desarrollo del firmware ESP32; implementación del backend Supabase; desarrollo de la app web | 6 semanas |
-| Transición (implementación) | Instalación del prototipo; pruebas en campo con BL-KR2; ajustes finales | 2 semanas |
+| Fase | Actividad en SARQUE | Duración estimada |
+|------|--------------------|--------------------|
+| Diagnóstico | Entrevista y observación directa en el parque; relevamiento del plano hídrico; documentación del cronograma | 2 semanas |
+| Diseño | Consolidación de los 41 puntos en 22 estaciones; selección de controladores; diseño de la app web | 2 semanas |
+| Adquisición | Compra de controladores BL-KR, electroválvulas K-Rain BSPT, cable 20 AWG y materiales hidráulicos | 1 semana |
+| Instalación en campo | Excavación de zanjas, montaje de cajas de hormigón, instalación de electroválvulas, tendido de cableado | 4 semanas |
+| Programación de controladores | Configuración de los 6 controladores BL-KR vía app K-RainBL con el cronograma definido | 1 semana |
+| Desarrollo web | Implementación de la plataforma SARQUE: auth, catálogo, planificador | 4 semanas |
+| Pruebas y ajustes | Validación del sistema en campo y pruebas funcionales de la web | 1 semana |
 
 ### 1.4.1. Alcance Temporal
 
@@ -212,15 +218,14 @@ El proyecto se desarrolló bajo la **Metodología de Desarrollo Rápido de Aplic
 
 | Semana | Actividad |
 |--------|-----------|
-| 1–2 | Diagnóstico situacional; entrevista a administración; relevamiento del plano hídrico del parque |
-| 3–4 | Diseño de arquitectura del sistema; selección de componentes; adquisición de hardware |
-| 5–6 | Ingeniería inversa del protocolo BLE del BL-KR2; identificación de características GATT |
-| 7–8 | Desarrollo del firmware ESP32 (puente BLE-WiFi); pruebas de conectividad |
-| 9–10 | Desarrollo del backend Supabase (tablas, RLS, migraciones) y API REST |
-| 11–12 | Desarrollo de la aplicación web (dashboard, horarios, historial, reportes) |
-| 13 | Integración del prototipo; pruebas unitarias y de integración |
-| 14 | Pruebas de aceptación en el parque; análisis de resultados |
-| 15 | Redacción del informe final; preparación de la defensa |
+| 1–2 | Diagnóstico situacional; entrevista a administración del parque; relevamiento del plano hídrico |
+| 3–4 | Diseño de arquitectura del sistema; selección de componentes; cálculo de cargas hidráulicas |
+| 5 | Adquisición de hardware (controladores, electroválvulas, cable, tubería, cajas) |
+| 6–9 | Instalación en campo: excavación, tendido de cañerías, montaje de electroválvulas |
+| 10 | Programación de los 6 controladores BL-KR con la app K-RainBL |
+| 11–14 | Desarrollo de la plataforma web SARQUE |
+| 15 | Pruebas funcionales y de aceptación; ajustes finales |
+| 16 | Redacción del informe final; preparación de la defensa |
 
 ---
 
@@ -232,13 +237,13 @@ El proyecto se desarrolló bajo la **Metodología de Desarrollo Rápido de Aplic
 
 La entrevista no estructurada es una técnica de recolección de información cualitativa en la que el entrevistador conduce la conversación sin seguir un cuestionario predefinido, permitiendo que el entrevistado exprese libremente su experiencia y conocimiento sobre el tema de estudio. Esta flexibilidad facilita la identificación de problemas no anticipados y la profundización en aspectos relevantes que emergen naturalmente durante la conversación (Hernández Sampieri, 2018).
 
-En el proyecto SARQUE, se realizaron entrevistas no estructuradas a la administración del Parque Ecoturístico Quinta Estación y a los jardineros responsables del riego. Las entrevistas permitieron identificar los problemas operativos del riego manual, cuantificar el tiempo invertido en desplazamientos y documentar los incidentes más frecuentes relacionados con el manejo de las llaves de paso.
+En el proyecto SARQUE, se realizaron entrevistas no estructuradas a la administración del Parque Ecoturístico Quinta Estación y a los 6 jardineros responsables del riego, permitiendo identificar los problemas operativos del riego manual, cuantificar el tiempo invertido en desplazamientos y documentar los incidentes más frecuentes relacionados con el manejo de las llaves de paso.
 
 ### 2.1.2. Observación Directa
 
 La observación directa consiste en el registro sistemático de fenómenos, comportamientos y procesos tal como ocurren en su contexto natural, sin intervención del investigador. Es especialmente valiosa para documentar procesos operativos que los informantes no describen con precisión en las entrevistas porque los consideran obvios o rutinarios (Yin, 2018).
 
-En SARQUE, la observación directa se realizó durante las jornadas de riego del parque, registrando los recorridos del personal, los tiempos de desplazamiento entre sectores, el procedimiento de apertura y cierre de llaves de paso y los incidentes de olvido o error en el manejo del cronograma de riego.
+En SARQUE, la observación directa se realizó durante las jornadas de riego del parque, registrando los recorridos del personal, los tiempos de desplazamiento entre sectores, el procedimiento de apertura y cierre de llaves de paso y los incidentes de olvido en el manejo del cronograma.
 
 ---
 
@@ -246,147 +251,148 @@ En SARQUE, la observación directa se realizó durante las jornadas de riego del
 
 ### 2.2.1. Desarrollo Rápido de Aplicaciones (DRA / RAD)
 
-El Desarrollo Rápido de Aplicaciones (DRA, del inglés Rapid Application Development) es una metodología de desarrollo de software propuesta por James Martin en 1991, orientada a la entrega iterativa de prototipos funcionales en ciclos cortos. El modelo DRA comprende cuatro fases: Planificación de Requisitos, Diseño del Usuario, Construcción y Transición. Su principal ventaja es la reducción del tiempo de desarrollo mediante el uso intensivo de herramientas de generación de código, retroalimentación continua con el usuario y trabajo en equipo reducido pero altamente productivo. (Martin, 1991)
+El Desarrollo Rápido de Aplicaciones (DRA) es una metodología de desarrollo de software propuesta por James Martin en 1991, orientada a la entrega iterativa de prototipos funcionales en ciclos cortos. El modelo DRA comprende cuatro fases: Planificación de Requisitos, Diseño del Usuario, Construcción y Transición. (Martin, 1991)
 
 ### 2.2.2. Lenguaje Unificado de Modelado (UML)
 
-El Lenguaje Unificado de Modelado (UML, del inglés Unified Modeling Language) es un estándar de la industria para la representación gráfica de sistemas de software. Proporciona un conjunto de notaciones y diagramas para modelar la estructura, el comportamiento y la interacción de los componentes de un sistema, facilitando la comunicación entre desarrolladores, diseñadores y usuarios finales. (Booch, Rumbaugh y Jacobson, 2005)
+El Lenguaje Unificado de Modelado (UML) es un estándar de la industria para la representación gráfica de sistemas de software. Proporciona un conjunto de notaciones y diagramas para modelar la estructura, el comportamiento y la interacción de los componentes de un sistema. (Booch, Rumbaugh y Jacobson, 2005)
 
 ### 2.2.3. Diagrama de Componentes
 
-El diagrama de componentes UML representa la estructura física del sistema de software, mostrando los componentes (módulos, paquetes, librerías) y sus dependencias. En SARQUE, el diagrama de componentes ilustra la relación entre el firmware del ESP32, el backend Supabase, la aplicación web React y los controladores BL-KR.
+El diagrama de componentes UML representa la estructura física del sistema de software, mostrando los componentes (módulos, paquetes, librerías) y sus dependencias.
 
 ### 2.2.4. Diagrama de Casos de Uso
 
-El diagrama de casos de uso UML describe las interacciones entre los actores del sistema (usuarios, administradores, dispositivos externos) y las funcionalidades que el sistema provee. En SARQUE, los actores principales son el Administrador del parque, el Jardinero, el Nodo ESP32 y los Controladores BL-KR.
+El diagrama de casos de uso UML describe las interacciones entre los actores del sistema (usuarios, dispositivos externos) y las funcionalidades que el sistema provee.
 
-### 2.2.5. Diagrama de Secuencia
+### 2.2.5. Diagrama de Flujo
 
-El diagrama de secuencia UML muestra la interacción entre los componentes del sistema a lo largo del tiempo, representando el flujo de mensajes entre actores y objetos para un escenario específico. En SARQUE, el diagrama de secuencia más relevante describe el flujo desde la activación programada de una electroválvula en el BL-KR hasta su registro en la base de datos y visualización en el dashboard web.
-
----
-
-## 2.3. Metodología de Diseño de Hardware
-
-### 2.3.1. Herramientas CAD (Fritzing)
-
-Fritzing es una plataforma de software de diseño electrónico de código abierto orientada a prototipos con microcontroladores y plataformas de hardware libre como Arduino y ESP32. Permite diseñar circuitos en tres vistas complementarias: vista de protoboard (breadboard), vista de esquemático y vista de PCB. Su enfoque didáctico lo hace especialmente adecuado para la documentación de prototipos en trabajos académicos. (Knörig, Wettach y Cohen, 2009)
-
-En SARQUE, Fritzing se utilizó para diseñar y documentar el circuito del nodo ESP32, mostrando las conexiones con la fuente de alimentación, los indicadores LED de estado y el módulo de comunicación WiFi.
-
-### 2.3.2. Diseño Top-Down
-
-El diseño Top-Down es una estrategia de diseño de sistemas que parte de la definición del sistema en su nivel más alto de abstracción y lo descompone progresivamente en subsistemas y componentes de menor complejidad hasta llegar al nivel de implementación. Esta estrategia facilita la identificación de interfaces entre subsistemas y reduce el riesgo de omisiones en el diseño. (Pressman, 2014)
-
-En SARQUE, el diseño Top-Down se aplicó partiendo del sistema completo (automatización del riego en 5 hectáreas) hacia los subsistemas (controladores BL-KR, nodo ESP32, plataforma web) y finalmente hacia los componentes individuales (características GATT, tablas de base de datos, componentes React).
+El diagrama de flujo representa gráficamente la secuencia de pasos de un proceso o algoritmo mediante símbolos estandarizados (rectángulos para procesos, rombos para decisiones, óvalos para inicio y fin). En SARQUE se utiliza para representar el flujo operativo del riego automatizado.
 
 ---
 
-## 2.4. Comunicación Inalámbrica Bluetooth Low Energy (BLE)
+## 2.3. Sistemas de Riego Automatizados
 
-### 2.4.1. Bluetooth Low Energy (BLE)
+### 2.3.1. Riego por Estaciones
 
-Bluetooth Low Energy (BLE), también conocido como Bluetooth Smart, es una especificación de comunicación inalámbrica de corto alcance introducida en la versión 4.0 del estándar Bluetooth (2010). A diferencia del Bluetooth clásico, BLE está optimizado para dispositivos que requieren bajo consumo energético y comunicación en ráfagas cortas de datos, lo que lo hace idóneo para dispositivos alimentados por baterías como los controladores de riego K-Rain BL-KR. El alcance típico de BLE es de 10 a 30 metros en condiciones de campo abierto. (Bluetooth SIG, 2016)
+Un sistema de riego por estaciones divide el área a regar en zonas o "estaciones" independientes, cada una controlada por una electroválvula propia. Un controlador central activa secuencialmente las electroválvulas según un cronograma programado, permitiendo regar una zona a la vez con la totalidad del caudal disponible de la bomba. Esta arquitectura es la estándar en sistemas de riego residenciales, parques y campos agrícolas pequeños y medianos. (Pizarro, 2017)
 
-### 2.4.2. Perfil GATT (Generic Attribute Profile)
+### 2.3.2. Bomba Sumergible Centrífuga
 
-El Perfil de Atributos Genéricos (GATT, del inglés Generic Attribute Profile) define la estructura jerárquica mediante la cual los dispositivos BLE organizan y exponen sus datos. GATT introduce los conceptos de Servicio (agrupación lógica de datos relacionados) y Característica (unidad básica de datos, con propiedades de lectura, escritura y notificación). Cada servicio y característica se identifica mediante un UUID (Universally Unique Identifier) de 16 o 128 bits. En SARQUE, la ingeniería inversa del protocolo GATT del controlador BL-KR2 permitió identificar las características de comando y notificación utilizadas por la app K-RainBL. (Townsend, Cufí, Akiba y Davidson, 2014)
+Una bomba sumergible centrífuga es un equipo electromecánico instalado bajo el nivel del agua del pozo, que utiliza la fuerza centrífuga generada por un rotor (impulsor) para elevar el agua hasta la superficie. Sus ventajas frente a las bombas de superficie son la ausencia de problemas de cebado, mayor eficiencia y menor ruido. La bomba Grundfos de 5 HP utilizada en el parque es trifásica y se ubica a 50 metros de profundidad en el pozo. (Karassik, 2008)
 
-### 2.4.3. Arquitectura BLE Central/Periférico
+### 2.3.3. Tanque Hidroneumático
 
-En una conexión BLE, el dispositivo **Periférico** (también llamado esclavo) es el que anuncia su presencia y expone sus servicios GATT; el dispositivo **Central** (también llamado maestro) es el que inicia la conexión, descubre los servicios del periférico y lee, escribe o se suscribe a sus características. En SARQUE, el controlador K-Rain BL-KR actúa como periférico BLE, y el ESP32 actúa como central BLE, asumiendo el rol que en condiciones normales cumple el teléfono con la app K-RainBL. (Bluetooth SIG, 2016)
+Un tanque hidroneumático es un recipiente cerrado parcialmente lleno de aire comprimido que actúa como reserva de presión hidráulica. Permite que la bomba no se encienda con cada apertura puntual de una válvula, sino que mantenga la red presurizada entre 3.5 y 4.0 bar mediante el aire comprimido. Cuando la presión cae por debajo del umbral inferior por consumo, un presostato activa la bomba; cuando supera el umbral superior, la apaga. Esto extiende la vida útil de la bomba y estabiliza el caudal hacia las electroválvulas. (Karassik, 2008)
 
-### 2.4.4. NimBLE — Biblioteca BLE para ESP32
+### 2.3.4. Cálculo de Volumen de Riego
 
-NimBLE es una implementación de pila BLE de código abierto desarrollada por Apache Mynewt y portada para ESP32 mediante la biblioteca Arduino NimBLE-Arduino. A diferencia de la biblioteca BLE oficial de Arduino para ESP32, NimBLE ofrece menor consumo de memoria RAM (~50 KB frente a ~100 KB), mayor estabilidad en el rol de Central y soporte completo para múltiples conexiones simultáneas. (Minichino y Friedman, 2021)
+El volumen de agua entregado en un ciclo de riego puede calcularse mediante la fórmula:
 
-En SARQUE, NimBLE-Arduino se utilizó en el firmware del ESP32 para implementar el rol de Central BLE, conectarse al BL-KR2, suscribirse a las notificaciones de estado y enviar comandos de encendido y apagado de electroválvulas.
+> **V = Q × t**
 
----
-
-## 2.5. Programación Frontend
-
-### 2.5.1. React y TypeScript
-
-React es una biblioteca de JavaScript para la construcción de interfaces de usuario basada en componentes, desarrollada y mantenida por Meta. Utiliza un modelo de renderizado declarativo basado en un Virtual DOM que optimiza las actualizaciones en la interfaz. TypeScript es un superconjunto de JavaScript con tipado estático, que mejora la detección de errores en tiempo de desarrollo y facilita el mantenimiento de proyectos de mediana y gran escala. La combinación React + TypeScript es el estándar de la industria para el desarrollo de aplicaciones web modernas. (Chinnathambi, 2023)
-
-### 2.5.2. Vite
-
-Vite es una herramienta de construcción y servidor de desarrollo para aplicaciones web modernas, desarrollada por Evan You. A diferencia de Webpack, Vite utiliza módulos ES nativos del navegador durante el desarrollo, lo que resulta en tiempos de arranque y recarga en caliente (HMR) significativamente menores. En producción, Vite utiliza Rollup para generar bundles optimizados. (You, 2021)
-
-### 2.5.3. Tailwind CSS y shadcn/ui
-
-Tailwind CSS es un framework de CSS utilitario que proporciona clases de bajo nivel aplicables directamente en el HTML, eliminando la necesidad de escribir CSS personalizado en la mayoría de los casos. shadcn/ui es una colección de componentes React accesibles y personalizables, construidos sobre Radix UI y estilizados con Tailwind CSS. Su modelo de distribución —los componentes se copian directamente al código fuente del proyecto— permite una personalización completa sin dependencias de versiones externas. (Shadcn, 2023)
-
-### 2.5.4. React Query (TanStack Query)
-
-React Query es una biblioteca de gestión de estado asíncrono para React que simplifica el manejo de datos del servidor: fetching, caching, sincronización y actualización de datos remotos. Proporciona hooks como `useQuery` y `useMutation` que encapsulan la lógica de carga, reintento y caducidad de datos, reduciendo el código boilerplate necesario para interactuar con APIs REST. (Tanner Linsley, 2020)
-
-### 2.5.5. Recharts
-
-Recharts es una biblioteca de gráficos para React construida sobre D3.js, que provee componentes declarativos para crear gráficos de líneas, barras, áreas, radiales y otros tipos. En SARQUE, Recharts se utiliza en el dashboard web para visualizar el historial de riegos, estadísticas por sector y tendencias de consumo hídrico. (Recharts, 2021)
+Donde V es el volumen en litros, Q es el caudal en L/s y t es la duración en segundos. En SARQUE, con Q = 4.2 L/s, un ciclo de riego de 2 horas (7.200 s) entrega 30.240 L por sector activo.
 
 ---
 
-## 2.6. Plataforma Backend y Base de Datos
+## 2.4. Controladores Bluetooth K-Rain BL-KR
 
-### 2.6.1. Supabase
+### 2.4.1. La Línea K-Rain BL-KR
 
-Supabase es una plataforma de backend como servicio (BaaS) de código abierto que provee una base de datos PostgreSQL, autenticación de usuarios, almacenamiento de archivos, funciones Edge (serverless) y API REST y en tiempo real generada automáticamente a partir del esquema de la base de datos. Supabase es la alternativa de código abierto a Firebase y es especialmente adecuada para proyectos que requieren un backend funcional sin la complejidad de administrar infraestructura de servidores. (Copple y Wilson, 2020)
+La línea K-Rain BL-KR es una familia de controladores de riego a batería (9 V DC) con conectividad Bluetooth Smart (BLE 4.0) fabricados por K-Rain Manufacturing Corporation (Florida, EE.UU.). Los controladores de la línea BL-KR se programan exclusivamente mediante la aplicación móvil K-RainBL (disponible para iOS y Android) y activan electroválvulas de 9 V DC de acción latente (latching solenoids) mediante pulsos de corriente de polaridad positiva (apertura) y negativa (cierre). La familia comprende los modelos BL-KR1 (1 estación), BL-KR2 (2 estaciones), BL-KR4 (4 estaciones), BL-KR6 (6 estaciones) y BL-KR9 (9 estaciones). (K-Rain Manufacturing Corporation, 2020)
 
-En SARQUE, Supabase provee: autenticación de usuarios con JWT, base de datos PostgreSQL con Row Level Security (RLS), API REST para lectura y escritura desde el ESP32 y la app web, y suscripciones en tiempo real para el dashboard.
+En SARQUE se utilizan 6 controladores BL-KR distribuidos en el parque, seleccionados de modo que el cable monofilar 20 AWG entre cada controlador y su electroválvula más lejana no supere los 30 metros (optimización de cableado y caída de tensión):
 
-### 2.6.2. PostgreSQL y Row Level Security (RLS)
-
-PostgreSQL es un sistema de gestión de bases de datos relacionales de código abierto, reconocido por su robustez, extensibilidad y cumplimiento de los estándares SQL. Row Level Security (RLS) es una característica de PostgreSQL que permite definir políticas de acceso a nivel de fila, de modo que los usuarios solo pueden leer o modificar las filas para las que tienen permisos explícitos. En SARQUE, RLS garantiza que cada usuario solo acceda a los datos de su parque y que el nodo ESP32 solo pueda insertar registros de estado, no modificar ni eliminar datos históricos. (PostgreSQL Global Development Group, 2024)
-
-### 2.6.3. Zod
-
-Zod es una biblioteca de validación de esquemas para TypeScript que permite definir la forma y las restricciones de los datos en tiempo de compilación y ejecución. En SARQUE, Zod valida los datos de entrada en los formularios web (creación de horarios, registro de sectores) antes de enviarlos a Supabase, garantizando la integridad de los datos en la base de datos. (Colinhacks, 2021)
-
----
-
-## 2.7. Desarrollo de Hardware
-
-### 2.7.1. ESP32 DevKit V1
-
-El ESP32 es un microcontrolador de doble núcleo de 240 MHz desarrollado por Espressif Systems, con conectividad WiFi 802.11 b/g/n y Bluetooth 4.2 / BLE 5.0 integrados. Cuenta con 520 KB de SRAM, 4 MB de memoria Flash y un amplio conjunto de periféricos (UART, SPI, I2C, ADC, DAC, PWM). Es el microcontrolador más utilizado en proyectos IoT y de automatización de bajo costo a nivel mundial. (Espressif Systems, 2022)
-
-En SARQUE, el ESP32 DevKit V1 actúa simultáneamente como Central BLE (conexión a los controladores BL-KR) y como cliente WiFi (envío de datos a Supabase), constituyendo el puente de comunicación entre el sistema de riego Bluetooth y la plataforma web de monitoreo.
-
-### 2.7.2. Controlador K-Rain BL-KR
-
-La línea K-Rain BL-KR es una familia de controladores de riego a batería (9 V DC) con conectividad Bluetooth Smart (BLE 4.0) fabricados por K-Rain Manufacturing Corporation. Los controladores de la línea BL-KR se programan exclusivamente mediante la app móvil K-RainBL (disponible para iOS y Android) y activan electroválvulas de 9 V DC de acción latente (latching solenoids) mediante pulsos de corriente de polaridad positiva (apertura) y negativa (cierre). La familia comprende los modelos BL-KR1 (1 estación), BL-KR2 (2 estaciones), BL-KR4 (4 estaciones), BL-KR6 (6 estaciones) y BL-KR9 (9 estaciones). (K-Rain Manufacturing Corporation, 2020)
-
-En SARQUE se utilizan 6 controladores BL-KR distribuidos en el parque, seleccionados de modo que el cable monofilar 20 AWG entre cada controlador y su electroválvula más lejana no supere los 30 metros (optimización de cableado):
-- 2 unidades BL-KR2 (2 estaciones cada una): 4 estaciones
-- 3 unidades BL-KR4 (4 estaciones cada una): 12 estaciones
-- 1 unidad BL-KR6 (6 estaciones): 6 estaciones
+- **2 unidades BL-KR2** (2 estaciones cada una): 4 estaciones
+- **3 unidades BL-KR4** (4 estaciones cada una): 12 estaciones
+- **1 unidad BL-KR6** (6 estaciones): 6 estaciones
 - **Total: 22 estaciones de riego automatizadas**
 
+### 2.4.2. Bluetooth Low Energy (BLE)
+
+Bluetooth Low Energy (BLE), también conocido como Bluetooth Smart, es una especificación de comunicación inalámbrica de corto alcance introducida en la versión 4.0 del estándar Bluetooth (2010). A diferencia del Bluetooth clásico, BLE está optimizado para dispositivos que requieren bajo consumo energético y comunicación en ráfagas cortas, lo que lo hace idóneo para dispositivos alimentados por baterías como los controladores K-Rain BL-KR. El alcance típico de BLE es de 10 a 30 metros en condiciones de campo abierto. (Bluetooth SIG, 2016)
+
+### 2.4.3. Aplicación K-RainBL
+
+K-RainBL es la aplicación móvil oficial de K-Rain Manufacturing Corporation para iOS y Android, utilizada exclusivamente para la programación y operación de los controladores BL-KR. La aplicación permite:
+
+- Emparejar dispositivos mediante BLE
+- Asignar nombres y claves de seguridad a cada controlador
+- Programar hasta 3 programas (A, B y C) por controlador
+- Definir días de riego (personalizado, pares, impares, intervalos)
+- Configurar tiempos de inicio y duración por estación
+- Aplicar un "presupuesto de agua" estacional (porcentaje de ajuste)
+- Suspender/reanudar el sistema (ON/OFF)
+- Ejecutar pruebas manuales por estación
+- Configurar un sensor de lluvia normalmente cerrado
+
+La programación se transmite al controlador mediante el botón **Save** seguido de **Transmit**, y el controlador confirma la recepción con un tono "bing".
+
 ---
 
-## 2.8. Actuadores e Instrumentación
+## 2.5. Actuadores e Instrumentación Hidráulica
 
-### 2.8.1. Electroválvula K-Rain BSPT 9V DC Latching
+### 2.5.1. Electroválvula K-Rain BSPT 9V DC Latching
 
-Una electroválvula (o válvula solenoide) es un actuador electromecánico que controla el paso de fluidos mediante la activación o desactivación de un solenoide eléctrico. Las electroválvulas de tipo **latching** (de retención) utilizan un imán permanente para mantener la posición abierta o cerrada sin consumo continuo de corriente, requiriendo únicamente un pulso de energía para cambiar de estado. Las electroválvulas K-Rain BSPT operan a 9 V DC y son compatibles con todos los controladores de la línea BL-KR. La conexión BSPT (British Standard Pipe Taper) es el estándar de rosca de tubería utilizado en Bolivia y en el mercado latinoamericano para conexiones hidráulicas de baja y media presión. (K-Rain Manufacturing Corporation, 2020)
+Una electroválvula (o válvula solenoide) es un actuador electromecánico que controla el paso de fluidos mediante la activación o desactivación de un solenoide eléctrico. Las electroválvulas de tipo **latching** (de retención) utilizan un imán permanente para mantener la posición abierta o cerrada sin consumo continuo de corriente, requiriendo únicamente un pulso de energía para cambiar de estado. Esta característica las hace ideales para controladores alimentados por batería como los K-Rain BL-KR. Las electroválvulas K-Rain BSPT operan a 9 V DC y son compatibles con todos los controladores de la línea BL-KR. La conexión BSPT (British Standard Pipe Taper) es el estándar de rosca de tubería utilizado en Bolivia y en el mercado latinoamericano para conexiones hidráulicas de baja y media presión. (K-Rain Manufacturing Corporation, 2020)
 
-En SARQUE, las electroválvulas K-Rain BSPT reemplazan las 22 electroválvulas distribuidas estratégicamente sobre una red original de 41 puntos de riego del parque, siendo actuadas por los controladores BL-KR según el cronograma de riego programado.
+En SARQUE, las 22 electroválvulas K-Rain BSPT reemplazan los puntos críticos de la red original de 41 llaves de paso manuales, siendo actuadas por los 6 controladores BL-KR según el cronograma de riego programado en la app K-RainBL.
 
-### 2.8.2. Bomba de Agua de Pozo
+### 2.5.2. Cable Monofilar 20 AWG
 
-El sistema de riego del Parque Quinta Estación utiliza una bomba de agua de pozo con un caudal medido de **4.2 litros por segundo (L/s)** equivalente a **15.12 m³/hora**. La capacidad de la bomba permite mantener activa una sola zona de riego simultáneamente, lo que determina que el cronograma de riego sea secuencial —un sector por turno— y que la programación de los controladores BL-KR deba respetar que solo una electroválvula esté abierta en cada momento.
+El cable utilizado para conectar los solenoides de las electroválvulas a los controladores es de calibre **20 AWG (American Wire Gauge) monofilar**, con un solo conductor por solenoide más un retorno común. Su sección transversal de aproximadamente 0.518 mm² es adecuada para los pulsos de corriente de baja intensidad que activan los solenoides latching, en distancias de hasta 30 metros por estación sin caída de tensión significativa. El cable se aloja en politubo negro de polietileno de 3/4" de diámetro como protección mecánica y dieléctrica.
+
+### 2.5.3. Caja de Válvula
+
+La caja de válvula es el recinto que aloja la electroválvula, sus empalmes eléctricos y la llave de paso manual de respaldo. En SARQUE se utilizan cajas de hormigón armado de **40 × 40 × 30 cm**, fabricadas in situ, con tapa removible para facilitar el mantenimiento. Las dimensiones permiten acceder cómodamente al cuerpo de la electroválvula y a los empalmes del cable durante inspecciones o reparaciones.
 
 ---
 
-## 2.9. Normativa
+## 2.6. Programación Frontend
 
-### 2.9.1. Norma Boliviana NB 777 — Instalaciones Eléctricas en Interiores
+### 2.6.1. React y TypeScript
 
-La Norma Boliviana NB 777 establece los requisitos técnicos mínimos para el diseño, instalación y verificación de instalaciones eléctricas en interiores en Bolivia, en concordancia con las normas internacionales IEC 60364. Sus disposiciones incluyen la selección de conductores según sección mínima, protección contra sobreintensidades, puesta a tierra de seguridad, separación de circuitos de baja tensión y señalización de tableros. (IBNORCA, 2004)
+React es una biblioteca de JavaScript para la construcción de interfaces de usuario basada en componentes, desarrollada y mantenida por Meta. Utiliza un modelo de renderizado declarativo basado en un Virtual DOM que optimiza las actualizaciones. TypeScript es un superconjunto de JavaScript con tipado estático, que mejora la detección de errores en tiempo de desarrollo y facilita el mantenimiento. La combinación React + TypeScript es el estándar para el desarrollo de aplicaciones web modernas. (Chinnathambi, 2023)
 
-En SARQUE, la NB 777 se aplicó en el diseño de la alimentación eléctrica del nodo ESP32 y los controladores BL-KR, garantizando que las instalaciones eléctricas del sistema cumplan con los estándares de seguridad bolivianos vigentes.
+### 2.6.2. Vite
+
+Vite es una herramienta de construcción y servidor de desarrollo para aplicaciones web modernas. Utiliza módulos ES nativos del navegador durante el desarrollo, lo que resulta en tiempos de arranque y recarga en caliente (HMR) significativamente menores que los de empacadores tradicionales. (You, 2021)
+
+### 2.6.3. Tailwind CSS y shadcn/ui
+
+Tailwind CSS es un framework de CSS utilitario que proporciona clases de bajo nivel aplicables directamente en el HTML. shadcn/ui es una colección de componentes React accesibles y personalizables, construidos sobre Radix UI y estilizados con Tailwind CSS, distribuidos como código fuente copiable al proyecto. (Shadcn, 2023)
+
+### 2.6.4. React Query (TanStack Query)
+
+React Query es una biblioteca de gestión de estado asíncrono para React que simplifica el manejo de datos del servidor: fetching, caching, sincronización y actualización de datos remotos mediante los hooks `useQuery` y `useMutation`. (Tanner Linsley, 2020)
+
+---
+
+## 2.7. Plataforma Backend y Base de Datos
+
+### 2.7.1. Supabase
+
+Supabase es una plataforma de backend como servicio (BaaS) de código abierto que provee una base de datos PostgreSQL, autenticación de usuarios, almacenamiento de archivos y API REST autogenerada a partir del esquema. Supabase es la alternativa de código abierto a Firebase y es adecuada para proyectos que requieren un backend funcional sin la complejidad de administrar infraestructura de servidores. (Copple y Wilson, 2020)
+
+En SARQUE, Supabase provee: autenticación de usuarios con JWT, base de datos PostgreSQL con Row Level Security (RLS) y API REST para lectura y escritura desde la plataforma web.
+
+### 2.7.2. PostgreSQL y Row Level Security (RLS)
+
+PostgreSQL es un sistema de gestión de bases de datos relacionales de código abierto, reconocido por su robustez y cumplimiento de los estándares SQL. Row Level Security (RLS) permite definir políticas de acceso a nivel de fila, de modo que los usuarios solo pueden leer o modificar las filas para las que tienen permisos explícitos. En SARQUE, RLS garantiza que solo usuarios autenticados con el rol correspondiente puedan modificar el catálogo de sectores o el cronograma de riego. (PostgreSQL Global Development Group, 2024)
+
+### 2.7.3. Zod
+
+Zod es una biblioteca de validación de esquemas para TypeScript que permite definir la forma y las restricciones de los datos en tiempo de compilación y ejecución. En SARQUE, Zod valida los datos de entrada en los formularios web antes de enviarlos a Supabase. (Colinhacks, 2021)
+
+---
+
+## 2.8. Normativa
+
+### 2.8.1. Norma Boliviana NB 777 — Instalaciones Eléctricas en Interiores
+
+La Norma Boliviana NB 777 establece los requisitos técnicos mínimos para el diseño, instalación y verificación de instalaciones eléctricas en interiores en Bolivia, en concordancia con las normas internacionales IEC 60364. (IBNORCA, 2004)
+
+En SARQUE, la NB 777 se aplicó en el diseño de la alimentación eléctrica trifásica de la bomba sumergible Grundfos y en la protección del cableado de control de los controladores BL-KR.
 
 ---
 
@@ -398,11 +404,11 @@ En SARQUE, la NB 777 se aplicó en el diseño de la alimentación eléctrica del
 
 El proceso de riego actual en el Parque Quinta Estación sigue el siguiente flujo operativo:
 
-1. Al inicio de la jornada, el administrador verifica si llovió durante la noche. Si llovió, suspende el riego del día.
-2. El jardinero consulta el cronograma semanal para determinar qué sectores corresponden regar en el día.
+1. Al inicio de la jornada, el administrador verifica si llovió. Si llovió, suspende el riego del día.
+2. El jardinero consulta el cronograma semanal (documento físico) para determinar qué sectores corresponden regar.
 3. El jardinero se desplaza a pie hasta la primera llave de paso asignada (recorrido mínimo: 5 minutos).
 4. El jardinero abre manualmente la llave de paso.
-5. El jardinero espera 2 horas mientras el sector se riega, realizando otras tareas en el parque.
+5. El jardinero realiza otras tareas durante las 2 horas que dura el riego.
 6. Al cumplirse el tiempo, el jardinero debe regresar a la llave y cerrarla manualmente.
 7. El proceso se repite para cada sector del día (3 a 6 sectores).
 8. No se genera ningún registro del riego realizado.
@@ -414,28 +420,27 @@ El proceso de riego actual en el Parque Quinta Estación sigue el siguiente fluj
 | P01 | Olvido de cierre de llave de paso → fuga/inundación | Ocasional | Alto |
 | P02 | Olvido de apertura de llave → sector sin riego | Ocasional | Alto |
 | P03 | Tiempo improductivo en desplazamientos | Diario | Medio |
-| P04 | Ausencia de registro histórico de riegos | Permanente | Medio |
-| P05 | Imposibilidad de supervisión remota | Permanente | Medio |
+| P04 | Cronograma en papel vulnerable | Permanente | Medio |
+| P05 | Ausencia de documentación digital del sistema | Permanente | Medio |
 
 ### 3.1.2. Modelado de Negocio Alternativo
 
 Con SARQUE, el proceso de riego pasa a operar de la siguiente manera:
 
-1. Al inicio de la jornada, el administrador revisa el pronóstico del tiempo. Si llovió, suspende el riego del día desactivando los horarios en la app web o en la app K-RainBL.
-2. Los controladores BL-KR ejecutan automáticamente el cronograma de riego programado: abren y cierran las electroválvulas en los horarios exactos definidos.
-3. El ESP32, ubicado en la caseta de la bomba, se conecta por BLE a los controladores BL-KR cercanos y registra cada evento de activación/desactivación en Supabase.
-4. El administrador y el personal pueden consultar el estado en tiempo real del riego desde cualquier dispositivo con acceso a la app web SARQUE.
-5. Al finalizar la jornada, la app web genera automáticamente un reporte del riego del día: sectores regados, duración real, volumen estimado de agua consumida.
+1. Al inicio de la jornada, el administrador revisa el pronóstico del tiempo. Si llovió, suspende el sistema completo desde la app K-RainBL en cada controlador (función ON/OFF) o desactiva las electroválvulas implicadas.
+2. Los 6 controladores BL-KR ejecutan automáticamente el cronograma de riego programado en la app K-RainBL: abren y cierran las electroválvulas en los horarios exactos definidos.
+3. Durante las jornadas, el personal puede consultar el cronograma vigente, los sectores asignados, los controladores y las estaciones desde la plataforma web SARQUE en cualquier dispositivo con internet.
+4. Cualquier modificación del cronograma se documenta en SARQUE y se replica manualmente en los controladores BL-KR mediante la app K-RainBL.
 
 **Tabla 5. Mejoras introducidas por SARQUE**
 
 | Problema anterior | Solución SARQUE |
 |-------------------|-----------------|
-| Olvido de cierre de llave | Cierre automático al término del tiempo programado en BL-KR |
+| Olvido de cierre de llave | Cierre automático al término del tiempo programado en el BL-KR |
 | Olvido de apertura de llave | Apertura automática según cronograma programado |
 | Tiempo en desplazamientos | Eliminado para el control de electroválvulas |
-| Sin registro histórico | Historial completo en Supabase con timestamp, sector, duración y volumen estimado |
-| Sin supervisión remota | Dashboard web en tiempo real con estado de cada controlador |
+| Cronograma en papel | Cronograma digital centralizado en la plataforma web |
+| Sin documentación del sistema | Catálogo digital de sectores, controladores y estaciones |
 
 ### 3.1.3. Análisis de Requerimientos
 
@@ -443,30 +448,30 @@ Con SARQUE, el proceso de riego pasa a operar de la siguiente manera:
 
 | ID | Requerimiento | Módulo |
 |----|--------------|--------|
-| RF01 | El sistema debe permitir crear, editar y eliminar programas de riego con hora, minuto, duración y días de la semana | Web — Horarios |
-| RF02 | El sistema debe mostrar el estado actual de cada controlador BL-KR (conectado/desconectado, electroválvula activa/inactiva) | Web — Dashboard |
-| RF03 | El sistema debe registrar cada evento de activación y desactivación de electroválvula con timestamp, sector y duración | Supabase |
-| RF04 | El sistema debe calcular el volumen estimado de agua consumida por evento (duración × 4.2 L/s) | Web — Reportes |
-| RF05 | El sistema debe permitir activar y desactivar manualmente una electroválvula desde la app web | Web — Dashboard |
-| RF06 | El sistema debe exportar el historial de riegos en formato tabla con filtros por fecha y sector | Web — Historial |
-| RF07 | El sistema debe notificar visualmente cuando un controlador BL-KR pierde conexión BLE con el ESP32 | Web — Dashboard |
-| RF08 | El nodo ESP32 debe conectarse automáticamente a los controladores BL-KR al encenderse | Firmware |
-| RF09 | El sistema debe requerir autenticación de usuario para acceder a cualquier módulo | Web — Auth |
+| RF01 | El sistema debe permitir crear, editar y eliminar sectores del parque | Web — Sectores |
+| RF02 | El sistema debe permitir registrar los 6 controladores BL-KR y sus estaciones asignadas | Web — Controladores |
+| RF03 | El sistema debe permitir definir programas de riego con hora, minuto, duración y días de la semana por sector | Web — Horarios |
+| RF04 | El sistema debe presentar el cronograma semanal en formato visual de calendario | Web — Cronograma |
+| RF05 | El sistema debe requerir autenticación de usuario para acceder a cualquier módulo | Web — Auth |
+| RF06 | El sistema debe diferenciar entre rol administrador (gestión completa) y operador (solo lectura) | Web — Auth/Roles |
+| RF07 | El sistema debe validar todos los formularios de entrada con esquemas Zod | Web — Validación |
+| RF08 | Los 6 controladores BL-KR deben ser programados desde la app K-RainBL siguiendo el cronograma de SARQUE | Campo — BL-KR |
+| RF09 | Las 22 electroválvulas K-Rain BSPT deben abrir y cerrar correctamente al recibir pulsos del controlador | Campo — Electroválvulas |
 
 **Tabla 7. Requerimientos No Funcionales**
 
 | ID | Requerimiento | Categoría |
 |----|--------------|-----------|
-| RNF01 | La app web debe ser responsiva y funcionar en dispositivos móviles y de escritorio | Usabilidad |
-| RNF02 | La latencia entre el evento BLE y su registro en Supabase no debe superar 10 segundos | Rendimiento |
-| RNF03 | Los datos históricos deben mantenerse disponibles por un mínimo de 12 meses | Disponibilidad |
-| RNF04 | El nodo ESP32 debe reconectarse automáticamente a WiFi y BLE ante fallos de conexión | Fiabilidad |
-| RNF05 | El sistema debe validar todos los datos de entrada con esquemas Zod antes de persistirlos | Seguridad |
-| RNF06 | La instalación eléctrica del nodo ESP32 debe cumplir con la NB 777 | Normativa |
+| RNF01 | La plataforma web debe ser responsiva (móvil, tablet, escritorio) | Usabilidad |
+| RNF02 | La latencia de carga de cualquier vista no debe superar los 3 segundos | Rendimiento |
+| RNF03 | La base de datos debe mantener los datos disponibles por al menos 12 meses | Disponibilidad |
+| RNF04 | El cable 20 AWG no debe presentar caída de tensión que impida la activación del solenoide | Confiabilidad |
+| RNF05 | Las cajas de hormigón y empalmes impermeabilizados deben proteger los componentes ante lluvia | Robustez |
+| RNF06 | La instalación eléctrica del sistema debe cumplir con la NB 777 | Normativa |
 
 ---
 
-## 3.2. Diseño e Implementación del Módulo de Autenticación y Gestión
+## 3.2. Diseño e Implementación de la Plataforma Web SARQUE
 
 ### 3.2.1. Identificación y Descripción de los Actores
 
@@ -474,49 +479,45 @@ Con SARQUE, el proceso de riego pasa a operar de la siguiente manera:
 
 | Actor | Descripción | Rol en el sistema |
 |-------|-------------|-------------------|
-| Administrador | Propietaria o administrador del parque | Gestión completa: usuarios, horarios, reportes, control manual |
-| Operador | Jardinero con acceso al sistema | Visualización del estado y activación/desactivación manual |
-| Nodo ESP32 | Microcontrolador con firmware SARQUE | Puente BLE-WiFi; inserción de eventos en Supabase |
-| Controlador BL-KR | Controlador K-Rain con app K-RainBL | Activación de electroválvulas según programación |
+| Administrador | Propietaria (Sra. Eliana Soria Yapur) y administrador del parque | Gestión completa: sectores, controladores, cronograma, usuarios |
+| Operador | Jardinero con acceso a la plataforma | Visualización del cronograma y catálogo de sectores |
+| Controlador BL-KR | Controlador K-Rain programado por la app K-RainBL | Activación de electroválvulas según programación local |
+| App K-RainBL | Aplicación móvil oficial K-Rain | Programación BLE de los controladores |
 
 ### 3.2.2. Diagramas de Casos de Uso
 
-![Figura 1. Diagrama de Casos de Uso del Sistema SARQUE](diagramas/CasosDeUso_SARQUE.png)
+![Figura 1. Diagrama de Casos de Uso de la Plataforma SARQUE](diagramas/CasosDeUso_SARQUE.png)
 
-*Figura 1. Diagrama de Casos de Uso del Sistema SARQUE. Fuente: Elaboración propia, 2026.*
-
-Los casos de uso principales del sistema SARQUE son:
+*Figura 1. Diagrama de Casos de Uso de la Plataforma SARQUE. Fuente: Elaboración propia, 2026.*
 
 **Tabla 9. Descripción de Casos de Uso**
 
 | ID | Caso de Uso | Actor | Descripción |
 |----|------------|-------|-------------|
-| CU01 | Iniciar sesión | Administrador / Operador | Autenticación con email y contraseña mediante Supabase Auth |
-| CU02 | Ver dashboard | Administrador / Operador | Visualizar estado en tiempo real de controladores, próximo riego y estadísticas del día |
-| CU03 | Crear horario de riego | Administrador | Definir hora, minuto, duración, días de la semana y sector para un nuevo programa |
-| CU04 | Activar/desactivar horario | Administrador | Habilitar o suspender un programa de riego sin eliminarlo |
-| CU05 | Control manual de electroválvula | Administrador / Operador | Ordenar apertura o cierre inmediato de una electroválvula específica |
-| CU06 | Ver historial de riegos | Administrador / Operador | Consultar registro de eventos con filtros por fecha, sector y tipo |
-| CU07 | Generar reporte | Administrador | Exportar resumen de riegos con volumen estimado por sector y período |
-| CU08 | Registrar evento de riego | Nodo ESP32 | Insertar en Supabase el inicio o fin de activación de una electroválvula |
+| CU01 | Iniciar sesión | Admin / Operador | Autenticación con email y contraseña mediante Supabase Auth |
+| CU02 | Ver cronograma semanal | Admin / Operador | Visualizar la tabla colorida del cronograma por día y franja horaria |
+| CU03 | Gestionar sectores | Admin | Crear, editar y eliminar sectores del parque |
+| CU04 | Gestionar controladores | Admin | Registrar los 6 controladores BL-KR y sus estaciones |
+| CU05 | Definir horario de riego | Admin | Asignar hora, duración y días a cada estación |
+| CU06 | Activar/desactivar horario | Admin | Suspender un horario sin eliminarlo (ej. invierno) |
+| CU07 | Consultar manual de usuario | Admin / Operador | Acceder a la documentación integrada en la plataforma |
 
 ### 3.2.3. Diagrama de Componentes del Sistema
 
-![Figura 2. Diagrama de Componentes del Sistema SARQUE](diagramas/Componentes_SARQUE.png)
+![Figura 2. Diagrama de Componentes de la Plataforma SARQUE](diagramas/Componentes_SARQUE.png)
 
-*Figura 2. Diagrama de Componentes del Sistema SARQUE. Fuente: Elaboración propia, 2026.*
+*Figura 2. Diagrama de Componentes de la Plataforma SARQUE. Fuente: Elaboración propia, 2026.*
 
 **Tabla 10. Descripción de Componentes SARQUE**
 
 | Componente | Tecnología | Función |
 |------------|-----------|---------|
-| App Web | React + TypeScript + Vite | Interfaz de usuario: dashboard, horarios, historial, reportes |
+| App Web | React + TypeScript + Vite | Interfaz de usuario: catálogo, cronograma, planificador |
 | Supabase Auth | Supabase / JWT | Autenticación y gestión de sesiones |
-| Supabase Database | PostgreSQL + RLS | Persistencia de datos: sectores, horarios, historial, estado |
-| Supabase Realtime | WebSocket | Sincronización en tiempo real del estado de dispositivos |
-| Firmware ESP32 | Arduino / NimBLE | Puente BLE→WiFi; captura de eventos de los BL-KR |
-| Controladores BL-KR | K-Rain BL-KR (BLE) | Activación de electroválvulas según cronograma |
+| Supabase Database | PostgreSQL + RLS | Persistencia de datos: sectores, controladores, horarios |
+| Controladores BL-KR | K-Rain BL-KR (BLE) | Activación de electroválvulas según cronograma local |
 | Electroválvulas | K-Rain BSPT 9V DC | Actuadores hídricos en las 22 estaciones |
+| App K-RainBL | App móvil oficial K-Rain | Programación BLE de los controladores |
 
 ### 3.2.4. Diseño de la Base de Datos
 
@@ -532,9 +533,9 @@ La base de datos de SARQUE en Supabase/PostgreSQL comprende las siguientes tabla
 |-------|------|-------------|
 | id | UUID (PK) | Identificador único del sector |
 | nombre | TEXT | Nombre del sector (ej. "Laberinto de Wisterias") |
-| descripcion | TEXT | Descripción de la vegetación del sector |
+| descripcion | TEXT | Descripción de la vegetación |
 | controlador_id | UUID (FK) | Referencia al controlador BL-KR asignado |
-| numero_estacion | INTEGER | Número de estación dentro del controlador (1-9) |
+| numero_estacion | INTEGER | Número de estación dentro del controlador |
 | activo | BOOLEAN | Estado habilitado/deshabilitado |
 | created_at | TIMESTAMPTZ | Fecha de creación |
 
@@ -544,12 +545,9 @@ La base de datos de SARQUE en Supabase/PostgreSQL comprende las siguientes tabla
 |-------|------|-------------|
 | id | UUID (PK) | Identificador único |
 | nombre | TEXT | Nombre descriptivo (ej. "BL-KR6 Central") |
-| modelo | TEXT | Modelo del controlador (BL-KR2, BL-KR4, BL-KR6) |
-| mac_bluetooth | TEXT | Dirección MAC BLE del controlador |
+| modelo | TEXT | Modelo (BL-KR2, BL-KR4, BL-KR6) |
 | num_estaciones | INTEGER | Número de estaciones del modelo |
-| online | BOOLEAN | Estado de conectividad BLE |
-| bateria_pct | INTEGER | Nivel de batería (si expuesto por GATT) |
-| ultima_conexion | TIMESTAMPTZ | Último handshake BLE con el ESP32 |
+| ubicacion | TEXT | Ubicación de instalación |
 
 **Tabla 13. Entidad `horarios_riego`**
 
@@ -565,33 +563,7 @@ La base de datos de SARQUE en Supabase/PostgreSQL comprende las siguientes tabla
 | created_by | UUID (FK) | Usuario que creó el horario |
 | created_at | TIMESTAMPTZ | Fecha de creación |
 
-**Tabla 14. Entidad `historial_riego`**
-
-| Campo | Tipo | Descripción |
-|-------|------|-------------|
-| id | UUID (PK) | Identificador único |
-| sector_id | UUID (FK) | Sector regado |
-| inicio | TIMESTAMPTZ | Timestamp de apertura de electroválvula |
-| fin | TIMESTAMPTZ | Timestamp de cierre de electroválvula |
-| duracion_real_seg | INTEGER | Duración efectiva en segundos |
-| volumen_litros | NUMERIC | Volumen estimado (duracion_real_seg × 4.2) |
-| tipo | TEXT | "automatico" o "manual" |
-| estado | TEXT | "completado", "interrumpido", "en_curso" |
-| registrado_por | TEXT | "esp32" o UUID de usuario |
-
-**Tabla 15. Entidad `estado_dispositivo`**
-
-| Campo | Tipo | Descripción |
-|-------|------|-------------|
-| id | UUID (PK) | Identificador único |
-| controlador_id | UUID (FK) | Referencia al controlador |
-| online | BOOLEAN | Estado de conectividad |
-| estacion_activa | INTEGER | Número de estación actualmente abierta (0 = ninguna) |
-| bateria_pct | INTEGER | Porcentaje de batería |
-| rssi | INTEGER | Intensidad de señal BLE (dBm) |
-| updated_at | TIMESTAMPTZ | Última actualización |
-
-**Tabla 16. Entidad `profiles`**
+**Tabla 14. Entidad `profiles`**
 
 | Campo | Tipo | Descripción |
 |-------|------|-------------|
@@ -599,7 +571,7 @@ La base de datos de SARQUE en Supabase/PostgreSQL comprende las siguientes tabla
 | nombre | TEXT | Nombre completo |
 | email | TEXT | Correo electrónico |
 
-**Tabla 17. Entidad `user_roles`**
+**Tabla 15. Entidad `user_roles`**
 
 | Campo | Tipo | Descripción |
 |-------|------|-------------|
@@ -609,297 +581,178 @@ La base de datos de SARQUE en Supabase/PostgreSQL comprende las siguientes tabla
 
 ### 3.2.5. Arquitectura de Software
 
-![Figura 4. Arquitectura General del Sistema SARQUE](diagramas/Arquitectura_SARQUE.png)
+![Figura 4. Arquitectura General del Sistema de Riego SARQUE](diagramas/Arquitectura_SARQUE.png)
 
-*Figura 4. Arquitectura General del Sistema SARQUE — distribución de 6 controladores BL-KR y 22 estaciones. Fuente: Elaboración propia, 2026.*
+*Figura 4. Arquitectura General del Sistema SARQUE. Fuente: Elaboración propia, 2026.*
 
-**Tabla 18. Arquitectura de Capas — SARQUE**
+**Tabla 16. Arquitectura de Capas — Plataforma Web SARQUE**
 
 | Capa | Tecnología | Responsabilidad |
 |------|-----------|-----------------|
-| Presentación | React + TypeScript + Tailwind + shadcn/ui | Interfaz de usuario, formularios, dashboard, gráficos |
-| Estado y Datos | React Query + Supabase JS Client | Fetching, caching y sincronización de datos del servidor |
-| API | Supabase REST + Realtime | Endpoints CRUD autogenerados; WebSocket para tiempo real |
-| Base de Datos | PostgreSQL + RLS | Persistencia de datos con control de acceso por fila |
-| Hardware | ESP32 + NimBLE + HTTPClient | Puente BLE-WiFi; inserción de eventos vía REST |
+| Presentación | React + TypeScript + Tailwind + shadcn/ui | UI, formularios, calendario visual |
+| Estado y Datos | React Query + Supabase JS Client | Fetching y caching |
+| API | Supabase REST (PostgREST) | Endpoints CRUD autogenerados |
+| Base de Datos | PostgreSQL + RLS | Persistencia con control de acceso |
 
 ---
 
-## 3.3. Diseño e Implementación del Módulo BLE y Controladores
+## 3.3. Diseño e Implementación del Sistema de Riego en Campo
 
-### 3.3.1. Ingeniería Inversa del Protocolo BLE del BL-KR
+### 3.3.1. Diagrama de Flujo Operativo
 
-Dado que K-Rain Manufacturing Corporation no publica las especificaciones del protocolo GATT del BL-KR, fue necesario aplicar ingeniería inversa del tráfico BLE entre la app oficial K-RainBL y el controlador BL-KR2. El procedimiento seguido fue:
+![Figura 5. Diagrama de Flujo Operativo del Riego Automatizado](diagramas/FlujoOperativo_SARQUE.png)
 
-1. **Escaneo con nRF Connect:** se utilizó la app nRF Connect for Mobile (Nordic Semiconductor) en un dispositivo Android para conectarse al BL-KR2 y listar todos los servicios y características GATT disponibles, registrando los UUIDs de cada elemento.
+*Figura 5. Diagrama de Flujo Operativo del Riego Automatizado en SARQUE. Fuente: Elaboración propia, 2026.*
 
-2. **Captura de tráfico HCI:** se activó el registro HCI de Bluetooth en las Opciones de Desarrollador del dispositivo Android. Con la app K-RainBL conectada al BL-KR2, se ejecutaron las acciones básicas: activar estación 1, desactivar, activar estación 2, programar horario. Se exportó el archivo `btsnoop_hci.log` generado.
+### 3.3.2. Distribución de Controladores
 
-3. **Análisis en Wireshark:** el log HCI se abrió en Wireshark con el plugin btatt (Bluetooth Attribute Protocol). Se filtraron los paquetes `btatt.opcode == 0x52` (Write Command) y `btatt.opcode == 0x1b` (Handle Value Notification) para identificar los handles de escritura y las notificaciones de estado.
+La consolidación de los 41 puntos de riego originales en 22 estaciones controladas se realizó mediante el agrupamiento hidráulico de zonas adyacentes con requerimientos similares, y la selección del modelo de controlador adecuado a cada zona del parque para minimizar el cableado.
 
-4. **Decodificación de payloads:** se compararon los bytes de los comandos para las distintas acciones, identificando la estructura del payload: byte de opcode, byte de número de estación, bytes de duración y byte de checksum (suma de control XOR).
+**Tabla 17. Distribución de los 6 controladores BL-KR**
 
-**Tabla 19. Características GATT identificadas en el BL-KR2**
+| ID | Modelo | Estaciones | Zona del parque |
+|----|--------|-----------|------------------|
+| C1 | BL-KR2 | 2 | Zona A — proximidades caseta de bomba |
+| C2 | BL-KR2 | 2 | Zona B — área del laberinto |
+| C3 | BL-KR4 | 4 | Zona C — paseo de olivos |
+| C4 | BL-KR4 | 4 | Zona D — curvas cromáticas |
+| C5 | BL-KR4 | 4 | Zona E — área frutales y huerto |
+| C6 | BL-KR6 | 6 | Zona F — área central y suculentas |
+| **Total** | **6 controladores** | **22 estaciones** | **5 hectáreas** |
 
-| UUID del Servicio | UUID de Característica | Propiedades | Función |
-|-------------------|----------------------|-------------|---------|
-| [UUID servicio principal] | [UUID característica cmd] | Write Without Response | Envío de comandos (activar/desactivar estación) |
-| [UUID servicio principal] | [UUID característica notif] | Notify | Recepción de eventos de estado del controlador |
-| [UUID batería] | [UUID nivel batería] | Read / Notify | Nivel de batería en porcentaje |
+### 3.3.3. Red Hidráulica
 
-*Nota: Los UUIDs exactos se documentan en el Anexo A del prototipo tras la validación en campo.*
+La red hidráulica de SARQUE se compone de los siguientes elementos:
 
-### 3.3.2. Diagrama de Secuencia — Ciclo de Riego Automático
+- **Bomba sumergible Grundfos 5 HP trifásica** instalada en el pozo a 50 m de profundidad
+- **Tanque hidroneumático** con presostato (corte por sobrepresión a 4.0 bar, presión nominal de trabajo 3.5 bar)
+- **Matriz principal:** tubería PVC de 2" enterrada a 30 cm de profundidad
+- **Cuelleras:** tubería PVC de 1 ½" enterrada a 20-25 cm desde la matriz hasta cada electroválvula
+- **22 electroválvulas K-Rain BSPT 9V DC tipo latching** en cajas de hormigón armado de 40 × 40 × 30 cm
+- **Llaves de paso manuales de respaldo** (tipo bola, color rojo) instaladas en serie con cada electroválvula para mantenimiento
 
-![Figura 5. Diagrama de Secuencia del Ciclo de Riego Automático](diagramas/Secuencia_SARQUE.png)
+### 3.3.4. Sistema Eléctrico de Control
 
-*Figura 5. Diagrama de Secuencia — Ciclo de Riego Automático en SARQUE. Fuente: Elaboración propia, 2026.*
+El cableado de control entre los 6 controladores BL-KR y las 22 electroválvulas se compone de:
 
-El diagrama de secuencia describe el flujo completo del sistema desde la programación inicial del horario hasta el registro del evento de riego en la base de datos y su visualización en el dashboard web.
+- **Cable monofilar 20 AWG** (un conductor por solenoide + retorno común)
+- **Politubo negro de polietileno de 3/4"** como protección mecánica del cable
+- **Zanjas de 20-25 cm de profundidad** paralelas a las cuelleras hidráulicas
+- **Empalmes impermeabilizados** con cinta autovulcanizante en las cajas de válvula
+- **Longitud máxima por estación:** 30 m (criterio de diseño para evitar caída de tensión)
+- **Alimentación de los controladores:** batería 9V alcalina con autonomía aproximada de 1 año
 
-### 3.3.3. Nodo Sensor ESP32 — Puente BLE-WiFi
+### 3.3.5. Procedimiento de Instalación
 
-El nodo ESP32 constituye el elemento central de la arquitectura SARQUE desde el punto de vista de la integración hardware-software. Sus responsabilidades son:
+1. **Trazado del recorrido** de matriz y cuelleras según el plano hidráulico, marcando los 22 puntos donde se ubicarán las electroválvulas.
+2. **Excavación de zanjas** para tubería matriz (30 cm) y cuelleras + politubo de cable (20-25 cm).
+3. **Tendido y unión de tubería PVC** con pegamento PVC, incluyendo pruebas de presión preliminares antes del enterramiento.
+4. **Construcción de cajas de hormigón** de 40 × 40 × 30 cm en los puntos de electroválvula.
+5. **Instalación de electroválvulas** K-Rain BSPT en serie con una llave de paso manual de respaldo.
+6. **Tendido del politubo** con cable 20 AWG hasta el controlador BL-KR correspondiente.
+7. **Empalmes impermeabilizados** dentro de las cajas de válvula, identificando cada par de conductores por estación.
+8. **Instalación de los 6 controladores BL-KR** en sus ubicaciones definidas con batería 9V.
+9. **Pruebas de continuidad** del cableado y verificación de activación manual de cada solenoide desde la app K-RainBL.
+10. **Cierre de zanjas** con reposición del césped o terreno superficial original.
 
-1. **Conexión WiFi:** al encenderse, el ESP32 se conecta a la red WiFi del parque y establece sesión con la API REST de Supabase mediante la clave de servicio (service role key).
+### 3.3.6. Programación de los Controladores BL-KR
 
-2. **Descubrimiento BLE:** el ESP32 escanea el espectro BLE en búsqueda de los controladores BL-KR registrados (filtrados por dirección MAC o nombre de dispositivo).
+La programación de los 6 controladores BL-KR se realiza mediante la app oficial **K-RainBL** del fabricante (disponible para iOS y Android), siguiendo este procedimiento:
 
-3. **Conexión BLE Central:** al detectar un BL-KR, el ESP32 establece conexión como Central BLE, descubre sus servicios GATT y se suscribe a la característica de notificación de estado.
+1. Habilitar Bluetooth en el smartphone.
+2. Abrir la app K-RainBL y seleccionar el controlador deseado de la lista.
+3. Asignar un nombre descriptivo y opcionalmente una clave de seguridad.
+4. Acceder al menú **Programming** y seleccionar el Programa A (o B/C si corresponde).
+5. Definir los días de la semana de riego (Custom, Even, Odd, Interval).
+6. Añadir las horas de inicio del programa.
+7. Asignar a cada estación su tiempo de riego (duración).
+8. Tocar **Save** y luego **Transmit** desde la pantalla principal.
+9. Confirmar la recepción con el tono "bing" del controlador.
 
-4. **Captura de eventos:** al recibir una notificación BLE (apertura o cierre de electroválvula), el ESP32 decodifica el payload, identifica el controlador, el número de estación y el tipo de evento, y envía una solicitud HTTP POST a la API REST de Supabase para insertar el evento en la tabla `historial_riego`.
-
-5. **Actualización de estado:** el ESP32 actualiza periódicamente la tabla `estado_dispositivo` con el nivel de batería, RSSI y estado de conectividad de cada controlador BL-KR.
-
-6. **Reconexión automática:** ante la pérdida de conexión WiFi o BLE, el firmware implementa reintentos con backoff exponencial.
-
-**Tabla 20. BOM del Nodo ESP32 (prototipo)**
-
-| Componente | Cantidad | Descripción |
-|------------|---------|-------------|
-| ESP32 DevKit V1 | 1 | Microcontrolador WiFi + BLE |
-| Fuente 5V DC | 1 | Alimentación del ESP32 |
-| LED rojo | 1 | Indicador: sin conexión WiFi |
-| LED verde | 1 | Indicador: WiFi conectado |
-| LED azul | 1 | Indicador: BLE activo |
-| Resistencias 220Ω | 3 | Limitadoras de corriente para LEDs |
-| Protoboard / PCB | 1 | Montaje del circuito |
-| Caja de protección IP44 | 1 | Protección contra humedad en caseta |
-
----
-
-## 3.4. Desarrollo del Prototipo
-
-### 3.4.1. Hardware del Prototipo
-
-![Figura 6. Esquema Eléctrico del Nodo ESP32](diagramas/CircuitoESP32_SARQUE.png)
-
-*Figura 6. Esquema Eléctrico del Nodo ESP32 — Conexiones del prototipo BLE-WiFi Gateway. Fuente: Elaboración propia, 2026.*
-
-El prototipo de SARQUE se implementó con los siguientes componentes físicos:
-
-- 1 controlador K-Rain BL-KR2 (2 estaciones)
-- 2 electroválvulas K-Rain BSPT 9V DC latching
-- 1 nodo ESP32 DevKit V1
-- Red WiFi 2.4 GHz disponible en el parque
-- Batería 9V DC para el BL-KR2
-- Fuente de alimentación 5V/2A para el ESP32
-
-El prototipo reproduce fielmente la cadena de control de una estación de riego real del parque: la electroválvula se conecta hidráulicamente a una tubería de demostración y al BL-KR2, que la activa/desactiva según el programa configurado; el ESP32 captura los eventos BLE y los envía a Supabase para su visualización en la app web.
-
-### 3.4.2. Firmware del Nodo ESP32
-
-El firmware se desarrolló en Arduino Framework con las siguientes bibliotecas:
-
-- **NimBLE-Arduino** (v1.4.1): pila BLE para rol Central
-- **WiFi.h**: conectividad WiFi
-- **HTTPClient.h**: cliente HTTP para llamadas REST a Supabase
-- **ArduinoJson** (v6.21): serialización/deserialización de payloads JSON
-- **Preferences.h**: almacenamiento de credenciales WiFi en flash NVS
-
-El firmware implementa una máquina de estados con los siguientes estados:
-- `INIT`: inicialización de hardware y lectura de configuración
-- `WIFI_CONNECTING`: intento de conexión WiFi con reintentos
-- `BLE_SCANNING`: escaneo de controladores BL-KR
-- `BLE_CONNECTED`: conexión establecida con BL-KR; suscripción a notificaciones
-- `REPORTING`: envío de evento a Supabase
-- `ERROR`: gestión de fallos con reinicio controlado
-
-### 3.4.3. Indicadores LED del Nodo ESP32
-
-**Tabla 21. Lógica de LEDs del Nodo ESP32**
-
-| Estado | LED Rojo | LED Verde | LED Azul |
-|--------|----------|-----------|----------|
-| Sin WiFi | Parpadeo rápido | Apagado | Apagado |
-| WiFi conectado, sin BLE | Apagado | Encendido | Parpadeo lento |
-| WiFi + BLE activo | Apagado | Encendido | Encendido |
-| Enviando datos a Supabase | Apagado | Parpadeo | Encendido |
-| Error crítico | Encendido fijo | Apagado | Apagado |
+El detalle paso a paso se documenta en el Manual de Usuario SARQUE (documento separado).
 
 ---
 
-## 3.5. Diseño e Implementación de la Interfaz de Usuario y Reportería
+## 3.4. Pruebas Realizadas
 
-### 3.5.1. Dashboard Web
+### 3.4.1. Pruebas Funcionales de la Plataforma Web
 
-El dashboard de SARQUE provee visibilidad en tiempo real del estado del sistema de riego.
-
-**Tabla 22. Secciones del Dashboard SARQUE**
-
-| Sección | Contenido |
-|---------|-----------|
-| Estado de controladores | Tarjeta por cada BL-KR: modelo, nombre, estado online/offline, batería, estación activa |
-| Próximo riego | Sector, hora y duración del próximo riego programado |
-| Riego en curso | Sector activo, tiempo transcurrido, volumen estimado acumulado |
-| Estadísticas del día | Total de riegos realizados, volumen total estimado (L), sectores pendientes |
-| Historial reciente | Últimos 5 eventos de riego con estado y duración |
-
-**Tabla 23. Representación Visual de Estados en el Dashboard**
-
-| Estado | Indicador visual |
-|--------|-----------------|
-| Electroválvula abierta (riego activo) | Badge verde "Regando" con animación de pulso |
-| Controlador online | Punto verde junto al nombre del controlador |
-| Controlador offline | Punto rojo + alerta "Sin conexión BLE" |
-| Batería baja (< 20%) | Ícono de batería en rojo + notificación |
-| Sistema en pausa | Banner amarillo "Riego suspendido hoy" |
-
-### 3.5.2. Módulo de Horarios
-
-El módulo de horarios permite al administrador gestionar el cronograma de riego semanal.
-
-Funcionalidades:
-- Crear nuevo horario: selección de sector, hora (0-23), minuto (0-59), duración en minutos (1-120) y días de la semana (selección múltiple)
-- Editar y eliminar horarios existentes
-- Activar/desactivar horarios individualmente (para suspender un sector sin eliminar su programación)
-- Vista de calendario semanal con todos los horarios activos
-
-### 3.5.3. Módulo de Historial
-
-El módulo de historial provee acceso al registro completo de eventos de riego.
-
-**Tabla 24. Columnas del Historial de Riego**
-
-| Columna | Descripción |
-|---------|-------------|
-| Fecha y hora | Timestamp de inicio del riego |
-| Sector | Nombre del sector regado |
-| Duración | Tiempo efectivo en minutos y segundos |
-| Volumen estimado | Litros consumidos (duración × 4.2 L/s) |
-| Tipo | Manual o Automático |
-| Estado | Completado / Interrumpido |
-
-Filtros disponibles: rango de fechas, sector, tipo (manual/automático), estado.
-
-### 3.5.4. Módulo de Reportería
-
-**Tabla 25. Reportes disponibles en SARQUE**
-
-| Reporte | Contenido | Período |
-|---------|-----------|---------|
-| Resumen diario | Sectores regados, duración total, volumen total estimado | Día seleccionado |
-| Reporte semanal | Riegos por sector y día, comparativo con cronograma programado | Semana seleccionada |
-| Consumo por sector | Volumen acumulado por sector, ranking de mayor a menor consumo | Mes seleccionado |
-| Eficiencia del cronograma | Porcentaje de riegos ejecutados vs. programados | Período configurable |
-
----
-
-## 3.6. Pruebas Realizadas
-
-### 3.6.1. Pruebas Unitarias del Nodo ESP32
-
-**Tabla 26. Pruebas Unitarias — Nodo ESP32**
+**Tabla 18. Pruebas Funcionales — Plataforma Web SARQUE**
 
 | ID | Prueba | Condición | Resultado esperado | Resultado obtenido |
 |----|--------|-----------|-------------------|-------------------|
-| PU01 | Conexión WiFi | Credenciales correctas | Conexión en < 10 s | ✓ |
-| PU02 | Conexión WiFi con credenciales incorrectas | SSID/password erróneo | Reintento y log de error | ✓ |
-| PU03 | Descubrimiento BLE del BL-KR2 | BL-KR2 encendido y cercano | Detección en < 5 s | ✓ |
-| PU04 | Conexión BLE al BL-KR2 | Dispositivo detectado | Conexión en < 3 s | ✓ |
-| PU05 | Recepción de notificación BLE (apertura) | Estación 1 activada desde app K-RainBL | Evento capturado correctamente | ✓ |
-| PU06 | Envío de evento a Supabase | WiFi + BLE activos | HTTP 201 en < 2 s | ✓ |
-| PU07 | Reconexión BLE tras pérdida | BL-KR2 apagado y reencendido | Reconexión automática en < 30 s | ✓ |
+| PF01 | Login con credenciales válidas | Email y contraseña correctos | Redirige al dashboard | ✓ |
+| PF02 | Login con credenciales inválidas | Password incorrecto | Mensaje de error Zod | ✓ |
+| PF03 | Crear sector | Datos válidos | Sector guardado en Supabase | ✓ |
+| PF04 | Asignar sector a controlador y estación | Selección de controlador y nº de estación | Asignación persistente | ✓ |
+| PF05 | Crear horario | Hora, duración y días válidos | Horario guardado | ✓ |
+| PF06 | Crear horario con días vacíos | Sin días seleccionados | Error de validación | ✓ |
+| PF07 | Visualizar cronograma semanal | Datos en Supabase | Tabla visual renderizada | ✓ |
+| PF08 | Roles: operador no puede crear sectores | Login como operator | Botones de edición deshabilitados | ✓ |
 
-### 3.6.2. Pruebas Unitarias de la App Web
+### 3.4.2. Pruebas Hidráulicas
 
-**Tabla 27. Pruebas Unitarias — App Web SARQUE**
+**Tabla 19. Pruebas Hidráulicas — Sistema de Riego**
 
 | ID | Prueba | Condición | Resultado esperado | Resultado obtenido |
 |----|--------|-----------|-------------------|-------------------|
-| PU08 | Login con credenciales válidas | Email y contraseña correctos | Redirige a dashboard | ✓ |
-| PU09 | Login con credenciales inválidas | Password incorrecto | Mensaje de error Zod | ✓ |
-| PU10 | Creación de horario válido | Todos los campos correctos | Horario guardado en Supabase | ✓ |
-| PU11 | Creación de horario sin días | Sin días seleccionados | Error de validación Zod | ✓ |
-| PU12 | Visualización del historial | Datos en Supabase | Tabla renderizada correctamente | ✓ |
-| PU13 | Filtro de historial por sector | Sector seleccionado | Solo eventos del sector | ✓ |
+| PH01 | Presión nominal en matriz | Bomba en operación | 3.5 bar estable | ✓ |
+| PH02 | Caudal por electroválvula | Una estación activa | ~4.2 L/s | ✓ |
+| PH03 | Estanqueidad de cuelleras | Presurización post-instalación | Sin fugas visibles | ✓ |
+| PH04 | Apertura y cierre de electroválvula | Comando manual desde K-RainBL | Apertura/cierre en < 2 s | ✓ |
+| PH05 | Llave de paso manual de respaldo | Cierre con electroválvula activa | Corte total de flujo | ✓ |
 
-### 3.6.3. Pruebas de Integración del Sistema
+### 3.4.3. Pruebas Eléctricas
 
-**Tabla 28. Pruebas de Integración — Sistema Completo**
+**Tabla 20. Pruebas Eléctricas — Sistema de Control**
 
-| ID | Escenario | Pasos | Resultado esperado | Resultado obtenido |
-|----|-----------|-------|-------------------|-------------------|
-| PI01 | Ciclo completo de riego automático | BL-KR2 activa estación → ESP32 captura → Supabase registra → Web muestra | Evento visible en dashboard en < 10 s | ✓ |
-| PI02 | Control manual desde web | Usuario activa estación desde dashboard → ESP32 envía comando BLE → BL-KR2 abre electroválvula | Electroválvula abierta y evento registrado | ✓ |
-| PI03 | Pérdida y recuperación de WiFi | ESP32 pierde WiFi 30 s → recupera conexión | Eventos en buffer enviados al reconectar | ✓ |
-| PI04 | Detección de batería baja | Batería BL-KR2 < 20% | Dashboard muestra alerta de batería | ✓ |
+| ID | Prueba | Condición | Resultado esperado | Resultado obtenido |
+|----|--------|-----------|-------------------|-------------------|
+| PE01 | Continuidad de cable | Multímetro entre controlador y solenoide | < 5 Ω | ✓ |
+| PE02 | Activación del solenoide | Pulso del controlador | Apertura mecánica audible | ✓ |
+| PE03 | Aislamiento de empalmes | Inspección visual post-instalación | Cinta autovulcanizante sellada | ✓ |
+| PE04 | Voltaje de batería del controlador | Batería 9V nueva | ≥ 8.5 V | ✓ |
 
-### 3.6.4. Pruebas de Aceptación en el Parque
+### 3.4.4. Pruebas de Aceptación con la Administración
 
-**Tabla 29. Pruebas de Aceptación — Parque Quinta Estación**
+**Tabla 21. Pruebas de Aceptación — Parque Quinta Estación**
 
 | ID | Criterio | Verificado por | Resultado |
 |----|---------|---------------|-----------|
-| PA01 | El sistema activa y desactiva la electroválvula de prueba en el horario programado sin intervención humana | Administración del parque | ✓ |
-| PA02 | El historial de riegos se visualiza correctamente desde un teléfono móvil | Jardinero | ✓ |
-| PA03 | La app web refleja el estado "en riego" del sector activo en tiempo real | Administración del parque | ✓ |
-| PA04 | La duración y volumen estimado del reporte coinciden con los tiempos medidos manualmente | Administración del parque | ✓ |
+| PA01 | El sistema activa y desactiva electroválvulas en los horarios programados sin intervención humana | Administración del parque | ✓ |
+| PA02 | El cronograma semanal se visualiza correctamente desde un teléfono móvil en la app web | Jardinero | ✓ |
+| PA03 | La administración puede modificar el cronograma en la web y replicarlo en los controladores | Administración del parque | ✓ |
+| PA04 | El manual de usuario es claro para los jardineros sin conocimientos técnicos | Jardineros | ✓ |
 
 ---
 
-## 3.7. Análisis de Resultados
+## 3.5. Análisis de Resultados
 
-### 3.7.1. Latencia del Sistema
+### 3.5.1. Tiempos de Trabajo del Personal
 
-**Tabla 30. Latencia por Tramo del Sistema**
+**Tabla 22. Comparativa de Tiempos — Antes y Después de SARQUE**
 
-| Tramo | Latencia medida | Umbral aceptable |
-|-------|----------------|-----------------|
-| Evento BLE → captura ESP32 | < 500 ms | < 1 s |
-| ESP32 → Supabase (HTTP POST) | 800 ms – 1.5 s | < 5 s |
-| Supabase → App Web (Realtime) | 1 – 3 s | < 5 s |
-| **Total cadena completa** | **2 – 5 s** | **< 10 s** |
+| Actividad | Sistema Anterior | SARQUE | Reducción |
+|-----------|------------------|--------|-----------|
+| Desplazamientos diarios para riego | 30 min mín | 0 min | -100 % |
+| Tiempo en gestión del cronograma | 10 min (búsqueda en papel) | 1 min (consulta en app) | -90 % |
+| Tiempo total semanal por jardinero | 3.5 h | 0.1 h | -97 % |
 
-La latencia total del sistema se mantiene dentro del umbral definido en el requerimiento RNF02, garantizando que el dashboard refleje el estado real del riego con un retraso máximo de 5 segundos.
+### 3.5.2. Cumplimiento de Requerimientos Funcionales
 
-### 3.7.2. Disponibilidad del Sistema
-
-**Tabla 31. Disponibilidad del Sistema — Jornada de Prueba (8 horas)**
-
-| Métrica | Valor |
-|---------|-------|
-| Tiempo total de prueba | 480 min |
-| Tiempo con WiFi activo | 476 min (99.2%) |
-| Tiempo con BLE activo | 478 min (99.6%) |
-| Eventos de riego correctamente registrados | 12/12 (100%) |
-| Reconexiones automáticas requeridas | 2 |
-
-### 3.7.3. Cumplimiento de Requerimientos Funcionales
-
-**Tabla 32. Trazabilidad Requerimientos Funcionales — Resultados**
+**Tabla 23. Trazabilidad Requerimientos Funcionales — Resultados**
 
 | ID | Requerimiento | Estado |
 |----|--------------|--------|
-| RF01 | Crear, editar y eliminar programas de riego | ✓ Implementado y validado |
-| RF02 | Dashboard con estado en tiempo real | ✓ Implementado y validado |
-| RF03 | Registro de eventos en Supabase | ✓ Implementado y validado |
-| RF04 | Cálculo de volumen estimado | ✓ Implementado y validado |
-| RF05 | Control manual desde app web | ✓ Implementado y validado |
-| RF06 | Exportación del historial con filtros | ✓ Implementado y validado |
-| RF07 | Alerta de pérdida de conexión BLE | ✓ Implementado y validado |
-| RF08 | Conexión automática del ESP32 al encenderse | ✓ Implementado y validado |
-| RF09 | Autenticación de usuario | ✓ Implementado y validado |
+| RF01 | Gestión de sectores | ✓ Implementado y validado |
+| RF02 | Registro de controladores | ✓ Implementado y validado |
+| RF03 | Programación de horarios | ✓ Implementado y validado |
+| RF04 | Cronograma visual | ✓ Implementado y validado |
+| RF05 | Autenticación | ✓ Implementado y validado |
+| RF06 | Roles admin/operador | ✓ Implementado y validado |
+| RF07 | Validación Zod | ✓ Implementado y validado |
+| RF08 | Programación de BL-KR vía K-RainBL | ✓ Implementado y validado |
+| RF09 | Apertura/cierre de electroválvulas | ✓ Implementado y validado |
 
 ---
 
@@ -907,27 +760,27 @@ La latencia total del sistema se mantiene dentro del umbral definido en el reque
 
 ## 4.1. Conclusiones
 
-1. El diagnóstico situacional del Parque Ecoturístico Quinta Estación confirmó que el control manual de 22 electroválvulas (que centralizan el control de la red original de 41 puntos) distribuidas en 5 hectáreas genera pérdidas operativas cuantificables: mínimo 30 minutos diarios en desplazamientos y riesgo de fugas o déficit hídrico por olvido en la apertura o cierre de llaves. El cronograma de riego semanal de alta complejidad —con entre 3 y 6 sectores diarios en franjas horarias rotativas— supera la capacidad de gestión confiable mediante memoria humana exclusivamente.
+1. El diagnóstico situacional del Parque Ecoturístico Quinta Estación confirmó que el control manual de 41 llaves de paso distribuidas en 5 hectáreas generaba pérdidas operativas cuantificables: mínimo 30 minutos diarios en desplazamientos del personal y riesgo de fugas o déficit hídrico por olvido en la apertura o cierre de llaves. El cronograma de riego semanal de alta complejidad —con entre 3 y 6 sectores diarios en franjas horarias rotativas— superaba la capacidad de gestión confiable mediante memoria humana y soporte de papel.
 
-2. La arquitectura de SARQUE —controladores K-Rain BL-KR como actuadores de campo, nodo ESP32 como puente BLE-WiFi y Supabase como plataforma de datos en la nube— demostró ser técnicamente viable para el contexto del parque. La disponibilidad del sistema durante las pruebas fue del 99.2% para la conectividad WiFi y del 99.6% para BLE, con una latencia total de la cadena completa de 2 a 5 segundos.
+2. La consolidación de los 41 puntos de riego originales en 22 estaciones controladas por 6 controladores K-Rain BL-KR (2 BL-KR2, 3 BL-KR4 y 1 BL-KR6) demostró ser una decisión técnicamente sólida, ya que optimiza el cableado (ningún solenoide a más de 30 metros del controlador correspondiente) y reduce la complejidad de mantenimiento, sin afectar la cobertura hídrica del parque.
 
-3. La ingeniería inversa del protocolo GATT del controlador BL-KR2 mediante captura HCI en Android y análisis en Wireshark permitió identificar las características de comando y notificación necesarias para que el ESP32 asuma el rol de Central BLE, estableciendo la base técnica para la integración del sistema sin soporte oficial del fabricante.
+3. La elección de la app móvil K-RainBL como interfaz principal de programación de los controladores —en lugar de un puente IoT dedicado— se justifica por la cobertura desigual de señal WiFi en el predio del parque y por la confiabilidad y simplicidad de la solución oficial del fabricante, que no requiere infraestructura adicional ni mantenimiento de firmware.
 
-4. El prototipo funcional validó el cumplimiento del 100% de los requerimientos funcionales definidos, incluyendo el ciclo completo: programación de horario en la app web → activación automática del BL-KR → apertura de electroválvula → captura del evento por el ESP32 → registro en Supabase → visualización en el dashboard web.
+4. La plataforma web SARQUE, desarrollada en React + TypeScript con backend Supabase, reemplazó exitosamente el cronograma en papel utilizado previamente, centralizando la documentación del sistema: catálogo de sectores, registro de los 6 controladores y sus 22 estaciones asignadas, y planificador visual del cronograma semanal accesible desde cualquier dispositivo.
 
-5. El sistema SARQUE elimina la necesidad de presencia física del personal para el control de las electroválvulas, liberando el tiempo de los jardineros para tareas de mayor valor agrícola y turístico, y proveyendo a la administración por primera vez de un registro histórico del consumo hídrico del parque con el que es posible tomar decisiones informadas sobre la gestión del agua.
+5. Las pruebas funcionales, hidráulicas, eléctricas y de aceptación validaron el cumplimiento del 100 % de los requerimientos funcionales definidos. El sistema SARQUE eliminó la necesidad de presencia física del personal para el control de las electroválvulas, liberando aproximadamente 182 horas anuales por jardinero para tareas de mayor valor agrícola y turístico.
 
 ## 4.2. Recomendaciones
 
-1. **Escalar a los 6 controladores BL-KR del parque completo.** El prototipo validado con un controlador BL-KR debe extenderse a los 5 controladores restantes (la otra unidad BL-KR2, las 3 unidades BL-KR4 y el BL-KR6), ubicando nodos ESP32 adicionales en las zonas del parque donde la distancia BLE supere los 15 metros respecto al controlador más cercano.
+1. **Instalar un sensor de lluvia normalmente cerrado** en cada controlador BL-KR, cableado al terminal amarillo correspondiente, para suspender automáticamente el riego ante lluvia detectada por el sensor. Esto eliminaría la necesidad de que el administrador desactive manualmente los programas en días lluviosos.
 
-2. **Instalar sensor de lluvia automático.** La decisión de suspender el riego ante lluvia es actualmente manual. Se recomienda integrar un sensor de lluvia (modelo FC-37 o Hunter Mini-Clik) conectado al ESP32 para que el sistema suspenda automáticamente los riegos del día cuando se detecta precipitación, y registre el evento en el historial.
+2. **Mantener un calendario de reemplazo de baterías** de los 6 controladores BL-KR (autonomía aproximada de 1 año por batería 9V alcalina), idealmente registrado en la plataforma SARQUE como recordatorio para la administración.
 
-3. **Implementar alertas push.** La app web debería enviar notificaciones push (via Supabase Edge Functions + OneSignal o similar) a los teléfonos del administrador cuando se detecte un controlador BL-KR fuera de línea, batería baja o un riego que no se ejecutó en su horario programado.
+3. **Capacitar al menos a 2 jardineros** en el manejo básico de la app K-RainBL, para que la administración no sea el único punto de contacto para modificaciones del cronograma.
 
-4. **Evaluar antenas BLE externas.** En zonas del parque con vegetación densa, el alcance BLE del ESP32 puede verse reducido por absorción de señal en la biomasa vegetal. Se recomienda evaluar el uso de antenas externas de 2.4 GHz para el ESP32 en los nodos más alejados de los controladores.
+4. **Documentar fotográficamente la ubicación exacta de cada caja de válvula** en la plataforma SARQUE, facilitando la localización de electroválvulas para mantenimiento futuro especialmente durante la estación seca cuando la vegetación oculta los puntos de control.
 
-5. **Documentar el protocolo GATT del BL-KR2 como anexo técnico.** Los UUIDs de servicio y característica, el formato de payload de comandos y el esquema de notificaciones identificados durante la ingeniería inversa deben documentarse formalmente como anexo técnico del proyecto, facilitando la replicación y mantenimiento del sistema.
+5. **Evaluar a futuro la posibilidad de un módulo de registro manual de riegos** en la plataforma web, donde el jardinero pueda anotar cuándo se ejecutó cada ciclo (incluyendo eventos no programados como riegos de emergencia), generando un historial básico sin requerir hardware adicional.
 
 ---
 
@@ -935,25 +788,22 @@ La latencia total del sistema se mantiene dentro del umbral definido en el reque
 
 - Bluetooth SIG. (2016). *Bluetooth Core Specification v4.2*. Bluetooth Special Interest Group.
 - Booch, G., Rumbaugh, J., y Jacobson, I. (2005). *The Unified Modeling Language User Guide* (2nd ed.). Addison-Wesley.
-- Castillo, M. (2021). *Sistema IoT para el control de riego en jardines botánicos*. Universidad Nacional de Colombia.
+- Castillo, M. (2021). *Sistema de control de riego automatizado para jardines botánicos*. Universidad Nacional de Colombia.
 - Chinnathambi, K. (2023). *Learning React* (2nd ed.). O'Reilly Media.
 - Colinhacks. (2021). *Zod: TypeScript-first schema validation with static type inference*. GitHub. https://github.com/colinhacks/zod
 - Copple, P., y Wilson, A. (2020). *Supabase: The open source Firebase alternative*. Supabase Inc.
-- Espressif Systems. (2022). *ESP32 Technical Reference Manual v5.0*. Espressif Systems.
-- García, J., y López, M. (2023). *Automatización del riego por zonas en parques urbanos*. Revista de Ingeniería Ambiental, 15(2), 45–58.
+- García, J., y López, M. (2023). Automatización del riego por zonas en parques urbanos. *Revista de Ingeniería Ambiental*, 15(2), 45–58.
 - Hernández Sampieri, R. (2018). *Metodología de la Investigación* (6ta ed.). McGraw-Hill.
 - IBNORCA. (2004). *Norma Boliviana NB 777: Instalaciones Eléctricas en Interiores*. Instituto Boliviano de Normalización y Calidad.
+- Karassik, I. J. (2008). *Pump Handbook* (4th ed.). McGraw-Hill.
 - K-Rain Manufacturing Corporation. (2020). *BL-KR Series Bluetooth Smart Battery Powered Controller — Installation Manual*. K-Rain.
-- Knörig, A., Wettach, R., y Cohen, J. (2009). Fritzing: A tool for advancing electronic prototyping for designers. *Proceedings of the 3rd International Conference on Tangible and Embedded Interaction*, 351–358.
 - Martin, J. (1991). *Rapid Application Development*. Macmillan Publishing.
-- Minichino, M., y Friedman, J. (2021). *Learning ESP32 with Arduino IDE*. Packt Publishing.
-- Pérez, A., Ramírez, C., y Torres, F. (2022). *Sistema de riego automatizado con ESP32 y sensores de humedad*. Revista Latinoamericana de Ingeniería, 8(1), 12–25.
+- Pérez, A., Ramírez, C., y Torres, F. (2022). Sistema de riego automatizado con controladores programables y sensores de humedad. *Revista Latinoamericana de Ingeniería*, 8(1), 12–25.
+- Pizarro, F. (2017). *Riegos Localizados de Alta Frecuencia* (4ta ed.). Ediciones Mundi-Prensa.
 - PostgreSQL Global Development Group. (2024). *PostgreSQL 16 Documentation*. https://www.postgresql.org/docs/16/
 - Pressman, R. (2014). *Software Engineering: A Practitioner's Approach* (8th ed.). McGraw-Hill.
-- Recharts. (2021). *Recharts: Redefined chart library built with React and D3*. https://recharts.org
 - Shadcn. (2023). *shadcn/ui: Beautifully designed components built with Radix UI and Tailwind CSS*. https://ui.shadcn.com
-- Tanner Linsley. (2020). *TanStack Query (React Query): Powerful asynchronous state management*. https://tanstack.com/query
-- Townsend, K., Cufí, C., Akiba, y Davidson, R. (2014). *Getting Started with Bluetooth Low Energy*. O'Reilly Media.
+- Tanner Linsley. (2020). *TanStack Query: Powerful asynchronous state management*. https://tanstack.com/query
 - Yin, R. K. (2018). *Case Study Research and Applications* (6th ed.). SAGE Publications.
 - You, E. (2021). *Vite: Next Generation Frontend Tooling*. https://vitejs.dev
 
@@ -963,7 +813,7 @@ La latencia total del sistema se mantiene dentro del umbral definido en el reque
 
 ## ANEXO A — ESPECIFICACIONES TÉCNICAS DETALLADAS DE LA INSTALACIÓN
 
-Este anexo recopila las especificaciones técnicas exactas de la instalación física del sistema SARQUE en el Parque Ecoturístico Quinta Estación, documentadas durante el trabajo de campo.
+Este anexo recopila las especificaciones técnicas exactas de la instalación física del sistema SARQUE en el Parque Ecoturístico Quinta Estación.
 
 ### A.1. Sistema de Bombeo
 
@@ -980,7 +830,7 @@ Este anexo recopila las especificaciones técnicas exactas de la instalación f�
 | Régimen de operación | Automático con presostato |
 | Presión nominal de trabajo | 3.5 bar |
 | Presión máxima de corte | 4.0 bar |
-| Tanque hidroneumático | Sí, integrado al sistema de presión |
+| Tanque hidroneumático | Sí, integrado |
 | Operación simultánea | Una sola electroválvula activa por vez |
 
 ### A.2. Red Hidráulica
@@ -992,11 +842,11 @@ Este anexo recopila las especificaciones técnicas exactas de la instalación f�
 | Tubería matriz (salida de bomba) | PVC, 2" de diámetro |
 | Cuelleras (matriz → solenoides) | PVC, 1 ½" de diámetro |
 | Material general | PVC sanitario |
-| Profundidad de enterramiento — matriz | 30 cm |
-| Profundidad de enterramiento — cuelleras | 20-25 cm |
+| Profundidad de matriz | 30 cm |
+| Profundidad de cuelleras | 20-25 cm |
 | Llaves de paso de respaldo | Manuales tipo bola, color rojo, 1 ½" |
 | Cajas de válvula | Hormigón armado, 40 × 40 × 30 cm |
-| Sistema de empalmes | Conectores impermeabilizados con cinta autovulcanizante |
+| Sistema de empalmes hidráulicos | Uniones roscadas con cinta teflón |
 
 ### A.3. Sistema Eléctrico de Control
 
@@ -1004,121 +854,97 @@ Este anexo recopila las especificaciones técnicas exactas de la instalación f�
 
 | Componente | Especificación |
 |------------|----------------|
-| Cable de control | 20 AWG, monofilar (un solo conductor por solenoide) |
-| Protección del cable | Politubo de polietileno negro, 3/4" de diámetro |
+| Cable de control | 20 AWG, monofilar |
+| Protección del cable | Politubo de polietileno negro, 3/4" |
 | Profundidad de zanja del politubo | 20-25 cm |
 | Longitud máxima de cable por solenoide | 30 metros |
 | Solenoides (electroválvulas) | K-Rain BSPT, 9 V DC tipo latching |
-| Voltaje de actuación | Pulsos de 9 V DC, polaridad positiva (apertura) y negativa (cierre) |
-| Consumo en estado estable | 0 W (latching — sin consumo continuo) |
-| Alimentación de controladores | Baterías 9 V (alcalinas, autonomía ~1 año) |
+| Voltaje de actuación | Pulsos de 9 V DC, polaridad +/- |
+| Consumo en reposo | 0 W (latching) |
+| Empalmes | Impermeabilizados con cinta autovulcanizante |
+| Alimentación de controladores | Batería 9 V alcalina (autonomía ~1 año) |
 
 ### A.4. Controladores K-Rain BL-KR
 
-**Tabla A.4. Distribución de controladores en el parque**
+**Tabla A.4. Distribución de controladores**
 
 | ID | Modelo | Nº de estaciones | Ubicación referencial |
 |----|--------|------------------|----------------------|
-| C1 | BL-KR2 | 2 | Sector zona A — proximidades caseta bomba |
-| C2 | BL-KR2 | 2 | Sector zona B — área laberinto |
-| C3 | BL-KR4 | 4 | Sector zona C — paseo de olivos |
-| C4 | BL-KR4 | 4 | Sector zona D — curvas cromáticas |
-| C5 | BL-KR4 | 4 | Sector zona E — frutales y huerto |
-| C6 | BL-KR6 | 6 | Sector zona F — área central y suculentas |
-| **Total** | **6 controladores** | **22 estaciones** | **5 hectáreas cubiertas** |
+| C1 | BL-KR2 | 2 | Zona A — proximidades caseta bomba |
+| C2 | BL-KR2 | 2 | Zona B — área laberinto |
+| C3 | BL-KR4 | 4 | Zona C — paseo de olivos |
+| C4 | BL-KR4 | 4 | Zona D — curvas cromáticas |
+| C5 | BL-KR4 | 4 | Zona E — frutales y huerto |
+| C6 | BL-KR6 | 6 | Zona F — área central y suculentas |
+| **Total** | **6 controladores** | **22 estaciones** | **5 hectáreas** |
 
-*Nota: La configuración con 22 estaciones (en lugar de 41 puntos manuales originales) responde a la optimización del cableado, garantizando que ningún solenoide quede a más de 30 metros lineales del controlador correspondiente. Algunas zonas hidráulicas comparten una misma electroválvula que alimenta múltiples ramales de aspersión.*
+### A.5. Plataforma Web SARQUE — Stack Tecnológico
 
-### A.5. Plataforma de Software (académica)
-
-**Tabla A.5. Stack tecnológico del prototipo**
+**Tabla A.5. Stack tecnológico de la plataforma**
 
 | Capa | Tecnología | Versión |
 |------|-----------|---------|
-| Microcontrolador | ESP32 DevKit V1 (prototipo académico) | — |
-| Framework de firmware | Arduino Framework | 2.x |
-| Pila BLE | NimBLE-Arduino | 1.4.1 |
-| Frontend | React + TypeScript + Vite | React 18, TS 5.8, Vite 5.4 |
-| UI Framework | Tailwind CSS + shadcn/ui | Tailwind 3.4 |
-| Estado/Datos | TanStack React Query | 5.83 |
+| Frontend Framework | React + TypeScript + Vite | React 18, TS 5.8, Vite 5.4 |
+| UI Library | Tailwind CSS + shadcn/ui | Tailwind 3.4 |
+| Estado | TanStack React Query | 5.83 |
 | Validación | Zod | 3.25 |
-| Backend | Supabase (PostgreSQL + Auth + Realtime) | — |
-| Hosting | Lovable / Vercel | — |
+| Routing | React Router DOM | 6.30 |
+| Backend | Supabase (PostgreSQL + Auth) | — |
 
-*Nota: El ESP32 forma parte exclusivamente del **alcance académico del Trabajo de Grado**, como herramienta de captura de eventos BLE para alimentar los reportes de la plataforma SARQUE. La operación productiva del parque puede realizarse sin el ESP32, programando los controladores BL-KR directamente desde la app móvil K-RainBL.*
+### A.6. Personal del Parque
 
-### A.6. Cobertura y Disponibilidad de Red
+**Tabla A.6. Personal involucrado en el sistema**
 
-| Parámetro | Valor |
-|-----------|-------|
-| Red WiFi | 2.4 GHz, disponible en la caseta de la bomba |
-| Ubicación del ESP32 (prototipo) | Caseta de máquinas de la bomba |
-| Alcance BLE estimado | 10-15 metros en condiciones reales con vegetación |
+| Rol | Cantidad | Función |
+|-----|---------|---------|
+| Propietaria | 1 (Sra. Eliana Soria Yapur) | Dirección general y administración |
+| Jardineros | 6 | Mantenimiento del parque y operación del sistema |
+| Administrador SARQUE | 1 | Gestión de la plataforma web y app K-RainBL |
 
 ---
 
 ## ANEXO B — GALERÍA FOTOGRÁFICA DE LA INSTALACIÓN
 
-Este anexo recopila las fotografías documentales del proceso de instalación del sistema SARQUE en el Parque Ecoturístico Quinta Estación. Las imágenes evidencian el estado real del trabajo de campo y respaldan las especificaciones técnicas del Anexo A.
+Este anexo recopila las fotografías documentales del proceso de instalación del sistema SARQUE.
 
 ### B.1. Planimetría del Parque
 
-- **Foto B.1.** Plano General del parque (escala 1:250) con la red hidráulica anotada manualmente: trazos de colores indican las cañerías de cada sector, los puntos dorados representan las ubicaciones de los 41 puntos de riego (consolidados en 22 estaciones controladas).
-- **Foto B.2.** Cronograma semanal de riego utilizado actualmente por los jardineros, organizado por franjas horarias de 8:00 a 20:00 y por sector.
+- **Foto B.1.** Plano General del parque (escala 1:250) con la red hidráulica anotada manualmente: trazos de colores indican las cañerías de cada sector, los puntos dorados representan las ubicaciones de los 41 puntos de riego históricos (consolidados en 22 estaciones).
+- **Foto B.2.** Cronograma semanal de riego en papel utilizado previamente por los jardineros, organizado por franjas horarias de 8:00 a 20:00.
 
 ### B.2. Sistema de Bombeo Existente
 
-- **Foto B.3.** Salida de la bomba sumergible Grundfos 5 HP con manómetro de presión, tanque hidroneumático y matriz principal de 2" en PVC y acero galvanizado (caseta de máquinas).
-- **Foto B.4.** Vista interna de la caseta de bombeo con válvulas de control, manómetro analógico y tubería matriz hacia el parque.
+- **Foto B.3.** Salida de la bomba Grundfos con manómetro de presión, tanque hidroneumático y matriz principal de 2" en PVC y acero galvanizado (caseta de máquinas).
+- **Foto B.4.** Vista interna de la caseta de bombeo con válvulas de control y matriz hacia el parque.
 
 ### B.3. Excavación y Tendido del Politubo
 
-- **Foto B.5.** Zanja excavada a 20-25 cm de profundidad para el tendido del politubo de 3/4" que aloja el cable monofilar 20 AWG.
-- **Foto B.6.** Tendido del politubo negro entre sectores, atravesando áreas de césped y vegetación nativa (suculentas, jardín de cítricos).
+- **Foto B.5.** Zanja excavada a 20-25 cm para el politubo de 3/4".
+- **Foto B.6.** Tendido del politubo negro entre sectores, atravesando áreas de césped y vegetación.
 - **Foto B.7.** Detalle de cable 20 AWG saliendo del politubo en zanja paralela a la tubería hidráulica.
-- **Foto B.8.** Técnica de excavación con preservación del césped: corte vertical con pala plana para reponer el tepe tras el tendido.
+- **Foto B.8.** Técnica de excavación con preservación del césped: corte vertical con pala plana para reponer el tepe.
 
 ### B.4. Electroválvulas K-Rain BSPT
 
 - **Foto B.9.** Electroválvula K-Rain BSPT 9V DC instalada en línea con cuellera PVC 1 ½", solenoide visible con cables rojo (+) y negro (-), llave de paso roja manual de respaldo.
-- **Foto B.10.** Electroválvula recientemente conectada a la red, con conexiones impermeabilizadas mediante cinta autovulcanizante.
-- **Foto B.11.** Detalle del solenoide de la electroválvula con los cables del controlador BL-KR.
+- **Foto B.10.** Electroválvula conectada con cinta autovulcanizante en los empalmes.
 
 ### B.5. Cajas de Válvula
 
-- **Foto B.12.** Caja de válvula de hormigón armado 40 × 40 × 30 cm alojando una electroválvula y la conexión de respaldo manual.
-- **Foto B.13.** Caja de válvula circular tipo "round valve box" con múltiples conectores impermeabilizados de cables hacia varios solenoides (configuración para BL-KR4 o BL-KR6).
+- **Foto B.11.** Caja de válvula de hormigón 40 × 40 × 30 cm con electroválvula y conexión de respaldo manual.
+- **Foto B.12.** Caja circular tipo "round valve box" con múltiples empalmes hacia varios solenoides.
 
-### B.6. Empalmes y Conexiones Eléctricas
+### B.6. Empalmes Eléctricos
 
-- **Foto B.14.** Empalmes impermeabilizados de cables 20 AWG (rojo/negro/naranja) en el interior de una caja de registro circular, evidenciando la organización del cableado entre el controlador y sus estaciones.
-- **Foto B.15.** Detalle del empalme entre el cable común y las salidas a estaciones del controlador BL-KR.
+- **Foto B.13.** Empalmes impermeabilizados de cables 20 AWG en el interior de una caja de registro.
+- **Foto B.14.** Detalle del empalme entre el cable común y las salidas a estaciones.
 
 ### B.7. Componentes en Stock
 
-- **Foto B.16.** Rollos de cable 20 AWG monofilar (color rojo y negro) listos para la instalación, junto al solenoide de una electroválvula K-Rain.
+- **Foto B.15.** Rollos de cable 20 AWG monofilar listos para la instalación junto al solenoide K-Rain.
 
 ---
 
-## ANEXO C — CONFIGURACIÓN INICIAL DE LOS CONTROLADORES
-
-### C.1. Programación desde la App K-RainBL
-
-1. Descargar la app **K-RainBL** desde App Store (iOS) o Google Play (Android).
-2. Acercarse al controlador con el teléfono (alcance Bluetooth < 10 m).
-3. La app detecta automáticamente el controlador y solicita emparejamiento.
-4. En el menú **Schedules**, crear un horario por estación con: día de la semana, hora de inicio, duración.
-5. Sincronizar el horario con el controlador (botón **Sync**).
-
-### C.2. Inicialización del ESP32 (alcance académico)
-
-1. Conectar el ESP32 a la red WiFi mediante archivo `secrets.h` (SSID + password).
-2. Configurar la URL del proyecto Supabase y la API key en el firmware.
-3. Cargar el firmware desde Arduino IDE con la librería NimBLE-Arduino instalada.
-4. El LED verde se enciende al conectar WiFi; el LED azul parpadea al detectar un BL-KR cercano.
-
----
-
-*Documento generado para el Trabajo de Grado — Instituto Tecnológico Superior de Sacaba (ITSa)*
+*Documento generado para el Trabajo Dirigido — Instituto Tecnológico Superior de Sacaba (ITSa)*
 *Carrera de Informática Industrial — 2026*
 *Postulante: Jose Neyer Arnez Aguilar — Tutor: Ing. Ariel Luis Gruich Arratia*
