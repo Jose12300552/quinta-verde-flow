@@ -1,9 +1,25 @@
 -- ============================================================
--- SARQUE — Esquema completo sin autenticación
+-- SARQUE — SETUP COMPLETO DE BASE DE DATOS
 -- Ejecutar este script UNA SOLA VEZ en el SQL Editor de Supabase
+-- Funciona tanto si las tablas ya existen como si no
 -- ============================================================
 
--- 1. Tabla de horarios de riego
+-- ============================================================
+-- 1. ELIMINAR DEPENDENCIAS DE AUTENTICACIÓN
+-- ============================================================
+
+-- Si las tablas ya existen, eliminar restricciones de auth
+ALTER TABLE IF EXISTS public.horarios_riego
+  DROP CONSTRAINT IF EXISTS horarios_riego_created_by_fkey;
+
+ALTER TABLE IF EXISTS public.horarios_riego
+  ALTER COLUMN created_by DROP NOT NULL;
+
+-- ============================================================
+-- 2. CREAR TABLAS (si no existen)
+-- ============================================================
+
+-- Tabla de horarios de riego
 CREATE TABLE IF NOT EXISTS public.horarios_riego (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   hora INTEGER NOT NULL CHECK (hora >= 0 AND hora < 24),
@@ -11,11 +27,12 @@ CREATE TABLE IF NOT EXISTS public.horarios_riego (
   duracion_segundos INTEGER NOT NULL CHECK (duracion_segundos > 0),
   dias_semana INTEGER[] NOT NULL DEFAULT ARRAY[0,1,2,3,4,5,6],
   activo BOOLEAN NOT NULL DEFAULT true,
+  created_by UUID,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
--- 2. Tabla de historial de riego
+-- Tabla de historial de riego
 CREATE TABLE IF NOT EXISTS public.historial_riego (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   fecha_hora_inicio TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -28,7 +45,7 @@ CREATE TABLE IF NOT EXISTS public.historial_riego (
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
--- 3. Tabla de estado del dispositivo
+-- Tabla de estado del dispositivo
 CREATE TABLE IF NOT EXISTS public.estado_dispositivo (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   esp32_id TEXT NOT NULL UNIQUE,
@@ -41,8 +58,15 @@ CREATE TABLE IF NOT EXISTS public.estado_dispositivo (
 );
 
 -- ============================================================
--- Función y triggers de actualización automática
+-- 3. FORZAR created_by COMO OPCIONAL (por si la tabla ya existía)
 -- ============================================================
+ALTER TABLE public.horarios_riego
+  ALTER COLUMN created_by DROP NOT NULL;
+
+-- ============================================================
+-- 4. FUNCIONES Y TRIGGERS
+-- ============================================================
+
 CREATE OR REPLACE FUNCTION public.update_updated_at_column()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -64,46 +88,55 @@ CREATE TRIGGER update_estado_dispositivo_updated_at
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
 -- ============================================================
--- Insertar dispositivo por defecto
+-- 5. INSERTAR DISPOSITIVO POR DEFECTO
 -- ============================================================
 INSERT INTO public.estado_dispositivo (esp32_id, estado_bomba, estado_conexion)
 VALUES ('ESP32_QUINTA_ESTACION', 'apagado', 'offline')
 ON CONFLICT (esp32_id) DO NOTHING;
 
 -- ============================================================
--- RLS PÚBLICO (sin autenticación)
+-- 6. CONFIGURAR RLS PÚBLICO (sin login)
 -- ============================================================
 
--- Habilitar RLS en todas las tablas
+-- Habilitar RLS
 ALTER TABLE public.horarios_riego ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.historial_riego ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.estado_dispositivo ENABLE ROW LEVEL SECURITY;
 
--- Eliminar políticas anteriores si existen
-DROP POLICY IF EXISTS "Acceso público total a horarios" ON public.horarios_riego;
-DROP POLICY IF EXISTS "Acceso público total a historial" ON public.historial_riego;
-DROP POLICY IF EXISTS "Acceso público a lectura de estado_dispositivo" ON public.estado_dispositivo;
-DROP POLICY IF EXISTS "Acceso público total a estado_dispositivo" ON public.estado_dispositivo;
+-- Eliminar TODAS las políticas anteriores (de cualquier nombre)
+DO $$
+DECLARE
+  pol record;
+BEGIN
+  FOR pol IN
+    SELECT policyname, tablename
+    FROM pg_policies
+    WHERE schemaname = 'public'
+    AND tablename IN ('horarios_riego', 'historial_riego', 'estado_dispositivo')
+  LOOP
+    EXECUTE format('DROP POLICY IF EXISTS %I ON public.%I', pol.policyname, pol.tablename);
+  END LOOP;
+END $$;
 
--- Crear políticas públicas (acceso libre sin login)
-CREATE POLICY "Acceso público total a horarios"
+-- Crear políticas públicas (acceso libre sin autenticación)
+CREATE POLICY "Acceso publico horarios"
   ON public.horarios_riego
   FOR ALL
   USING (true)
   WITH CHECK (true);
 
-CREATE POLICY "Acceso público total a historial"
+CREATE POLICY "Acceso publico historial"
   ON public.historial_riego
   FOR ALL
   USING (true)
   WITH CHECK (true);
 
-CREATE POLICY "Acceso público total a estado_dispositivo"
+CREATE POLICY "Acceso publico estado"
   ON public.estado_dispositivo
   FOR ALL
   USING (true)
   WITH CHECK (true);
 
 -- ============================================================
--- Listo. La base de datos está configurada para SARQUE sin login.
+-- LISTO. Recarga tu app y prueba crear un horario.
 -- ============================================================
