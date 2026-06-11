@@ -28,18 +28,11 @@ const Horarios = () => {
   const [minuto, setMinuto] = useState("00");
   const [duracion, setDuracion] = useState("10");
   const [diasSeleccionados, setDiasSeleccionados] = useState<number[]>([0, 1, 2, 3, 4, 5, 6]);
-  const [user, setUser] = useState<any>(null);
   const { toast } = useToast();
 
   useEffect(() => {
     fetchHorarios();
-    fetchUser();
   }, []);
-
-  const fetchUser = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    setUser(user);
-  };
 
   const fetchHorarios = async () => {
     const { data } = await supabase
@@ -53,7 +46,6 @@ const Horarios = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
 
     // Validate input
     const validation = scheduleSchema.safeParse({
@@ -78,7 +70,6 @@ const Horarios = () => {
       minuto: validation.data.minuto,
       duracion_segundos: validation.data.duracion * 60,
       dias_semana: validation.data.diasSeleccionados,
-      created_by: user.id,
     };
 
     try {
