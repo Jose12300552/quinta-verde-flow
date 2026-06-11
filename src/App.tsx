@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Horarios from "./pages/Horarios";
 import Historial from "./pages/Historial";
+import Sectores from "./pages/Sectores";
 import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
 
@@ -20,8 +21,9 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Layout><Dashboard /></Layout>} />
+          <Route path="/sectores" element={<Layout><Sectores /></Layout>} />
           <Route path="/horarios" element={<Layout><Horarios /></Layout>} />
-          <Route path="/historial" element={<Layout><Historial /></Layout>} />
+          <Route path="/reportes" element={<Layout><Historial /></Layout>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

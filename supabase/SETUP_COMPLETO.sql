@@ -1,142 +1,188 @@
 -- ============================================================
--- SARQUE — SETUP COMPLETO DE BASE DE DATOS
--- Ejecutar este script UNA SOLA VEZ en el SQL Editor de Supabase
--- Funciona tanto si las tablas ya existen como si no
+-- SARQUE — BASE DE DATOS COMPLETA (visualización + cronograma editable)
+-- App de visualización para Parque Ecoturístico Quinta Estación
+-- Ejecutar en SQL Editor de Supabase
 -- ============================================================
 
 -- ============================================================
--- 1. ELIMINAR DEPENDENCIAS DE AUTENTICACIÓN
+-- LIMPIEZA — eliminar tablas anteriores si existen
 -- ============================================================
-
--- Si las tablas ya existen, eliminar restricciones de auth
-ALTER TABLE IF EXISTS public.horarios_riego
-  DROP CONSTRAINT IF EXISTS horarios_riego_created_by_fkey;
-
-ALTER TABLE IF EXISTS public.horarios_riego
-  ALTER COLUMN created_by DROP NOT NULL;
+DROP TABLE IF EXISTS public.historial_riego CASCADE;
+DROP TABLE IF EXISTS public.horarios_riego CASCADE;
+DROP TABLE IF EXISTS public.estado_dispositivo CASCADE;
+DROP TABLE IF EXISTS public.sectores CASCADE;
+DROP TABLE IF EXISTS public.profiles CASCADE;
+DROP TABLE IF EXISTS public.user_roles CASCADE;
 
 -- ============================================================
--- 2. CREAR TABLAS (si no existen)
+-- 1. TABLA: sectores
 -- ============================================================
-
--- Tabla de horarios de riego
-CREATE TABLE IF NOT EXISTS public.horarios_riego (
+CREATE TABLE public.sectores (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  hora INTEGER NOT NULL CHECK (hora >= 0 AND hora < 24),
-  minuto INTEGER NOT NULL CHECK (minuto >= 0 AND minuto < 60),
-  duracion_segundos INTEGER NOT NULL CHECK (duracion_segundos > 0),
-  dias_semana INTEGER[] NOT NULL DEFAULT ARRAY[0,1,2,3,4,5,6],
+  nombre TEXT NOT NULL UNIQUE,
+  duracion_minutos INTEGER NOT NULL CHECK (duracion_minutos > 0 AND duracion_minutos <= 240),
+  color TEXT NOT NULL DEFAULT 'amarillo' CHECK (color IN ('amarillo', 'verde', 'azul')),
+  descripcion TEXT,
   activo BOOLEAN NOT NULL DEFAULT true,
-  created_by UUID,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
--- Tabla de historial de riego
-CREATE TABLE IF NOT EXISTS public.historial_riego (
+-- ============================================================
+-- 2. TABLA: horarios_riego (cronograma semanal)
+-- Cada fila = un riego programado (sector, día, hora)
+-- ============================================================
+CREATE TABLE public.horarios_riego (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  fecha_hora_inicio TIMESTAMPTZ NOT NULL DEFAULT now(),
-  fecha_hora_fin TIMESTAMPTZ,
-  duracion_real INTEGER,
-  tipo TEXT NOT NULL CHECK (tipo IN ('manual', 'automatico')),
-  horario_id UUID REFERENCES public.horarios_riego(id) ON DELETE SET NULL,
-  estado TEXT NOT NULL DEFAULT 'completado' CHECK (estado IN ('completado', 'error', 'cancelado')),
-  observaciones TEXT,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
-);
-
--- Tabla de estado del dispositivo
-CREATE TABLE IF NOT EXISTS public.estado_dispositivo (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  esp32_id TEXT NOT NULL UNIQUE,
-  estado_bomba TEXT NOT NULL DEFAULT 'apagado' CHECK (estado_bomba IN ('encendido', 'apagado')),
-  estado_conexion TEXT NOT NULL DEFAULT 'offline' CHECK (estado_conexion IN ('online', 'offline')),
-  ultimo_ping TIMESTAMPTZ,
-  ip_address TEXT,
-  tiempo_inicio_riego TIMESTAMPTZ,
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+  sector_id UUID NOT NULL REFERENCES public.sectores(id) ON DELETE CASCADE,
+  dia_semana INTEGER NOT NULL CHECK (dia_semana BETWEEN 0 AND 6),
+  hora_inicio INTEGER NOT NULL CHECK (hora_inicio BETWEEN 0 AND 23),
+  minuto_inicio INTEGER NOT NULL DEFAULT 0 CHECK (minuto_inicio BETWEEN 0 AND 59),
+  activo BOOLEAN NOT NULL DEFAULT true,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE (sector_id, dia_semana, hora_inicio, minuto_inicio)
 );
 
 -- ============================================================
--- 3. FORZAR created_by COMO OPCIONAL (por si la tabla ya existía)
+-- 3. FUNCIONES Y TRIGGERS
 -- ============================================================
-ALTER TABLE public.horarios_riego
-  ALTER COLUMN created_by DROP NOT NULL;
-
--- ============================================================
--- 4. FUNCIONES Y TRIGGERS
--- ============================================================
-
 CREATE OR REPLACE FUNCTION public.update_updated_at_column()
-RETURNS TRIGGER
-LANGUAGE plpgsql
-AS $$
+RETURNS TRIGGER LANGUAGE plpgsql AS $$
 BEGIN
   NEW.updated_at = now();
   RETURN NEW;
 END;
 $$;
 
-DROP TRIGGER IF EXISTS update_horarios_updated_at ON public.horarios_riego;
-CREATE TRIGGER update_horarios_updated_at
+CREATE TRIGGER trg_sectores_updated_at
+  BEFORE UPDATE ON public.sectores
+  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+CREATE TRIGGER trg_horarios_updated_at
   BEFORE UPDATE ON public.horarios_riego
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
 
-DROP TRIGGER IF EXISTS update_estado_dispositivo_updated_at ON public.estado_dispositivo;
-CREATE TRIGGER update_estado_dispositivo_updated_at
-  BEFORE UPDATE ON public.estado_dispositivo
-  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
-
 -- ============================================================
--- 5. INSERTAR DISPOSITIVO POR DEFECTO
+-- 4. RLS PÚBLICO (sin autenticación)
 -- ============================================================
-INSERT INTO public.estado_dispositivo (esp32_id, estado_bomba, estado_conexion)
-VALUES ('ESP32_QUINTA_ESTACION', 'apagado', 'offline')
-ON CONFLICT (esp32_id) DO NOTHING;
-
--- ============================================================
--- 6. CONFIGURAR RLS PÚBLICO (sin login)
--- ============================================================
-
--- Habilitar RLS
+ALTER TABLE public.sectores ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.horarios_riego ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.historial_riego ENABLE ROW LEVEL SECURITY;
-ALTER TABLE public.estado_dispositivo ENABLE ROW LEVEL SECURITY;
 
--- Eliminar TODAS las políticas anteriores (de cualquier nombre)
-DO $$
-DECLARE
-  pol record;
-BEGIN
-  FOR pol IN
-    SELECT policyname, tablename
-    FROM pg_policies
-    WHERE schemaname = 'public'
-    AND tablename IN ('horarios_riego', 'historial_riego', 'estado_dispositivo')
-  LOOP
-    EXECUTE format('DROP POLICY IF EXISTS %I ON public.%I', pol.policyname, pol.tablename);
-  END LOOP;
-END $$;
+CREATE POLICY "Acceso publico sectores"
+  ON public.sectores FOR ALL USING (true) WITH CHECK (true);
 
--- Crear políticas públicas (acceso libre sin autenticación)
 CREATE POLICY "Acceso publico horarios"
-  ON public.horarios_riego
-  FOR ALL
-  USING (true)
-  WITH CHECK (true);
-
-CREATE POLICY "Acceso publico historial"
-  ON public.historial_riego
-  FOR ALL
-  USING (true)
-  WITH CHECK (true);
-
-CREATE POLICY "Acceso publico estado"
-  ON public.estado_dispositivo
-  FOR ALL
-  USING (true)
-  WITH CHECK (true);
+  ON public.horarios_riego FOR ALL USING (true) WITH CHECK (true);
 
 -- ============================================================
--- LISTO. Recarga tu app y prueba crear un horario.
+-- 5. DATOS INICIALES — sectores del Parque Quinta Estación
+-- Colores: amarillo=2h, verde=1.5h, azul=1h
+-- ============================================================
+INSERT INTO public.sectores (nombre, duracion_minutos, color) VALUES
+  ('Quinta Avenida', 120, 'amarillo'),
+  ('Casa Club (Salón)', 120, 'amarillo'),
+  ('Camping', 90, 'verde'),
+  ('Mapa Torre (Abajo)', 90, 'verde'),
+  ('Reservorio', 90, 'verde'),
+  ('Curvas (Norte)', 120, 'amarillo'),
+  ('Curvas (Sud)', 120, 'amarillo'),
+  ('Mil y una Flor', 120, 'amarillo'),
+  ('Laguna de Carpas', 90, 'verde'),
+  ('Suculentas', 60, 'azul'),
+  ('Cactáreo', 60, 'azul'),
+  ('Toro', 120, 'amarillo'),
+  ('Laberinto', 90, 'verde'),
+  ('Laguna Cuadrada', 90, 'verde'),
+  ('Huerto', 90, 'verde'),
+  ('Frutales 1', 120, 'amarillo'),
+  ('Frutales 2', 120, 'amarillo'),
+  ('Rotonda', 120, 'amarillo'),
+  ('Mediterráneo Calle', 120, 'amarillo'),
+  ('Mediterráneo Bambú', 120, 'amarillo');
+
+-- ============================================================
+-- 6. DATOS INICIALES — cronograma semanal según foto
+-- dia_semana: 0=Domingo, 1=Lunes, 2=Martes, 3=Miércoles,
+--             4=Jueves, 5=Viernes, 6=Sábado
+-- ============================================================
+
+-- LUNES (dia_semana = 1)
+INSERT INTO public.horarios_riego (sector_id, dia_semana, hora_inicio)
+SELECT id, 1, 8 FROM public.sectores WHERE nombre = 'Quinta Avenida';
+INSERT INTO public.horarios_riego (sector_id, dia_semana, hora_inicio)
+SELECT id, 1, 10 FROM public.sectores WHERE nombre = 'Casa Club (Salón)';
+INSERT INTO public.horarios_riego (sector_id, dia_semana, hora_inicio)
+SELECT id, 1, 12 FROM public.sectores WHERE nombre = 'Camping';
+INSERT INTO public.horarios_riego (sector_id, dia_semana, hora_inicio)
+SELECT id, 1, 14 FROM public.sectores WHERE nombre = 'Mapa Torre (Abajo)';
+INSERT INTO public.horarios_riego (sector_id, dia_semana, hora_inicio)
+SELECT id, 1, 16 FROM public.sectores WHERE nombre = 'Reservorio';
+
+-- MARTES (dia_semana = 2)
+INSERT INTO public.horarios_riego (sector_id, dia_semana, hora_inicio)
+SELECT id, 2, 8 FROM public.sectores WHERE nombre = 'Curvas (Norte)';
+INSERT INTO public.horarios_riego (sector_id, dia_semana, hora_inicio)
+SELECT id, 2, 10 FROM public.sectores WHERE nombre = 'Curvas (Sud)';
+INSERT INTO public.horarios_riego (sector_id, dia_semana, hora_inicio)
+SELECT id, 2, 12 FROM public.sectores WHERE nombre = 'Mil y una Flor';
+INSERT INTO public.horarios_riego (sector_id, dia_semana, hora_inicio)
+SELECT id, 2, 14 FROM public.sectores WHERE nombre = 'Laguna de Carpas';
+INSERT INTO public.horarios_riego (sector_id, dia_semana, hora_inicio)
+SELECT id, 2, 16 FROM public.sectores WHERE nombre = 'Suculentas';
+
+-- MIÉRCOLES (dia_semana = 3)
+INSERT INTO public.horarios_riego (sector_id, dia_semana, hora_inicio)
+SELECT id, 3, 8 FROM public.sectores WHERE nombre = 'Cactáreo';
+INSERT INTO public.horarios_riego (sector_id, dia_semana, hora_inicio)
+SELECT id, 3, 10 FROM public.sectores WHERE nombre = 'Toro';
+INSERT INTO public.horarios_riego (sector_id, dia_semana, hora_inicio)
+SELECT id, 3, 12 FROM public.sectores WHERE nombre = 'Laberinto';
+INSERT INTO public.horarios_riego (sector_id, dia_semana, hora_inicio)
+SELECT id, 3, 14 FROM public.sectores WHERE nombre = 'Laguna Cuadrada';
+INSERT INTO public.horarios_riego (sector_id, dia_semana, hora_inicio)
+SELECT id, 3, 16 FROM public.sectores WHERE nombre = 'Huerto';
+
+-- JUEVES (dia_semana = 4)
+INSERT INTO public.horarios_riego (sector_id, dia_semana, hora_inicio)
+SELECT id, 4, 8 FROM public.sectores WHERE nombre = 'Frutales 1';
+INSERT INTO public.horarios_riego (sector_id, dia_semana, hora_inicio)
+SELECT id, 4, 10 FROM public.sectores WHERE nombre = 'Frutales 2';
+INSERT INTO public.horarios_riego (sector_id, dia_semana, hora_inicio)
+SELECT id, 4, 12 FROM public.sectores WHERE nombre = 'Quinta Avenida';
+INSERT INTO public.horarios_riego (sector_id, dia_semana, hora_inicio)
+SELECT id, 4, 14 FROM public.sectores WHERE nombre = 'Casa Club (Salón)';
+INSERT INTO public.horarios_riego (sector_id, dia_semana, hora_inicio)
+SELECT id, 4, 16 FROM public.sectores WHERE nombre = 'Camping';
+
+-- VIERNES (dia_semana = 5)
+INSERT INTO public.horarios_riego (sector_id, dia_semana, hora_inicio)
+SELECT id, 5, 8 FROM public.sectores WHERE nombre = 'Curvas (Norte)';
+INSERT INTO public.horarios_riego (sector_id, dia_semana, hora_inicio)
+SELECT id, 5, 10 FROM public.sectores WHERE nombre = 'Curvas (Sud)';
+INSERT INTO public.horarios_riego (sector_id, dia_semana, hora_inicio)
+SELECT id, 5, 12 FROM public.sectores WHERE nombre = 'Mil y una Flor';
+INSERT INTO public.horarios_riego (sector_id, dia_semana, hora_inicio)
+SELECT id, 5, 14 FROM public.sectores WHERE nombre = 'Laguna de Carpas';
+INSERT INTO public.horarios_riego (sector_id, dia_semana, hora_inicio)
+SELECT id, 5, 16 FROM public.sectores WHERE nombre = 'Laberinto';
+
+-- SÁBADO (dia_semana = 6)
+INSERT INTO public.horarios_riego (sector_id, dia_semana, hora_inicio)
+SELECT id, 6, 8 FROM public.sectores WHERE nombre = 'Rotonda';
+INSERT INTO public.horarios_riego (sector_id, dia_semana, hora_inicio)
+SELECT id, 6, 10 FROM public.sectores WHERE nombre = 'Huerto';
+INSERT INTO public.horarios_riego (sector_id, dia_semana, hora_inicio)
+SELECT id, 6, 12 FROM public.sectores WHERE nombre = 'Mapa Torre (Abajo)';
+INSERT INTO public.horarios_riego (sector_id, dia_semana, hora_inicio)
+SELECT id, 6, 14 FROM public.sectores WHERE nombre = 'Toro';
+
+-- DOMINGO (dia_semana = 0)
+INSERT INTO public.horarios_riego (sector_id, dia_semana, hora_inicio)
+SELECT id, 0, 8 FROM public.sectores WHERE nombre = 'Mediterráneo Calle';
+INSERT INTO public.horarios_riego (sector_id, dia_semana, hora_inicio)
+SELECT id, 0, 10 FROM public.sectores WHERE nombre = 'Mediterráneo Bambú';
+
+-- ============================================================
+-- LISTO. La app ya puede leer sectores y cronograma.
 -- ============================================================

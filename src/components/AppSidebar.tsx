@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import { Home, Clock, History, Droplets } from "lucide-react";
+import { Home, Clock, BarChart3, Droplets, MapPin } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import {
   Sidebar,
@@ -15,8 +15,9 @@ import {
 
 const menuItems = [
   { title: "Dashboard", url: "/dashboard", icon: Home },
-  { title: "Horarios", url: "/horarios", icon: Clock },
-  { title: "Historial", url: "/historial", icon: History },
+  { title: "Sectores", url: "/sectores", icon: MapPin },
+  { title: "Cronograma", url: "/horarios", icon: Clock },
+  { title: "Reportes", url: "/reportes", icon: BarChart3 },
 ];
 
 export function AppSidebar() {

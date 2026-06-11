@@ -109,7 +109,7 @@ Este vacío confirma la originalidad del proyecto SARQUE en el contexto local y 
 
 El Parque Ecoturístico Quinta Estación, propiedad de la Sra. Eliana Soria Yapur, está ubicado en la ciudad de Cochabamba, Bolivia, y cuenta con una superficie de 5 hectáreas distribuidas en más de 20 sectores de vegetación diferenciada, entre los que se incluyen: Quinta Avenida, Laberinto de Wisterias, Laguna Cuadrada, Laguna de Carpas, Mil y una Flor, Rotonda, Torre de Abajo, Reservorio de Agua, Curvas Cromáticas Norte, Curvas Cromáticas Chirimoyas, Huerto Orgánico, Cactáreo Izquierdo, Cactáreo Derecho, Paseo de Olivos, Jardín de Suculentas, Área Frutales, Mediterráneo, Jardín de Camping, entre otros.
 
-El parque emplea a 6 jardineros y 1 administrador, bajo la dirección de la propietaria. El sistema de riego actual funciona mediante una bomba sumergible Grundfos de 5 HP trifásica instalada en un pozo de 50 metros de profundidad, con un caudal medido de 4.2 litros por segundo y un tanque hidroneumático que opera entre 3.5 y 4.0 bar. La bomba es capaz de mantener activa una sola zona de riego a la vez. El agua se distribuye desde la matriz principal de 2" en PVC a través de cuelleras de 1 ½" hacia 41 puntos de riego históricos distribuidos en el predio —representados en el Plano General a escala 1:250 como puntos de color dorado—, cada uno de los cuales debía ser abierto y cerrado manualmente por el personal en cada ciclo de riego.
+El parque emplea a 6 jardineros y 1 administrador, bajo la dirección de la propietaria. El sistema de riego actual funciona mediante una bomba sumergible Grundfos de 5 HP trifásica instalada en un pozo de 50 metros de profundidad, con un caudal medido de 4 litros por segundo y un tanque hidroneumático que opera entre 3.5 y 4.0 bar. La bomba es capaz de mantener activa una sola zona de riego a la vez. El agua se distribuye desde la matriz principal de 2" en PVC a través de cuelleras de 1 ½" hacia 41 puntos de riego históricos distribuidos en el predio —representados en el Plano General a escala 1:250 como puntos de color dorado—, cada uno de los cuales debía ser abierto y cerrado manualmente por el personal en cada ciclo de riego.
 
 El cronograma de riego semanal es de alta complejidad: asigna entre 3 y 6 sectores por día, con turnos de 2 horas por sector distribuidos en franjas horarias de 8:00 a 20:00, variando los sectores asignados según el día de la semana. Este cronograma se mantenía únicamente en un documento de papel que requería que el jardinero de turno recordara qué sectores corresponden a cada día, a qué hora debe abrir cada llave y a qué hora debe cerrarla.
 
@@ -129,7 +129,7 @@ Mediante observación directa en el parque y entrevista no estructurada a la adm
 
 **Justificación operativa.** Un olvido de apertura o cierre de llave de paso puede ocurrir en cualquiera de los 41 puntos del parque. Con 6 sectores diarios a gestionar en promedio, la probabilidad de error manual en un sistema completamente dependiente de la memoria humana es estadísticamente significativa. SARQUE reemplaza la decisión manual por una programación automática en los 6 controladores K-Rain BL-KR, garantizando que cada electroválvula se abra y cierre en el horario exacto configurado en la app K-RainBL, independientemente de la presencia o atención del jardinero.
 
-**Justificación hídrica.** La bomba sumergible Grundfos de 5 HP extrae agua de un pozo propio a un caudal de 4.2 L/s. Una llave de paso olvidada abierta durante 2 horas fuera de su horario desperdicia aproximadamente 30.240 litros de agua (4.2 L/s × 7.200 s). SARQUE elimina este riesgo al automatizar el cierre de electroválvulas al término exacto del ciclo programado en el controlador BL-KR.
+**Justificación hídrica.** La bomba sumergible Grundfos de 5 HP extrae agua de un pozo propio a un caudal de 4 L/s. Una llave de paso olvidada abierta durante 2 horas fuera de su horario desperdicia aproximadamente 28.800 litros de agua (4 L/s × 7.200 s). SARQUE elimina este riesgo al automatizar el cierre de electroválvulas al término exacto del ciclo programado en el controlador BL-KR.
 
 **Justificación laboral.** Con 30 minutos diarios de desplazamiento mínimo para el manejo de llaves, el personal invierte aproximadamente 182 horas anuales exclusivamente en caminatas de apertura y cierre de llaves. SARQUE libera ese tiempo para tareas de mayor valor: poda, abono, mantenimiento de instalaciones y atención a visitantes del parque.
 
@@ -291,7 +291,7 @@ El volumen de agua entregado en un ciclo de riego puede calcularse mediante la f
 
 > **V = Q × t**
 
-Donde V es el volumen en litros, Q es el caudal en L/s y t es la duración en segundos. En SARQUE, con Q = 4.2 L/s, un ciclo de riego de 2 horas (7.200 s) entrega 30.240 L por sector activo.
+Donde V es el volumen en litros, Q es el caudal en L/s y t es la duración en segundos. En SARQUE, con Q = 4 L/s, un ciclo de riego de 2 horas (7.200 s) entrega 28.800 L por sector activo.
 
 ---
 
@@ -697,7 +697,7 @@ El detalle paso a paso se documenta en el Manual de Usuario SARQUE (documento se
 | ID | Prueba | Condición | Resultado esperado | Resultado obtenido |
 |----|--------|-----------|-------------------|-------------------|
 | PH01 | Presión nominal en matriz | Bomba en operación | 3.5 bar estable | ✓ |
-| PH02 | Caudal por electroválvula | Una estación activa | ~4.2 L/s | ✓ |
+| PH02 | Caudal por electroválvula | Una estación activa | ~4 L/s | ✓ |
 | PH03 | Estanqueidad de cuelleras | Presurización post-instalación | Sin fugas visibles | ✓ |
 | PH04 | Apertura y cierre de electroválvula | Comando manual desde K-RainBL | Apertura/cierre en < 2 s | ✓ |
 | PH05 | Llave de paso manual de respaldo | Cierre con electroválvula activa | Corte total de flujo | ✓ |
@@ -764,7 +764,7 @@ El detalle paso a paso se documenta en el Manual de Usuario SARQUE (documento se
 
 2. La consolidación de los 41 puntos de riego originales en 22 estaciones controladas por 6 controladores K-Rain BL-KR (2 BL-KR2, 3 BL-KR4 y 1 BL-KR6) demostró ser una decisión técnicamente sólida, ya que optimiza el cableado (ningún solenoide a más de 30 metros del controlador correspondiente) y reduce la complejidad de mantenimiento, sin afectar la cobertura hídrica del parque.
 
-3. La elección de la app móvil K-RainBL como interfaz principal de programación de los controladores —en lugar de un puente IoT dedicado— se justifica por la cobertura desigual de señal WiFi en el predio del parque y por la confiabilidad y simplicidad de la solución oficial del fabricante, que no requiere infraestructura adicional ni mantenimiento de firmware.
+3. La elección de la app móvil K-RainBL como interfaz principal de programación de los controladores se justifica por la cobertura desigual de señal WiFi en el predio del parque y por la confiabilidad y simplicidad de la solución oficial del fabricante, que no requiere infraestructura adicional ni hardware complementario.
 
 4. La plataforma web SARQUE, desarrollada en React + TypeScript con backend Supabase, reemplazó exitosamente el cronograma en papel utilizado previamente, centralizando la documentación del sistema: catálogo de sectores, registro de los 6 controladores y sus 22 estaciones asignadas, y planificador visual del cronograma semanal accesible desde cualquier dispositivo.
 
@@ -826,7 +826,7 @@ Este anexo recopila las especificaciones técnicas exactas de la instalación f�
 | Potencia | 5 HP (3.7 kW) |
 | Alimentación eléctrica | Trifásica |
 | Profundidad de instalación | 50 metros |
-| Caudal medido | 4.2 L/s (15.12 m³/h) |
+| Caudal medido | 4 L/s (14.40 m³/h) |
 | Régimen de operación | Automático con presostato |
 | Presión nominal de trabajo | 3.5 bar |
 | Presión máxima de corte | 4.0 bar |
