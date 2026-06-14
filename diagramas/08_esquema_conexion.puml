@@ -1,0 +1,109 @@
+@startuml EsquemaConexion_SARQUE
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam defaultFontSize 13
+skinparam rectangle {
+  BackgroundColor<<pozo>> #BBDEFB
+  BorderColor<<pozo>> #0D47A1
+  BackgroundColor<<bomba>> #E1BEE7
+  BorderColor<<bomba>> #4A148C
+  BackgroundColor<<tanque>> #C5CAE9
+  BorderColor<<tanque>> #1A237E
+  BackgroundColor<<matriz>> #FFE0B2
+  BorderColor<<matriz>> #E65100
+  BackgroundColor<<cuello>> #FFCCBC
+  BorderColor<<cuello>> #BF360C
+  BackgroundColor<<ev>> #C8E6C9
+  BorderColor<<ev>> #1B5E20
+  BackgroundColor<<llave>> #FFCDD2
+  BorderColor<<llave>> #B71C1C
+  BackgroundColor<<ctrl>> #FFF9C4
+  BorderColor<<ctrl>> #F57F17
+  BackgroundColor<<sector>> #DCEDC8
+  BorderColor<<sector>> #33691E
+}
+
+title <b>Esquema de Conexión Hidráulico-Eléctrico — SARQUE</b>\n<i>Parque Ecoturístico Quinta Estación — 5 hectáreas</i>
+
+' === SISTEMA HIDRÁULICO ===
+package "SISTEMA HIDRÁULICO" {
+  rectangle "POZO\nProfundidad: 50 m" as POZO <<pozo>>
+  rectangle "BOMBA GRUNDFOS\nSumergible 5 HP\nTrifásica 380V\nCaudal: 4 L/s" as BOMBA <<bomba>>
+  rectangle "TANQUE\nHIDRONEUMÁTICO\nP nominal: 3.5 bar\nP corte: 4.0 bar" as TANQUE <<tanque>>
+  rectangle "MATRIZ PRINCIPAL\nPVC 2"\nProfundidad enterramiento: 30 cm" as MATRIZ <<matriz>>
+
+  POZO -down-> BOMBA : succión
+  BOMBA -down-> TANQUE : impulsión
+  TANQUE -right-> MATRIZ : distribución
+}
+
+' === DERIVACIÓN HACIA SECTORES ===
+package "RED DE DISTRIBUCIÓN POR SECTORES" {
+  rectangle "Cuellera 1\nPVC 1 ½"\n20-25 cm prof." as CL1 <<cuello>>
+  rectangle "Cuellera 2\nPVC 1 ½"\n20-25 cm prof." as CL2 <<cuello>>
+  rectangle "Cuellera 22\nPVC 1 ½"\n20-25 cm prof." as CL22 <<cuello>>
+
+  MATRIZ --> CL1
+  MATRIZ --> CL2
+  MATRIZ --> CL22
+
+  rectangle "Llave de paso\nmanual (respaldo)\n1 ½" — Bola roja" as LL1 <<llave>>
+  rectangle "ELECTROVÁLVULA #1\nK-Rain BSPT\n9V DC latching" as EV1 <<ev>>
+
+  rectangle "Llave de paso\nmanual #2" as LL2 <<llave>>
+  rectangle "ELECTROVÁLVULA #2\nK-Rain BSPT" as EV2 <<ev>>
+
+  rectangle "Llave de paso\nmanual #22" as LL22 <<llave>>
+  rectangle "ELECTROVÁLVULA #22\nK-Rain BSPT" as EV22 <<ev>>
+
+  CL1 --> LL1
+  LL1 --> EV1
+  CL2 --> LL2
+  LL2 --> EV2
+  CL22 --> LL22
+  LL22 --> EV22
+
+  rectangle "Sector A\nQuinta Avenida" as SA <<sector>>
+  rectangle "Sector B\nCasa Club" as SB <<sector>>
+  rectangle "Sector V\nMediterráneo" as SV <<sector>>
+
+  EV1 --> SA : riego
+  EV2 --> SB : riego
+  EV22 --> SV : riego
+}
+
+' === SISTEMA ELÉCTRICO DE CONTROL ===
+package "SISTEMA ELÉCTRICO DE CONTROL" {
+  rectangle "Controlador\nBL-KR2 #1\n(2 estaciones)\nBatería 9V" as C1 <<ctrl>>
+  rectangle "Controlador\nBL-KR4 #1\n(4 estaciones)\nBatería 9V" as C2 <<ctrl>>
+  rectangle "Controlador\nBL-KR6\n(6 estaciones)\nBatería 9V" as C6 <<ctrl>>
+
+  rectangle "Smartphone\nAdministrador\n(App K-RainBL)" as PHONE #E1F5FE
+
+  PHONE ..> C1 : BLE\n(programación)
+  PHONE ..> C2 : BLE
+  PHONE ..> C6 : BLE
+
+  C1 --> EV1 : Cable 20 AWG monofilar\nPolitubo 3/4"\nLong. máx: 30 m
+  C2 --> EV2
+  C6 --> EV22
+}
+
+note bottom of EV22
+  **Especificaciones del cableado:**
+  • Cable 20 AWG monofilar (1 conductor por solenoide + retorno común)
+  • Politubo polietileno negro 3/4"
+  • Zanja paralela a tubería hidráulica (20-25 cm)
+  • Empalmes impermeabilizados con cinta autovulcanizante
+  • Pulsos DC de polaridad +/- (latching)
+end note
+
+note top of TANQUE
+  **Operación:**
+  • Bomba arranca cuando P < 3.5 bar
+  • Bomba se apaga cuando P > 4.0 bar
+  • Solo 1 electroválvula abierta por vez
+  • Caudal entregado: 4 L/s
+end note
+
+@enduml
