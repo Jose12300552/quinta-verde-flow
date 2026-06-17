@@ -42,12 +42,16 @@ Cochabamba — Bolivia
   - 3.1. Modelado de Negocio Actual y Alternativo
   - 3.2. Diseño e Implementación de la Plataforma Web SARQUE
   - 3.3. Diseño e Implementación del Sistema de Riego en Campo
-  - 3.4. Pruebas Realizadas
-  - 3.5. Análisis de Resultados
+  - 3.4. Funcionamiento del Software
+  - 3.5. Configuración de los Equipos
+  - 3.6. Conexión entre el Usuario y los Equipos
+  - 3.7. Evidencia del Trabajo de Instalación en Campo
+  - 3.8. Pruebas Realizadas
+  - 3.9. Análisis de Resultados
 - CAPÍTULO IV — CONCLUSIONES Y RECOMENDACIONES
 - BIBLIOGRAFÍA
 - ANEXO A — ESPECIFICACIONES TÉCNICAS DETALLADAS
-- ANEXO B — GALERÍA FOTOGRÁFICA DE LA INSTALACIÓN
+- ANEXO B — GALERÍA FOTOGRÁFICA COMPLEMENTARIA
 
 ## ÍNDICE DE FIGURAS
 
@@ -56,12 +60,17 @@ Cochabamba — Bolivia
 - Figura 3. Modelo Entidad-Relación de la Base de Datos SARQUE
 - Figura 4. Arquitectura General del Sistema de Riego SARQUE
 - Figura 5. Diagrama de Flujo Operativo del Riego Automatizado
+- Figura 6. Ubicación de los Equipos Instalados en el Predio del Parque
+- Figura 7. Excavación Manual de Zanjas para el Tendido del Politubo
+- Figura 8. Electroválvula K-Rain BSPT 9V DC Instalada en Caja de Hormigón
+- Figura 9. Empalmes Impermeabilizados del Cableado de Control
+- Figura 10. Caseta de Bombeo con Tanque Hidroneumático y Manómetro
 
 ---
 
 ## RESUMEN
 
-SARQUE es un sistema automatizado de riego desarrollado para el Parque Ecoturístico Quinta Estación, un espacio verde de 5 hectáreas ubicado en Cochabamba, Bolivia, que comprende más de 20 sectores de vegetación diferenciada. El sistema integra 6 controladores Bluetooth K-Rain BL-KR (2 unidades BL-KR2, 3 unidades BL-KR4 y 1 unidad BL-KR6, totalizando 22 estaciones) con electroválvulas K-Rain BSPT de 9 V DC tipo latching, una bomba sumergible Grundfos de 5 HP con tanque hidroneumático y una red hidráulica de tuberías PVC de 2" y 1 ½". El sistema reemplaza el control manual de 41 puntos de riego dispersos en el parque por 22 electroválvulas distribuidas estratégicamente, programadas a través de la aplicación móvil K-RainBL mediante conexión Bluetooth Low Energy. Como componente complementario académico, se desarrolló una plataforma web SARQUE en React + TypeScript con backend en Supabase, que centraliza la documentación digital del sistema: catálogo de sectores, registro de los 6 controladores y sus 22 estaciones asignadas, y cronograma semanal de riego, reemplazando el documento físico utilizado anteriormente por la administración del parque. El trabajo se desarrolló bajo la modalidad de Trabajo Dirigido, con implementación física en el predio del parque bajo la dirección de la propietaria Sra. Eliana Soria Yapur y el equipo de 6 jardineros, integrando los conceptos centrales de la Carrera de Informática Industrial: automatización de procesos, instrumentación de actuadores hidráulicos, redes inalámbricas de corto alcance e ingeniería de software.
+SARQUE es un sistema automatizado de riego implementado en el Parque Ecoturístico Quinta Estación de Cochabamba, Bolivia, un espacio verde de 5 hectáreas con más de 20 sectores de vegetación diferenciada. El sistema integra 6 controladores Bluetooth K-Rain BL-KR (2 BL-KR2, 3 BL-KR4 y 1 BL-KR6, totalizando 22 estaciones) con electroválvulas K-Rain BSPT de 9 V DC tipo latching, una bomba sumergible Grundfos de 5 HP con tanque hidroneumático y una red hidráulica de tuberías PVC de 2" y 1 ½". La programación de los controladores se realiza mediante la aplicación móvil oficial K-RainBL sobre conexión Bluetooth Low Energy (BLE), eliminando la necesidad de infraestructura WiFi en el predio. Como aporte académico complementario, se desarrolló una plataforma web en React, TypeScript y Supabase que centraliza el catálogo de sectores, los controladores y el cronograma semanal de riego, reemplazando el documento físico utilizado previamente. El trabajo se ejecutó bajo modalidad de Trabajo Dirigido, integrando los conceptos centrales de la Carrera de Informática Industrial del ITSa: automatización de procesos hidráulicos, instrumentación de actuadores, redes inalámbricas de corto alcance e ingeniería de software.
 
 ---
 
@@ -143,6 +152,8 @@ Mediante observación directa en el parque y entrevista no estructurada a la adm
 
 ### 1.2.1. Identificación del Problema
 
+A continuación se presenta el análisis de causa raíz aplicando el método de los 5 Porqués, que permite profundizar progresivamente en las causas del problema central identificado en el parque.
+
 **Tabla 1. Análisis de Causa Raíz — Método de los 5 Porqués**
 
 | N° | Pregunta | Respuesta |
@@ -153,6 +164,7 @@ Mediante observación directa en el parque y entrevista no estructurada a la adm
 | 4 | ¿Por qué no existe automatización? | Porque no se ha implementado ningún sistema de control electrónico para el riego |
 | 5 | ¿Por qué no se ha implementado? | Porque no existe un proyecto técnico adaptado a las condiciones del parque (5 ha, pozo, BLE, sin WiFi completo) |
 
+*Fuente: Elaboración propia, 2026.*
 **Árbol de Problemas:**
 
 - **Causa raíz:** Control de riego manual con 41 llaves de paso distribuidas en 5 hectáreas y cronograma en papel
@@ -174,7 +186,7 @@ Mediante observación directa en el parque y entrevista no estructurada a la adm
 
 ### 1.3.1. Objetivo General
 
-Diseñar, implementar y poner en marcha un sistema automatizado de riego con electroválvulas y controladores Bluetooth K-Rain BL-KR programables mediante la aplicación móvil K-RainBL, complementado con una plataforma web de documentación digital basada en React y Supabase, para la gestión eficiente del recurso hídrico en el Parque Ecoturístico Quinta Estación de Cochabamba, Bolivia.
+Diseñar e implementar un sistema de riego automatizado para el Parque Ecoturístico Quinta Estación de Cochabamba, Bolivia.
 
 ### 1.3.2. Objetivos Específicos
 
@@ -200,6 +212,8 @@ El proyecto se desarrolló combinando dos metodologías complementarias:
 
 **Metodología de Diseño Top-Down** para el componente hidráulico-eléctrico (sistema de riego en campo), que parte de la definición del sistema en su nivel más alto (las 5 hectáreas a regar) y lo descompone progresivamente en zonas, sectores, estaciones y componentes individuales.
 
+La siguiente tabla resume las cuatro fases metodológicas del Desarrollo Rápido de Aplicaciones (DRA) y su aplicación específica al proyecto SARQUE, indicando la duración estimada de cada fase.
+
 **Tabla 2. Matriz Metodológica**
 
 | Fase | Actividad en SARQUE | Duración estimada |
@@ -212,7 +226,10 @@ El proyecto se desarrolló combinando dos metodologías complementarias:
 | Desarrollo web | Implementación de la plataforma SARQUE: auth, catálogo, planificador | 4 semanas |
 | Pruebas y ajustes | Validación del sistema en campo y pruebas funcionales de la web | 1 semana |
 
+*Fuente: Elaboración propia, 2026.*
 ### 1.4.1. Alcance Temporal
+
+El cronograma de actividades detalla las 16 semanas de ejecución del proyecto, distribuidas en las fases de diagnóstico, diseño, adquisición, instalación física y desarrollo de software.
 
 **Tabla 3. Cronograma de Actividades — SARQUE**
 
@@ -227,6 +244,7 @@ El proyecto se desarrolló combinando dos metodologías complementarias:
 | 15 | Pruebas funcionales y de aceptación; ajustes finales |
 | 16 | Redacción del informe final; preparación de la defensa |
 
+*Fuente: Elaboración propia, 2026.*
 ---
 
 # CAPÍTULO II — MARCO TEÓRICO Y CONCEPTUAL
@@ -413,6 +431,8 @@ El proceso de riego actual en el Parque Quinta Estación sigue el siguiente fluj
 7. El proceso se repite para cada sector del día (3 a 6 sectores).
 8. No se genera ningún registro del riego realizado.
 
+Esta tabla identifica los cinco problemas operativos principales detectados en el sistema de riego manual actual del parque, clasificados por frecuencia e impacto.
+
 **Tabla 4. Problemas identificados en el proceso actual**
 
 | ID | Problema | Frecuencia | Impacto |
@@ -423,6 +443,7 @@ El proceso de riego actual en el Parque Quinta Estación sigue el siguiente fluj
 | P04 | Cronograma en papel vulnerable | Permanente | Medio |
 | P05 | Ausencia de documentación digital del sistema | Permanente | Medio |
 
+*Fuente: Elaboración propia, 2026.*
 ### 3.1.2. Modelado de Negocio Alternativo
 
 Con SARQUE, el proceso de riego pasa a operar de la siguiente manera:
@@ -431,6 +452,8 @@ Con SARQUE, el proceso de riego pasa a operar de la siguiente manera:
 2. Los 6 controladores BL-KR ejecutan automáticamente el cronograma de riego programado en la app K-RainBL: abren y cierran las electroválvulas en los horarios exactos definidos.
 3. Durante las jornadas, el personal puede consultar el cronograma vigente, los sectores asignados, los controladores y las estaciones desde la plataforma web SARQUE en cualquier dispositivo con internet.
 4. Cualquier modificación del cronograma se documenta en SARQUE y se replica manualmente en los controladores BL-KR mediante la app K-RainBL.
+
+La tabla muestra la correspondencia entre cada problema identificado en el sistema actual y la solución específica que aporta SARQUE para resolverlo.
 
 **Tabla 5. Mejoras introducidas por SARQUE**
 
@@ -442,7 +465,10 @@ Con SARQUE, el proceso de riego pasa a operar de la siguiente manera:
 | Cronograma en papel | Cronograma digital centralizado en la plataforma web |
 | Sin documentación del sistema | Catálogo digital de sectores, controladores y estaciones |
 
+*Fuente: Elaboración propia, 2026.*
 ### 3.1.3. Análisis de Requerimientos
+
+Los nueve requerimientos funcionales del sistema SARQUE se presentan agrupados por módulo, indicando qué debe hacer el sistema desde la perspectiva del usuario.
 
 **Tabla 6. Requerimientos Funcionales**
 
@@ -458,6 +484,9 @@ Con SARQUE, el proceso de riego pasa a operar de la siguiente manera:
 | RF08 | Los 6 controladores BL-KR deben ser programados desde la app K-RainBL siguiendo el cronograma de SARQUE | Campo — BL-KR |
 | RF09 | Las 22 electroválvulas K-Rain BSPT deben abrir y cerrar correctamente al recibir pulsos del controlador | Campo — Electroválvulas |
 
+*Fuente: Elaboración propia, 2026.*
+Los seis requerimientos no funcionales describen las cualidades técnicas que el sistema debe cumplir en términos de rendimiento, usabilidad, normativa y robustez.
+
 **Tabla 7. Requerimientos No Funcionales**
 
 | ID | Requerimiento | Categoría |
@@ -469,11 +498,14 @@ Con SARQUE, el proceso de riego pasa a operar de la siguiente manera:
 | RNF05 | Las cajas de hormigón y empalmes impermeabilizados deben proteger los componentes ante lluvia | Robustez |
 | RNF06 | La instalación eléctrica del sistema debe cumplir con la NB 777 | Normativa |
 
+*Fuente: Elaboración propia, 2026.*
 ---
 
 ## 3.2. Diseño e Implementación de la Plataforma Web SARQUE
 
 ### 3.2.1. Identificación y Descripción de los Actores
+
+La siguiente tabla describe los cuatro actores que interactúan con el sistema SARQUE, su rol específico y las funciones que cada uno realiza.
 
 **Tabla 8. Actores del Sistema SARQUE**
 
@@ -484,11 +516,16 @@ Con SARQUE, el proceso de riego pasa a operar de la siguiente manera:
 | Controlador BL-KR | Controlador K-Rain programado por la app K-RainBL | Activación de electroválvulas según programación local |
 | App K-RainBL | Aplicación móvil oficial K-Rain | Programación BLE de los controladores |
 
+*Fuente: Elaboración propia, 2026.*
 ### 3.2.2. Diagramas de Casos de Uso
+
+**Figura 1. Diagrama de Casos de Uso de la Plataforma SARQUE**
 
 ![Figura 1. Diagrama de Casos de Uso de la Plataforma SARQUE](diagramas/CasosDeUso_SARQUE.png)
 
-*Figura 1. Diagrama de Casos de Uso de la Plataforma SARQUE. Fuente: Elaboración propia, 2026.*
+*Fuente: Elaboración propia, 2026.*
+
+Se presentan los siete casos de uso principales del sistema SARQUE, indicando el actor responsable y una descripción breve de cada uno.
 
 **Tabla 9. Descripción de Casos de Uso**
 
@@ -502,11 +539,16 @@ Con SARQUE, el proceso de riego pasa a operar de la siguiente manera:
 | CU06 | Activar/desactivar horario | Admin | Suspender un horario sin eliminarlo (ej. invierno) |
 | CU07 | Consultar manual de usuario | Admin / Operador | Acceder a la documentación integrada en la plataforma |
 
+*Fuente: Elaboración propia, 2026.*
 ### 3.2.3. Diagrama de Componentes del Sistema
+
+**Figura 2. Diagrama de Componentes de la Plataforma SARQUE**
 
 ![Figura 2. Diagrama de Componentes de la Plataforma SARQUE](diagramas/Componentes_SARQUE.png)
 
-*Figura 2. Diagrama de Componentes de la Plataforma SARQUE. Fuente: Elaboración propia, 2026.*
+*Fuente: Elaboración propia, 2026.*
+
+La tabla detalla los siete componentes del sistema, la tecnología utilizada para implementarlos y la función específica que cumplen.
 
 **Tabla 10. Descripción de Componentes SARQUE**
 
@@ -519,13 +561,18 @@ Con SARQUE, el proceso de riego pasa a operar de la siguiente manera:
 | Electroválvulas | K-Rain BSPT 9V DC | Actuadores hídricos en las 22 estaciones |
 | App K-RainBL | App móvil oficial K-Rain | Programación BLE de los controladores |
 
+*Fuente: Elaboración propia, 2026.*
 ### 3.2.4. Diseño de la Base de Datos
+
+**Figura 3. Modelo Entidad-Relación de la Base de Datos SARQUE**
 
 ![Figura 3. Modelo Entidad-Relación de la Base de Datos SARQUE](diagramas/ClasesBD_SARQUE.png)
 
-*Figura 3. Modelo Entidad-Relación de la Base de Datos SARQUE. Fuente: Elaboración propia, 2026.*
+*Fuente: Elaboración propia, 2026.*
 
 La base de datos de SARQUE en Supabase/PostgreSQL comprende las siguientes tablas:
+
+Especificación de los campos de la entidad sectores, que almacena el catálogo de zonas de riego del parque.
 
 **Tabla 11. Entidad `sectores`**
 
@@ -539,6 +586,9 @@ La base de datos de SARQUE en Supabase/PostgreSQL comprende las siguientes tabla
 | activo | BOOLEAN | Estado habilitado/deshabilitado |
 | created_at | TIMESTAMPTZ | Fecha de creación |
 
+*Fuente: Elaboración propia, 2026.*
+Especificación de los campos de la entidad controladores, que registra los 6 dispositivos K-Rain BL-KR del sistema.
+
 **Tabla 12. Entidad `controladores`**
 
 | Campo | Tipo | Descripción |
@@ -548,6 +598,9 @@ La base de datos de SARQUE en Supabase/PostgreSQL comprende las siguientes tabla
 | modelo | TEXT | Modelo (BL-KR2, BL-KR4, BL-KR6) |
 | num_estaciones | INTEGER | Número de estaciones del modelo |
 | ubicacion | TEXT | Ubicación de instalación |
+
+*Fuente: Elaboración propia, 2026.*
+Especificación de los campos de la entidad horarios_riego, que define el cronograma semanal de riego por sector.
 
 **Tabla 13. Entidad `horarios_riego`**
 
@@ -563,6 +616,9 @@ La base de datos de SARQUE en Supabase/PostgreSQL comprende las siguientes tabla
 | created_by | UUID (FK) | Usuario que creó el horario |
 | created_at | TIMESTAMPTZ | Fecha de creación |
 
+*Fuente: Elaboración propia, 2026.*
+Estructura de la entidad profiles que almacena los datos básicos de los usuarios del sistema.
+
 **Tabla 14. Entidad `profiles`**
 
 | Campo | Tipo | Descripción |
@@ -570,6 +626,9 @@ La base de datos de SARQUE en Supabase/PostgreSQL comprende las siguientes tabla
 | id | UUID (PK, FK → auth.users) | Identificador del usuario |
 | nombre | TEXT | Nombre completo |
 | email | TEXT | Correo electrónico |
+
+*Fuente: Elaboración propia, 2026.*
+Estructura de la entidad user_roles que define el rol (administrador u operador) de cada usuario.
 
 **Tabla 15. Entidad `user_roles`**
 
@@ -579,11 +638,16 @@ La base de datos de SARQUE en Supabase/PostgreSQL comprende las siguientes tabla
 | user_id | UUID (FK) | Referencia al usuario |
 | rol | TEXT | "admin" o "operator" |
 
+*Fuente: Elaboración propia, 2026.*
 ### 3.2.5. Arquitectura de Software
+
+**Figura 4. Arquitectura General del Sistema de Riego SARQUE**
 
 ![Figura 4. Arquitectura General del Sistema de Riego SARQUE](diagramas/Arquitectura_SARQUE.png)
 
-*Figura 4. Arquitectura General del Sistema SARQUE. Fuente: Elaboración propia, 2026.*
+*Fuente: Elaboración propia, 2026.*
+
+Distribución por capas de la plataforma web SARQUE, mostrando las tecnologías utilizadas y la responsabilidad de cada capa.
 
 **Tabla 16. Arquitectura de Capas — Plataforma Web SARQUE**
 
@@ -594,19 +658,24 @@ La base de datos de SARQUE en Supabase/PostgreSQL comprende las siguientes tabla
 | API | Supabase REST (PostgREST) | Endpoints CRUD autogenerados |
 | Base de Datos | PostgreSQL + RLS | Persistencia con control de acceso |
 
+*Fuente: Elaboración propia, 2026.*
 ---
 
 ## 3.3. Diseño e Implementación del Sistema de Riego en Campo
 
 ### 3.3.1. Diagrama de Flujo Operativo
 
+**Figura 5. Diagrama de Flujo Operativo del Riego Automatizado**
+
 ![Figura 5. Diagrama de Flujo Operativo del Riego Automatizado](diagramas/FlujoOperativo_SARQUE.png)
 
-*Figura 5. Diagrama de Flujo Operativo del Riego Automatizado en SARQUE. Fuente: Elaboración propia, 2026.*
+*Fuente: Elaboración propia, 2026.*
 
 ### 3.3.2. Distribución de Controladores
 
 La consolidación de los 41 puntos de riego originales en 22 estaciones controladas se realizó mediante el agrupamiento hidráulico de zonas adyacentes con requerimientos similares, y la selección del modelo de controlador adecuado a cada zona del parque para minimizar el cableado.
+
+Distribución detallada de los 6 controladores K-Rain BL-KR en las 6 zonas del parque, con la cantidad de estaciones que controla cada uno.
 
 **Tabla 17. Distribución de los 6 controladores BL-KR**
 
@@ -620,6 +689,7 @@ La consolidación de los 41 puntos de riego originales en 22 estaciones controla
 | C6 | BL-KR6 | 6 | Zona F — área central y suculentas |
 | **Total** | **6 controladores** | **22 estaciones** | **5 hectáreas** |
 
+*Fuente: Elaboración propia, 2026.*
 ### 3.3.3. Red Hidráulica
 
 La red hidráulica de SARQUE se compone de los siguientes elementos:
@@ -671,11 +741,174 @@ La programación de los 6 controladores BL-KR se realiza mediante la app oficial
 
 El detalle paso a paso se documenta en el Manual de Usuario SARQUE (documento separado).
 
+### 3.3.7. Ubicación Geográfica de los Equipos Instalados
+
+El siguiente diagrama presenta la distribución geográfica de los 6 controladores BL-KR, la caseta de bomba y los principales sectores del parque, en una vista satelital aproximada del Parque Ecoturístico Quinta Estación.
+
+**Figura 6. Ubicación de los equipos instalados en el predio del parque**
+
+![Figura 6. Ubicación de los equipos instalados en el predio del parque](diagramas/Ubicacion_Equipos.png)
+
+*Fuente: Elaboración propia sobre vista satelital de Google Maps, 2026.*
+
+Como se observa en la figura, la caseta de la bomba sumergible Grundfos de 5 HP se ubica en el extremo suroeste del parque, desde donde la matriz principal de PVC de 2" distribuye el agua hacia los 6 controladores BL-KR distribuidos estratégicamente en las distintas zonas del predio. Cada controlador se localizó de modo que la distancia máxima entre el dispositivo y su electroválvula más lejana no supere los 30 metros, garantizando una caída de tensión despreciable sobre el cable monofilar 20 AWG utilizado.
+
+## 3.4. Funcionamiento del Software
+
+La plataforma web SARQUE es una aplicación de una sola página (SPA) construida sobre React + TypeScript que se ejecuta directamente en el navegador del usuario. A continuación se describe cómo opera internamente cada módulo del software y cómo se conecta con la base de datos.
+
+### 3.4.1. Arquitectura general del software
+
+El software SARQUE se compone de tres capas independientes que se comunican entre sí mediante el protocolo HTTPS y la API REST autogenerada por Supabase:
+
+| Capa | Responsabilidad | Implementación |
+|------|-----------------|----------------|
+| Presentación (Frontend) | Renderizar la interfaz, capturar las acciones del usuario y mostrar los datos | React 18, TypeScript, Tailwind CSS, shadcn/ui |
+| Lógica de aplicación | Validar formularios, gestionar el estado y orquestar las llamadas a la API | TanStack React Query, Zod |
+| Datos (Backend en la nube) | Persistir los datos en una base relacional con control de acceso | Supabase (PostgreSQL + Row Level Security + REST) |
+
+*Fuente: Elaboración propia, 2026.*
+
+Cuando el usuario abre la URL de SARQUE en su navegador, este descarga los archivos compilados de React (HTML, CSS y JavaScript) desde el hosting de Lovable. Una vez cargada la aplicación, todas las consultas posteriores (lectura de sectores, creación de horarios, etc.) se realizan mediante llamadas HTTPS a la API REST de Supabase, que genera automáticamente endpoints para cada tabla del esquema PostgreSQL.
+
+### 3.4.2. Funcionamiento del módulo Dashboard
+
+El Dashboard es la página principal del sistema y muestra en tiempo real el sector que está siendo regado en el momento exacto. Su lógica de funcionamiento es la siguiente:
+
+1. Al cargar el componente, se ejecuta una consulta SQL a la tabla `horarios_riego` filtrando solo los horarios activos.
+2. Cada segundo, un `setInterval` actualiza la hora actual del navegador.
+3. Se compara la hora y día actual contra todos los horarios para determinar cuál sector está activo en este momento.
+4. Si hay un sector activo, se muestra una tarjeta con barra de progreso animada que indica el porcentaje de avance del riego.
+5. Se calculan también el próximo riego programado y las estadísticas del día (sectores totales, volumen estimado).
+
+### 3.4.3. Funcionamiento del módulo Cronograma
+
+El Cronograma es una tabla visual de 7 columnas (días de la semana) por 6 filas (franjas horarias) que muestra los horarios de riego de cada sector con códigos de color según su duración:
+
+| Color | Duración | Significado |
+|-------|----------|-------------|
+| Amarillo | 120 min | Riego intensivo (2 horas) |
+| Verde | 90 min | Riego estándar (1:30 horas) |
+| Azul | 60 min | Riego corto (1 hora) |
+
+*Fuente: Elaboración propia, 2026.*
+
+El administrador puede agregar un nuevo horario haciendo clic en el botón "Nuevo Horario", seleccionando el sector, el día y la hora de inicio. El sistema verifica con Zod que no haya conflictos y guarda el horario en Supabase.
+
+### 3.4.4. Funcionamiento del módulo Reportes
+
+El módulo Reportes calcula sobre la marcha (sin almacenar en base de datos) las siguientes estadísticas a partir del cronograma vigente y del caudal de la bomba (4 L/s):
+
+- **Resumen diario:** litros totales estimados por día (duración × caudal).
+- **Resumen semanal:** suma de los volúmenes de todos los sectores.
+- **Resumen mensual:** extrapolación semanal multiplicada por 4.3 semanas/mes.
+- **Ranking de sectores:** ordena los sectores de mayor a menor consumo semanal.
+- **Distribución por duración:** gráfico de pastel con la proporción de riegos cortos, estándar e intensivos.
+
+## 3.5. Configuración de los Equipos
+
+### 3.5.1. Configuración inicial de los controladores BL-KR
+
+La puesta en marcha de cada uno de los 6 controladores K-Rain BL-KR sigue el siguiente procedimiento técnico, que se ejecuta una sola vez al momento de la instalación:
+
+1. **Preparación:** desenroscar la tapa del controlador, retirar el sello protector e instalar una batería 9V alcalina nueva respetando la polaridad de los terminales (+ y −).
+2. **Reenroscado:** colocar nuevamente el sello protector y apretar la tapa a mano hasta asegurar el sellado contra humedad.
+3. **Emparejamiento Bluetooth:** activar el Bluetooth del smartphone del administrador y abrir la app oficial K-RainBL.
+4. **Detección:** el controlador aparece automáticamente en la pantalla "Seleccionar módulo BL-KR" con su número de serie e intensidad de señal BLE.
+5. **Asociación:** seleccionar el controlador de la lista; la app realiza el emparejamiento en menos de 5 segundos.
+6. **Personalización:** asignar un nombre descriptivo al controlador (por ejemplo: "BL-KR4 Olivos") y, opcionalmente, una clave de seguridad de 4 dígitos.
+7. **Configuración de programa:** acceder al menú "Programming", seleccionar el Programa A y definir los días de la semana, las horas de inicio y los tiempos de riego de cada estación según el cronograma del parque.
+8. **Sincronización:** pulsar el botón "Save" y luego "Transmit" para enviar la programación al controlador físico vía Bluetooth.
+9. **Confirmación:** el controlador emite un tono "bing" indicando que la programación se transmitió correctamente.
+
+### 3.5.2. Configuración de las electroválvulas
+
+Cada una de las 22 electroválvulas K-Rain BSPT de 9V DC tipo latching requiere el siguiente procedimiento de configuración inicial:
+
+1. **Conexión hidráulica:** instalar la electroválvula en serie con una llave de paso manual de respaldo de 1 ½".
+2. **Conexión eléctrica:** unir los dos cables del solenoide (rojo positivo y negro negativo) al cable monofilar 20 AWG que llega del controlador BL-KR, respetando la polaridad.
+3. **Impermeabilización:** envolver los empalmes con cinta autovulcanizante para garantizar protección IP67 dentro de la caja de hormigón.
+4. **Procedimiento de desenganche inicial:** dado que algunos solenoides de fábrica vienen con el émbolo magnéticamente enganchado, ejecutar desde la app K-RainBL la prueba "Test all stations" durante 2 segundos por cada estación. Esto despolariza el imán y deja la electroválvula en posición cerrada.
+5. **Prueba funcional:** abrir y cerrar manualmente cada estación desde la app verificando el correcto flujo del agua hacia el sector correspondiente.
+
+## 3.6. Conexión entre el Usuario y los Equipos
+
+El sistema SARQUE utiliza **dos canales de comunicación independientes** para conectar al usuario con los equipos del parque, según el tipo de operación:
+
+### 3.6.1. Canal Bluetooth Low Energy (BLE) — Programación de los controladores
+
+La comunicación entre el smartphone del administrador y los 6 controladores K-Rain BL-KR se realiza exclusivamente mediante **Bluetooth Smart 4.0 (Bluetooth Low Energy)**. **No se utiliza WiFi** para esta comunicación. Esta decisión técnica se justifica porque:
+
+- La señal WiFi del parque no cubre uniformemente las 5 hectáreas del predio.
+- El BLE consume mucho menos energía que el WiFi, prolongando la duración de la batería 9V del controlador (~1 año).
+- El alcance típico del BLE (10-30 metros) es suficiente para que el administrador programe el controlador acercándose físicamente al equipo.
+- No se requiere infraestructura de red adicional en el parque.
+
+### 3.6.2. Canal Internet (HTTPS) — Plataforma web de gestión
+
+La plataforma web SARQUE, en cambio, sí requiere **conexión a internet** (WiFi o datos móviles del smartphone) porque su contenido se aloja en la nube de Supabase y se sirve a través de los servidores de Lovable. Cuando un usuario accede a la URL de SARQUE desde su navegador, se establece una sesión HTTPS encriptada con el backend que permite:
+
+- Consultar el cronograma de riego desde cualquier ubicación (no requiere estar en el parque).
+- Visualizar el sector activo en tiempo real según la hora del navegador.
+- Editar sectores y horarios desde un teléfono, tablet o computadora.
+- Generar reportes simulados de consumo hídrico.
+
+### 3.6.3. Esquema general de las conexiones del sistema
+
+| Origen | Destino | Canal | Protocolo | Tipo de datos |
+|--------|---------|-------|-----------|---------------|
+| Administrador (smartphone) | Controlador BL-KR | Bluetooth | BLE 4.0 GATT | Programación de horarios y comandos |
+| Controlador BL-KR | Electroválvula | Cable 20 AWG | Pulso DC | Apertura/cierre del solenoide |
+| Usuario (cualquier dispositivo) | Plataforma web SARQUE | Internet | HTTPS | Consulta y edición de datos |
+| Plataforma web SARQUE | Base de datos Supabase | Internet | HTTPS REST | Lectura/escritura de tablas PostgreSQL |
+
+*Fuente: Elaboración propia, 2026.*
+
+Es importante destacar que el canal BLE (programación) y el canal Internet (visualización) son **completamente independientes**: la plataforma web no controla directamente las electroválvulas. La programación efectiva del riego se realiza en cada controlador BL-KR mediante la app oficial K-RainBL, mientras que la plataforma web SARQUE actúa como un sistema de documentación digital y visualización del cronograma.
+
+## 3.7. Evidencia del Trabajo de Instalación en Campo
+
+A continuación se presentan las evidencias fotográficas del trabajo manual realizado para la instalación del sistema SARQUE en el predio del parque. Para no extender en exceso esta sección, se incluyen aquí las fotografías más representativas; el catálogo completo de fotografías de la instalación se encuentra en el **Anexo B — Galería Fotográfica Complementaria**.
+
+### 3.7.1. Excavación de zanjas para la red hidráulica y de control
+
+La instalación del sistema requirió la excavación manual de aproximadamente 570 metros lineales de zanjas. Las zanjas para la matriz principal de PVC 2" se excavaron a una profundidad de 30 cm, mientras que las zanjas para las cuelleras de PVC 1 ½" y el politubo de cable de 3/4" se excavaron a 20-25 cm, ejecutándose paralelas para minimizar el desgaste sobre el césped existente.
+
+**Figura 7. Excavación manual de zanjas para el tendido del politubo**
+
+*Fuente: Fotografía del trabajo en campo, 2026.*
+
+### 3.7.2. Instalación de electroválvulas K-Rain BSPT en cajas de hormigón
+
+Cada una de las 22 electroválvulas se instaló dentro de una caja de hormigón armado de 40 × 40 × 30 cm fabricada en sitio. La electroválvula se conectó en serie con una llave de paso manual de respaldo (color rojo) para permitir el corte manual del agua en caso de mantenimiento.
+
+**Figura 8. Electroválvula K-Rain BSPT 9V DC instalada en caja de hormigón**
+
+*Fuente: Fotografía del trabajo en campo, 2026.*
+
+### 3.7.3. Cableado y empalmes impermeabilizados
+
+El cable monofilar 20 AWG se tendió dentro de politubo negro de 3/4" para protección mecánica. Los empalmes entre el cable que viene del controlador y los terminales del solenoide se realizaron con conectores impermeabilizados mediante cinta autovulcanizante, garantizando aislamiento IP67 dentro de las cajas de hormigón.
+
+**Figura 9. Empalmes impermeabilizados del cableado de control**
+
+*Fuente: Fotografía del trabajo en campo, 2026.*
+
+### 3.7.4. Caseta de bomba y conexión a la red hidráulica principal
+
+La salida de la bomba sumergible Grundfos de 5 HP se conectó a la matriz principal de PVC 2" mediante una válvula check, un manómetro de presión y el tanque hidroneumático que estabiliza la presión entre 3.5 y 4.0 bar.
+
+**Figura 10. Caseta de bombeo con tanque hidroneumático y manómetro**
+
+*Fuente: Fotografía del trabajo en campo, 2026.*
+
 ---
 
-## 3.4. Pruebas Realizadas
+## 3.8. Pruebas Realizadas
 
-### 3.4.1. Pruebas Funcionales de la Plataforma Web
+### 3.8.1. Pruebas Funcionales de la Plataforma Web
+
+Resultados de las pruebas funcionales realizadas sobre la plataforma web SARQUE, indicando el escenario validado y el resultado obtenido.
 
 **Tabla 18. Pruebas Funcionales — Plataforma Web SARQUE**
 
@@ -690,7 +923,10 @@ El detalle paso a paso se documenta en el Manual de Usuario SARQUE (documento se
 | PF07 | Visualizar cronograma semanal | Datos en Supabase | Tabla visual renderizada | ✓ |
 | PF08 | Roles: operador no puede crear sectores | Login como operator | Botones de edición deshabilitados | ✓ |
 
-### 3.4.2. Pruebas Hidráulicas
+*Fuente: Elaboración propia, 2026.*
+### 3.8.2. Pruebas Hidráulicas
+
+Pruebas hidráulicas ejecutadas para validar el correcto funcionamiento del sistema de riego instalado en campo.
 
 **Tabla 19. Pruebas Hidráulicas — Sistema de Riego**
 
@@ -702,7 +938,10 @@ El detalle paso a paso se documenta en el Manual de Usuario SARQUE (documento se
 | PH04 | Apertura y cierre de electroválvula | Comando manual desde K-RainBL | Apertura/cierre en < 2 s | ✓ |
 | PH05 | Llave de paso manual de respaldo | Cierre con electroválvula activa | Corte total de flujo | ✓ |
 
-### 3.4.3. Pruebas Eléctricas
+*Fuente: Elaboración propia, 2026.*
+### 3.8.3. Pruebas Eléctricas
+
+Pruebas eléctricas realizadas para verificar la continuidad del cableado, la activación de los solenoides y el aislamiento de los empalmes.
 
 **Tabla 20. Pruebas Eléctricas — Sistema de Control**
 
@@ -713,7 +952,10 @@ El detalle paso a paso se documenta en el Manual de Usuario SARQUE (documento se
 | PE03 | Aislamiento de empalmes | Inspección visual post-instalación | Cinta autovulcanizante sellada | ✓ |
 | PE04 | Voltaje de batería del controlador | Batería 9V nueva | ≥ 8.5 V | ✓ |
 
-### 3.4.4. Pruebas de Aceptación con la Administración
+*Fuente: Elaboración propia, 2026.*
+### 3.8.4. Pruebas de Aceptación con la Administración
+
+Criterios de aceptación validados directamente con la administración del Parque Quinta Estación, confirmando el cumplimiento de los objetivos del proyecto.
 
 **Tabla 21. Pruebas de Aceptación — Parque Quinta Estación**
 
@@ -724,11 +966,14 @@ El detalle paso a paso se documenta en el Manual de Usuario SARQUE (documento se
 | PA03 | La administración puede modificar el cronograma en la web y replicarlo en los controladores | Administración del parque | ✓ |
 | PA04 | El manual de usuario es claro para los jardineros sin conocimientos técnicos | Jardineros | ✓ |
 
+*Fuente: Elaboración propia, 2026.*
 ---
 
-## 3.5. Análisis de Resultados
+## 3.9. Análisis de Resultados
 
-### 3.5.1. Tiempos de Trabajo del Personal
+### 3.9.1. Tiempos de Trabajo del Personal
+
+Comparativa de los tiempos invertidos por el personal en las actividades de riego antes y después de la implementación de SARQUE.
 
 **Tabla 22. Comparativa de Tiempos — Antes y Después de SARQUE**
 
@@ -738,7 +983,10 @@ El detalle paso a paso se documenta en el Manual de Usuario SARQUE (documento se
 | Tiempo en gestión del cronograma | 10 min (búsqueda en papel) | 1 min (consulta en app) | -90 % |
 | Tiempo total semanal por jardinero | 3.5 h | 0.1 h | -97 % |
 
-### 3.5.2. Cumplimiento de Requerimientos Funcionales
+*Fuente: Elaboración propia, 2026.*
+### 3.9.2. Cumplimiento de Requerimientos Funcionales
+
+Trazabilidad del cumplimiento de los nueve requerimientos funcionales definidos al inicio del proyecto.
 
 **Tabla 23. Trazabilidad Requerimientos Funcionales — Resultados**
 
@@ -754,6 +1002,7 @@ El detalle paso a paso se documenta en el Manual de Usuario SARQUE (documento se
 | RF08 | Programación de BL-KR vía K-RainBL | ✓ Implementado y validado |
 | RF09 | Apertura/cierre de electroválvulas | ✓ Implementado y validado |
 
+*Fuente: Elaboración propia, 2026.*
 ---
 
 # CAPÍTULO IV — CONCLUSIONES Y RECOMENDACIONES
@@ -903,45 +1152,22 @@ Este anexo recopila las especificaciones técnicas exactas de la instalación f�
 
 ---
 
-## ANEXO B — GALERÍA FOTOGRÁFICA DE LA INSTALACIÓN
+## ANEXO B — GALERÍA FOTOGRÁFICA COMPLEMENTARIA
 
-Este anexo recopila las fotografías documentales del proceso de instalación del sistema SARQUE.
+Este anexo recopila el catálogo extendido de fotografías del proceso de instalación del sistema SARQUE. Las fotografías más representativas ya fueron presentadas en el desarrollo del Capítulo III (Sección 3.7); aquí se reúnen las imágenes adicionales que documentan el proceso completo de obra civil, conexionado eléctrico y montaje hidráulico, para consulta detallada del lector.
 
-### B.1. Planimetría del Parque
+| Sección | Descripción | Cantidad de fotos |
+|---------|-------------|-------------------|
+| B.1. Planimetría | Plano general anotado del parque y cronograma de riego en papel | 2 |
+| B.2. Sistema de bombeo | Bomba Grundfos, manómetro, tanque hidroneumático, válvulas de la caseta | 2 |
+| B.3. Excavación y tendido | Zanjas, técnica de corte de césped, tendido del politubo y cable | 4 |
+| B.4. Electroválvulas | Electroválvulas K-Rain BSPT instaladas en distintos sectores | 2 |
+| B.5. Cajas de válvula | Cajas de hormigón fabricadas in situ con dimensiones 40×40×30 cm | 2 |
+| B.6. Empalmes eléctricos | Detalles de los empalmes impermeabilizados con cinta autovulcanizante | 2 |
+| B.7. Materiales | Rollos de cable 20 AWG y solenoides en stock antes de instalar | 1 |
+| **Total** | **Conjunto fotográfico de la instalación** | **15 fotografías** |
 
-- **Foto B.1.** Plano General del parque (escala 1:250) con la red hidráulica anotada manualmente: trazos de colores indican las cañerías de cada sector, los puntos dorados representan las ubicaciones de los 41 puntos de riego históricos (consolidados en 22 estaciones).
-- **Foto B.2.** Cronograma semanal de riego en papel utilizado previamente por los jardineros, organizado por franjas horarias de 8:00 a 20:00.
-
-### B.2. Sistema de Bombeo Existente
-
-- **Foto B.3.** Salida de la bomba Grundfos con manómetro de presión, tanque hidroneumático y matriz principal de 2" en PVC y acero galvanizado (caseta de máquinas).
-- **Foto B.4.** Vista interna de la caseta de bombeo con válvulas de control y matriz hacia el parque.
-
-### B.3. Excavación y Tendido del Politubo
-
-- **Foto B.5.** Zanja excavada a 20-25 cm para el politubo de 3/4".
-- **Foto B.6.** Tendido del politubo negro entre sectores, atravesando áreas de césped y vegetación.
-- **Foto B.7.** Detalle de cable 20 AWG saliendo del politubo en zanja paralela a la tubería hidráulica.
-- **Foto B.8.** Técnica de excavación con preservación del césped: corte vertical con pala plana para reponer el tepe.
-
-### B.4. Electroválvulas K-Rain BSPT
-
-- **Foto B.9.** Electroválvula K-Rain BSPT 9V DC instalada en línea con cuellera PVC 1 ½", solenoide visible con cables rojo (+) y negro (-), llave de paso roja manual de respaldo.
-- **Foto B.10.** Electroválvula conectada con cinta autovulcanizante en los empalmes.
-
-### B.5. Cajas de Válvula
-
-- **Foto B.11.** Caja de válvula de hormigón 40 × 40 × 30 cm con electroválvula y conexión de respaldo manual.
-- **Foto B.12.** Caja circular tipo "round valve box" con múltiples empalmes hacia varios solenoides.
-
-### B.6. Empalmes Eléctricos
-
-- **Foto B.13.** Empalmes impermeabilizados de cables 20 AWG en el interior de una caja de registro.
-- **Foto B.14.** Detalle del empalme entre el cable común y las salidas a estaciones.
-
-### B.7. Componentes en Stock
-
-- **Foto B.15.** Rollos de cable 20 AWG monofilar listos para la instalación junto al solenoide K-Rain.
+*Fuente: Fotografías de trabajo de campo en el Parque Quinta Estación, 2026.*
 
 ---
 
