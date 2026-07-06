@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dania Estefany — XV Cumpleaños</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── TOKENS ─── */
+    :root {
+      --ink:       #0A0A0A;
+      --ink-soft:  #6B6B6B;
+      --ground:    #FFFFFF;
+      --accent:    #E63946;
+      --block:     #0A0A0A;
+      --rule:      #D4D4D4;
+
+      --ff-display: 'Bebas Neue', 'Arial Narrow', Arial, sans-serif;
+      --ff-body:    'Libre Baskerville', Georgia, serif;
+    }
+
+    /* ─── RESET ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--ground);
+      color: var(--ink);
+      font-family: var(--ff-body);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ─── FADE-IN SCROLL REVEAL ─── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.72s ease, transform 0.72s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; transition: none; }
+    }
+
+    /* ─── LAYOUT SHELL ─── */
+    .page-grid {
+      display: grid;
+      grid-template-columns: 45vw 1fr;
+      min-height: 100vh;
+    }
+
+    /* ─── LEFT BLOCK ─── */
+    .left-block {
+      background: var(--block);
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 40px 36px;
+      overflow: hidden;
+    }
+
+    .xv-glyph {
+      font-family: var(--ff-display);
+      font-size: clamp(140px, 22vw, 300px);
+      line-height: 0.82;
+      color: var(--accent);
+      letter-spacing: -0.02em;
+      position: absolute;
+      top: 50%;
+      left: -0.04em;
+      transform: translateY(-54%);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .left-label {
+      font-family: var(--ff-display);
+      font-size: 11px;
+      letter-spacing: 0.32em;
+      color: rgba(255,255,255,0.35);
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+
+    /* COUNTDOWN */
+    .countdown-wrap {
+      position: relative;
+      z-index: 2;
+    }
+    .countdown-title {
+      font-family: var(--ff-display);
+      font-size: 10px;
+      letter-spacing: 0.38em;
+      color: rgba(255,255,255,0.4);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .countdown {
+      display: flex;
+      gap: 0;
+      align-items: flex-start;
+    }
+    .cd-unit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 64px;
+    }
+    .cd-num {
+      font-family: var(--ff-display);
+      font-size: clamp(38px, 5vw, 56px);
+      line-height: 1;
+      color: #FFFFFF;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0.01em;
+    }
+    .cd-label {
+      font-family: var(--ff-display);
+      font-size: 9px;
+      letter-spacing: 0.3em;
+      color: rgba(255,255,255,0.3);
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+    .cd-sep {
+      font-family: var(--ff-display);
+      font-size: clamp(38px, 5vw, 56px);
+      line-height: 1;
+      color: rgba(255,255,255,0.2);
+      padding: 0 2px;
+      align-self: flex-start;
+    }
+
+    /* ─── RIGHT CONTENT ─── */
+    .right-content {
+      padding: clamp(40px, 6vw, 80px) clamp(28px, 5vw, 72px);
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    /* eyebrow */
+    .eyebrow {
+      font-family: var(--ff-display);
+      font-size: 10px;
+      letter-spacing: 0.42em;
+      color: var(--ink-soft);
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    /* NAME HEADLINE */
+    .name-block {
+      margin-bottom: 36px;
+    }
+    .name-first {
+      font-family: var(--ff-display);
+      font-size: clamp(52px, 8vw, 100px);
+      line-height: 0.88;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      text-wrap: balance;
+    }
+    .name-last {
+      font-family: var(--ff-display);
+      font-size: clamp(28px, 4vw, 52px);
+      line-height: 1;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-top: 6px;
+    }
+
+    /* rule */
+    .rule {
+      border: none;
+      border-top: 1px solid var(--rule);
+      margin: 32px 0;
+    }
+
+    /* DATE BLOCK */
+    .date-block {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .date-day-num {
+      font-family: var(--ff-display);
+      font-size: clamp(80px, 13vw, 160px);
+      line-height: 0.85;
+      letter-spacing: -0.01em;
+    }
+    .date-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .date-weekday {
+      font-family: var(--ff-display);
+      font-size: clamp(14px, 2vw, 20px);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+    }
+    .date-monthyear {
+      font-family: var(--ff-display);
+      font-size: clamp(22px, 3.5vw, 40px);
+      letter-spacing: 0.1em;
+      line-height: 1;
+    }
+    .date-time {
+      font-family: var(--ff-display);
+      font-size: clamp(14px, 2vw, 18px);
+      letter-spacing: 0.3em;
+      color: var(--ink-soft);
+      text-transform: uppercase;
+    }
+
+    /* DETAILS GRID */
+    .details-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px 24px;
+      margin: 36px 0;
+    }
+    .detail-item {}
+    .detail-label {
+      font-family: var(--ff-display);
+      font-size: 9px;
+      letter-spacing: 0.4em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-bottom: 6px;
+    }
+    .detail-value {
+      font-family: var(--ff-display);
+      font-size: clamp(18px, 2.5vw, 28px);
+      letter-spacing: 0.06em;
+      line-height: 1.1;
+    }
+    .detail-value.large {
+      font-size: clamp(24px, 3.5vw, 40px);
+    }
+
+    /* QUOTE */
+    .quote-block {
+      padding: 28px 0;
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      margin: 8px 0 36px;
+    }
+    .quote-text {
+      font-family: var(--ff-body);
+      font-style: italic;
+      font-size: clamp(15px, 2vw, 19px);
+      line-height: 1.65;
+      color: var(--ink);
+      max-width: 52ch;
+    }
+    .quote-attr {
+      font-family: var(--ff-display);
+      font-size: 9px;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-top: 14px;
+    }
+
+    /* CONFIRM BUTTON */
+    .confirm-section {
+      margin-top: 8px;
+    }
+    .confirm-label {
+      font-family: var(--ff-display);
+      font-size: 9px;
+      letter-spacing: 0.42em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      margin-bottom: 14px;
+    }
+    .confirm-btn {
+      font-family: var(--ff-display);
+      font-size: clamp(18px, 2.5vw, 26px);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+      border-bottom: 1.5px solid var(--ink);
+      padding-bottom: 3px;
+      display: inline-block;
+      transition: color 0.2s ease, border-color 0.2s ease;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+      cursor: pointer;
+    }
+    .confirm-btn:hover,
+    .confirm-btn:focus-visible {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+      outline: none;
+    }
+    .confirm-btn:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 4px;
+    }
+
+    /* FOOTER RULE */
+    .footer-rule {
+      margin-top: 64px;
+      padding-top: 20px;
+      border-top: 1px solid var(--rule);
+      font-family: var(--ff-display);
+      font-size: 9px;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--ink-soft);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    /* ─── MOBILE ─── */
+    @media (max-width: 768px) {
+      .page-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .left-block {
+        position: relative;
+        height: auto;
+        min-height: 54vw;
+        padding: 28px 24px 32px;
+      }
+
+      .xv-glyph {
+        font-size: clamp(100px, 38vw, 200px);
+        top: 50%;
+        left: -0.02em;
+        transform: translateY(-50%);
+      }
+
+      .cd-unit { min-width: 52px; }
+      .cd-num { font-size: clamp(32px, 8vw, 48px); }
+
+      .right-content {
+        padding: 36px 24px;
+      }
+
+      .details-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+
+      .date-day-num { font-size: clamp(72px, 22vw, 120px); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-grid">
+
+  <!-- LEFT: BLACK BLOCK -->
+  <aside class="left-block" aria-label="Countdown">
+    <span class="xv-glyph" aria-hidden="true">XV</span>
+
+    <p class="left-label">Faltan</p>
+
+    <div class="countdown-wrap">
+      <p class="countdown-title">Cuenta regresiva</p>
+      <div class="countdown" id="countdown" role="timer" aria-live="off">
+        <div class="cd-unit">
+          <span class="cd-num" id="cd-days">00</span>
+          <span class="cd-label">Días</span>
+        </div>
+        <span class="cd-sep" aria-hidden="true">:</span>
+        <div class="cd-unit">
+          <span class="cd-num" id="cd-hours">00</span>
+          <span class="cd-label">Hrs</span>
+        </div>
+        <span class="cd-sep" aria-hidden="true">:</span>
+        <div class="cd-unit">
+          <span class="cd-num" id="cd-mins">00</span>
+          <span class="cd-label">Min</span>
+        </div>
+        <span class="cd-sep" aria-hidden="true">:</span>
+        <div class="cd-unit">
+          <span class="cd-num" id="cd-secs">00</span>
+          <span class="cd-label">Seg</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- RIGHT: EDITORIAL CONTENT -->
+  <main class="right-content">
+
+    <p class="eyebrow reveal">Una invitación — 2026</p>
+
+    <div class="name-block reveal">
+      <h1 class="name-first">Dania<br>Estefany</h1>
+      <p class="name-last">Cruz Rodríguez</p>
+    </div>
+
+    <hr class="rule" aria-hidden="true" />
+
+    <!-- DATE -->
+    <section aria-label="Fecha" class="reveal">
+      <div class="date-block">
+        <span class="date-day-num">15</span>
+        <div class="date-meta">
+          <span class="date-weekday">Miércoles</span>
+          <span class="date-monthyear">Julio<br>2026</span>
+        </div>
+      </div>
+      <p class="date-time">7 : 00 PM</p>
+    </section>
+
+    <hr class="rule" aria-hidden="true" />
+
+    <!-- DETAILS -->
+    <div class="details-grid">
+      <div class="detail-item reveal">
+        <p class="detail-label">Lugar</p>
+        <p class="detail-value large">Casa<br>de Dania</p>
+      </div>
+      <div class="detail-item reveal">
+        <p class="detail-label">Dress Code</p>
+        <p class="detail-value">Elegante</p>
+      </div>
+      <div class="detail-item reveal">
+        <p class="detail-label">Edición</p>
+        <p class="detail-value large">XV<br>Años</p>
+      </div>
+      <div class="detail-item reveal">
+        <p class="detail-label">Hora de inicio</p>
+        <p class="detail-value large">19:00</p>
+      </div>
+    </div>
+
+    <!-- QUOTE -->
+    <blockquote class="quote-block reveal">
+      <p class="quote-text">
+        "La vida no es sino una serie de momentos
+        que elegimos hacer inolvidables."
+      </p>
+      <footer class="quote-attr">— Para Dania, con amor</footer>
+    </blockquote>
+
+    <!-- CONFIRM -->
+    <div class="confirm-section reveal">
+      <p class="confirm-label">Confirmar asistencia</p>
+      <a
+        class="confirm-btn"
+        href="https://wa.me/59171446398?text=Hola%20Dania%2C%20confirmo%20mi%20asistencia%20a%20tu%20cumplea%C3%B1os%20%F0%9F%8E%89"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Confirmar asistencia vía WhatsApp +591 71446398"
+      >
+        Confirmar vía WhatsApp
+      </a>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="footer-rule reveal" role="contentinfo">
+      <span>+591 71446398</span>
+      <span>15 · VII · 2026</span>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  /* ─── COUNTDOWN ─── */
+  const TARGET = new Date('2026-07-15T19:00:00').getTime();
+
+  function pad(n) { return String(Math.max(0, n)).padStart(2, '0'); }
+
+  function tick() {
+    const now  = Date.now();
+    const diff = Math.max(0, TARGET - now);
+
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+
+    document.getElementById('cd-days').textContent  = pad(d);
+    document.getElementById('cd-hours').textContent = pad(h);
+    document.getElementById('cd-mins').textContent  = pad(m);
+    document.getElementById('cd-secs').textContent  = pad(s);
+  }
+
+  tick();
+  setInterval(tick, 1000);
+
+  /* ─── SCROLL REVEAL ─── */
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
