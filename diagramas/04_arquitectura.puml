@@ -1,0 +1,83 @@
+@startuml Arquitectura_SARQUE
+skinparam backgroundColor #FFFFFF
+skinparam node {
+  BackgroundColor #E8EAF6
+  BorderColor #283593
+}
+skinparam cloud {
+  BackgroundColor #FFF8E1
+  BorderColor #F57F17
+}
+skinparam shadowing false
+skinparam linetype ortho
+
+title <b>Arquitectura General del Sistema SARQUE</b>\n<i>Parque Ecoturístico Quinta Estación — 5 hectáreas</i>
+
+cloud "Internet / Nube" as Internet {
+  rectangle "**Supabase**\n• PostgreSQL\n• Auth (JWT)\n• REST API\n• Row Level Security" as SB #FFE0B2
+}
+
+node "Caseta de Bomba" as Caseta #C5E1A5 {
+  rectangle "**Bomba Grundfos**\nSumergible 5 HP\nTrifásica\nPozo 50 m\n4.2 L/s @ 3.5 bar\nTanque hidroneumático" as Bomba
+}
+
+node "Sector A\n(BL-KR2)" as S1 #FFCCBC {
+  rectangle "BL-KR2 #1\n2 estaciones" as BK1
+  rectangle "2 EV BSPT 9V" as EV1
+  BK1 --> EV1
+}
+
+node "Sector B\n(BL-KR2)" as S2 #FFCCBC {
+  rectangle "BL-KR2 #2\n2 estaciones" as BK2
+  rectangle "2 EV BSPT 9V" as EV2
+  BK2 --> EV2
+}
+
+node "Sector C\n(BL-KR4)" as S3 #FFCCBC {
+  rectangle "BL-KR4 #1\n4 estaciones" as BK3
+  rectangle "4 EV BSPT 9V" as EV3
+  BK3 --> EV3
+}
+
+node "Sector D\n(BL-KR4)" as S4 #FFCCBC {
+  rectangle "BL-KR4 #2\n4 estaciones" as BK4
+  rectangle "4 EV BSPT 9V" as EV4
+  BK4 --> EV4
+}
+
+node "Sector E\n(BL-KR4)" as S5 #FFCCBC {
+  rectangle "BL-KR4 #3\n4 estaciones" as BK5
+  rectangle "4 EV BSPT 9V" as EV5
+  BK5 --> EV5
+}
+
+node "Sector F\n(BL-KR6)" as S6 #FFCCBC {
+  rectangle "BL-KR6\n6 estaciones" as BK6
+  rectangle "6 EV BSPT 9V" as EV6
+  BK6 --> EV6
+}
+
+actor "Administrador\n(Eliana Soria)" as Admin
+actor "Operadores\n(6 Jardineros)" as Op
+
+rectangle "**App Web SARQUE**\n• Sectores\n• Controladores\n• Cronograma\n• Usuarios" as Web #B3E5FC
+
+rectangle "**App K-RainBL**\n(Smartphone\nadministrador)" as KApp #D1C4E9
+
+Admin --> Web
+Op --> Web
+Web <--> SB : HTTPS/WSS
+
+Admin --> KApp : programa
+KApp ..> BK1 : BLE
+KApp ..> BK2 : BLE
+KApp ..> BK3 : BLE
+KApp ..> BK4 : BLE
+KApp ..> BK5 : BLE
+KApp ..> BK6 : BLE
+
+note bottom of Caseta : **Total: 22 estaciones**\n2×2 + 3×4 + 1×6 = 22\n(optimizado para cable ≤30 m\npor solenoide)
+note right of Web : Documentación digital\ny planificador
+note right of KApp : Control efectivo\n(K-Rain oficial)
+
+@enduml
