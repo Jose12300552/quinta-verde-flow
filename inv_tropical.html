@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¡Cumpleaños de Dania! 🌴</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;600;700;800;900&display=swap');
+
+/* ─── TOKENS ─────────────────────────────────────────── */
+:root {
+  --coral:   #FF6B6B;
+  --amber:   #FFD93D;
+  --jungle:  #6BCB77;
+  --sky:     #4D96FF;
+  --blaze:   #FF922B;
+  --deep:    #1A0A2E;
+  --deep2:   #2D1854;
+  --glass-bg: rgba(255,255,255,0.15);
+  --glass-border: rgba(255,255,255,0.3);
+  --text-on-dark: #FFF8F0;
+  --text-muted: rgba(255,248,240,0.75);
+}
+
+/* ─── RESET & BASE ───────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Nunito', system-ui, sans-serif;
+  background: var(--deep);
+  color: var(--text-on-dark);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ─── CONFETTI ───────────────────────────────────────── */
+#confetti-container {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 999;
+  overflow: hidden;
+}
+
+.confetti-piece {
+  position: absolute;
+  top: -12px;
+  width: 8px;
+  height: 14px;
+  border-radius: 2px;
+  opacity: 0;
+  animation: confetti-fall linear infinite;
+}
+
+@keyframes confetti-fall {
+  0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(110vh) rotate(720deg); opacity: 0.2; }
+}
+
+/* ─── HERO ───────────────────────────────────────────── */
+.hero {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 1.5rem 0;
+  background: linear-gradient(160deg,
+    #FF6B6B 0%,
+    #FF922B 30%,
+    #FFD93D 65%,
+    #FF922B 80%,
+    #FF6B6B 100%
+  );
+  overflow: hidden;
+}
+
+/* Sunset sky overlay */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 110%, #1A0A2E 0%, transparent 65%);
+  pointer-events: none;
+}
+
+/* Floating palm silhouette left */
+.palm-left, .palm-right {
+  position: absolute;
+  bottom: 60px;
+  pointer-events: none;
+}
+.palm-left { left: -10px; }
+.palm-right { right: -10px; transform: scaleX(-1); }
+
+/* ─── FLOATING ANIMATION ─────────────────────────────── */
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(-2deg); }
+  50%       { transform: translateY(-14px) rotate(2deg); }
+}
+@keyframes float-r {
+  0%, 100% { transform: scaleX(-1) translateY(0px) rotate(2deg); }
+  50%       { transform: scaleX(-1) translateY(-14px) rotate(-2deg); }
+}
+@keyframes sway {
+  0%, 100% { transform: rotate(-5deg); }
+  50%       { transform: rotate(5deg); }
+}
+@keyframes bounce-in {
+  0%   { transform: scale(0.3); opacity: 0; }
+  60%  { transform: scale(1.15); }
+  80%  { transform: scale(0.95); }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 20px rgba(255,107,107,0.5), 0 8px 32px rgba(0,0,0,0.3); }
+  50%       { box-shadow: 0 0 40px rgba(255,146,43,0.8), 0 8px 32px rgba(0,0,0,0.3); }
+}
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.palm-left  { animation: float   5s ease-in-out infinite; }
+.palm-right { animation: float-r 5.5s ease-in-out infinite; }
+
+/* ─── DECORATIVE FLOWERS ─────────────────────────────── */
+.deco-flower {
+  position: absolute;
+  pointer-events: none;
+  animation: float 4s ease-in-out infinite;
+}
+
+/* ─── HERO CONTENT ───────────────────────────────────── */
+.hero-eyebrow {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: clamp(0.75rem, 2.5vw, 1rem);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--deep);
+  background: rgba(255,255,255,0.35);
+  border: 1.5px solid rgba(255,255,255,0.5);
+  backdrop-filter: blur(8px);
+  padding: 0.4em 1.2em;
+  border-radius: 100px;
+  margin-bottom: 1.5rem;
+  animation: bounce-in 0.8s cubic-bezier(0.34,1.56,0.64,1) 0.2s both;
+  position: relative; z-index: 2;
+}
+
+.hero-tagline {
+  font-family: 'Pacifico', cursive;
+  font-size: clamp(1.1rem, 4vw, 1.6rem);
+  color: var(--deep);
+  margin-bottom: 0.6rem;
+  animation: bounce-in 0.8s cubic-bezier(0.34,1.56,0.64,1) 0.4s both;
+  position: relative; z-index: 2;
+}
+
+.hero-name {
+  font-family: 'Pacifico', cursive;
+  font-size: clamp(2.4rem, 10vw, 5.5rem);
+  line-height: 1.05;
+  text-wrap: balance;
+  color: #fff;
+  text-shadow:
+    0 4px 0 rgba(26,10,46,0.3),
+    0 8px 24px rgba(26,10,46,0.25);
+  animation: bounce-in 0.9s cubic-bezier(0.34,1.56,0.64,1) 0.6s both;
+  position: relative; z-index: 2;
+  margin-bottom: 0.5rem;
+}
+
+.hero-subtitle {
+  font-family: 'Pacifico', cursive;
+  font-size: clamp(1.3rem, 5vw, 2.6rem);
+  color: var(--deep);
+  text-shadow: 0 2px 0 rgba(255,255,255,0.2);
+  animation: bounce-in 0.9s cubic-bezier(0.34,1.56,0.64,1) 0.8s both;
+  position: relative; z-index: 2;
+  margin-bottom: 2rem;
+}
+
+.hero-emojis {
+  font-size: clamp(1.8rem, 6vw, 2.8rem);
+  letter-spacing: 0.15em;
+  animation: bounce-in 0.9s cubic-bezier(0.34,1.56,0.64,1) 1s both;
+  position: relative; z-index: 2;
+  margin-bottom: 3rem;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+}
+
+/* ─── WAVE DIVIDER ───────────────────────────────────── */
+.wave-bottom {
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+  margin-top: auto;
+  position: relative; z-index: 2;
+}
+.wave-top {
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+  transform: rotate(180deg);
+}
+.wave-bottom svg, .wave-top svg { display: block; width: 100%; }
+
+/* ─── MAIN BODY ──────────────────────────────────────── */
+.body-section {
+  background: linear-gradient(180deg, var(--deep) 0%, var(--deep2) 100%);
+  padding: 3rem 1.5rem 1rem;
+  position: relative;
+}
+
+/* ─── SECTION LABEL ──────────────────────────────────── */
+.section-label {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 900;
+  font-size: 0.7rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--amber);
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.section-title {
+  font-family: 'Pacifico', cursive;
+  font-size: clamp(1.6rem, 5vw, 2.5rem);
+  text-align: center;
+  color: var(--text-on-dark);
+  text-wrap: balance;
+  margin-bottom: 2rem;
+}
+
+/* ─── COUNTDOWN ──────────────────────────────────────── */
+.countdown-section {
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+}
+
+.countdown-grid {
+  display: flex;
+  justify-content: center;
+  gap: clamp(0.6rem, 2.5vw, 1.2rem);
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+
+/* Azulejo tile style */
+.tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tile-digit {
+  font-family: 'Pacifico', cursive;
+  font-size: clamp(2.2rem, 8vw, 3.8rem);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  width: clamp(72px, 20vw, 108px);
+  height: clamp(72px, 20vw, 108px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  border: 3px solid rgba(255,255,255,0.25);
+  box-shadow:
+    inset 0 2px 4px rgba(255,255,255,0.2),
+    inset 0 -3px 6px rgba(0,0,0,0.25),
+    0 8px 24px rgba(0,0,0,0.35);
+  color: var(--deep);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Glazed ceramic sheen */
+.tile-digit::after {
+  content: '';
+  position: absolute;
+  top: 6px; left: 8px;
+  width: 40%; height: 30%;
+  background: rgba(255,255,255,0.35);
+  border-radius: 50%;
+  filter: blur(4px);
+}
+
+.tile-d { background: linear-gradient(135deg, var(--coral), #ff4a4a); }
+.tile-h { background: linear-gradient(135deg, var(--blaze), #e07020); }
+.tile-m { background: linear-gradient(135deg, var(--jungle), #4aaa5a); }
+.tile-s { background: linear-gradient(135deg, var(--sky),   #2a76df); }
+
+.tile-label {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* ─── DETAIL CARDS ───────────────────────────────────── */
+.cards-section {
+  padding: 1rem 1.5rem 2rem;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+@media (min-width: 480px) {
+  .cards-grid { grid-template-columns: 1fr 1fr; }
+}
+
+.card {
+  background: var(--glass-bg);
+  border: 1.5px solid var(--glass-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 20px;
+  padding: 1.4rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+}
+
+.card-icon {
+  font-size: 2rem;
+  line-height: 1;
+  filter: drop-shadow(0 3px 6px rgba(0,0,0,0.2));
+}
+
+.card-eyebrow {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 900;
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-top: 0.2rem;
+}
+
+.card-value {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: clamp(0.95rem, 3vw, 1.1rem);
+  color: var(--text-on-dark);
+  line-height: 1.3;
+}
+
+.card-sub {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 600;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* ─── DRESS CODE ─────────────────────────────────────── */
+.dress-section {
+  padding: 1rem 1.5rem 2rem;
+  text-align: center;
+}
+
+.dress-strip {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin: 1rem 0;
+}
+
+.color-chip {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 3px solid rgba(255,255,255,0.3);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  transition: transform 0.2s;
+}
+.color-chip:hover { transform: scale(1.15); }
+
+.dress-note {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  max-width: 340px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ─── CTA / RSVP ─────────────────────────────────────── */
+.cta-section {
+  padding: 1.5rem 1.5rem 3rem;
+  text-align: center;
+}
+
+.cta-tagline {
+  font-family: 'Pacifico', cursive;
+  font-size: clamp(1.1rem, 4vw, 1.6rem);
+  color: var(--amber);
+  margin-bottom: 0.5rem;
+}
+
+.cta-body {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin-bottom: 1.8rem;
+  line-height: 1.6;
+}
+
+@keyframes bounce-btn {
+  0%, 100% { transform: translateY(0) scale(1); }
+  30%       { transform: translateY(-8px) scale(1.04); }
+  60%       { transform: translateY(-3px) scale(1.01); }
+}
+
+.btn-confirm {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 900;
+  font-size: 1.05rem;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  color: #fff;
+  background: linear-gradient(135deg, #25D366, #128C7E);
+  border: none;
+  border-radius: 100px;
+  padding: 0.9em 2.2em;
+  cursor: pointer;
+  animation: bounce-btn 2.5s ease-in-out infinite, pulse-glow 3s ease-in-out infinite;
+  box-shadow: 0 8px 32px rgba(37,211,102,0.4), 0 3px 8px rgba(0,0,0,0.3);
+  transition: filter 0.15s;
+}
+
+.btn-confirm:hover {
+  filter: brightness(1.1);
+}
+
+.btn-icon {
+  font-size: 1.3em;
+  line-height: 1;
+}
+
+/* ─── FOOTER ─────────────────────────────────────────── */
+.footer-wave-section {
+  background: linear-gradient(180deg, var(--deep2) 0%, var(--deep) 100%);
+}
+
+.footer {
+  background: var(--deep);
+  text-align: center;
+  padding: 1.5rem 1.5rem 2.5rem;
+}
+
+.footer-name {
+  font-family: 'Pacifico', cursive;
+  font-size: 1.3rem;
+  color: var(--coral);
+  margin-bottom: 0.3rem;
+}
+
+.footer-note {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+
+/* ─── HIBISCUS DIVIDER ───────────────────────────────── */
+.hibiscus-row {
+  display: flex;
+  justify-content: center;
+  gap: 1.2rem;
+  padding: 1rem 0;
+  font-size: 1.6rem;
+  animation: float 3s ease-in-out infinite;
+}
+
+/* ─── REDUCED MOTION ─────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- CONFETTI -->
+<div id="confetti-container"></div>
+
+<!-- ══════════════════════════════════════════════════════
+     HERO
+══════════════════════════════════════════════════════ -->
+<section class="hero">
+
+  <!-- Decorative: palm left -->
+  <div class="palm-left">
+    <svg width="90" height="220" viewBox="0 0 90 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- trunk -->
+      <path d="M52 220 C50 180 48 140 44 100 C42 80 38 60 36 40" stroke="#1A0A2E" stroke-width="7" stroke-linecap="round" fill="none" opacity="0.4"/>
+      <path d="M52 220 C50 180 48 140 44 100 C42 80 38 60 36 40" stroke="#6BCB77" stroke-width="4" stroke-linecap="round" fill="none"/>
+      <!-- leaf 1 -->
+      <path d="M36 40 C10 20 -10 35 5 55 C18 70 36 40 36 40Z" fill="#6BCB77" opacity="0.9"/>
+      <!-- leaf 2 -->
+      <path d="M36 40 C60 15 80 28 68 50 C58 66 36 40 36 40Z" fill="#4aaa5a" opacity="0.9"/>
+      <!-- leaf 3 -->
+      <path d="M36 40 C20 10 30 -5 50 8 C64 18 36 40 36 40Z" fill="#6BCB77" opacity="0.7"/>
+      <!-- coconuts -->
+      <circle cx="38" cy="46" r="6" fill="#FF922B" opacity="0.9"/>
+      <circle cx="46" cy="52" r="5" fill="#FFD93D" opacity="0.8"/>
+    </svg>
+  </div>
+
+  <!-- Decorative: palm right -->
+  <div class="palm-right">
+    <svg width="90" height="220" viewBox="0 0 90 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M52 220 C50 180 48 140 44 100 C42 80 38 60 36 40" stroke="#1A0A2E" stroke-width="7" stroke-linecap="round" fill="none" opacity="0.4"/>
+      <path d="M52 220 C50 180 48 140 44 100 C42 80 38 60 36 40" stroke="#6BCB77" stroke-width="4" stroke-linecap="round" fill="none"/>
+      <path d="M36 40 C10 20 -10 35 5 55 C18 70 36 40 36 40Z" fill="#6BCB77" opacity="0.9"/>
+      <path d="M36 40 C60 15 80 28 68 50 C58 66 36 40 36 40Z" fill="#4aaa5a" opacity="0.9"/>
+      <path d="M36 40 C20 10 30 -5 50 8 C64 18 36 40 36 40Z" fill="#6BCB77" opacity="0.7"/>
+      <circle cx="38" cy="46" r="6" fill="#FF922B" opacity="0.9"/>
+      <circle cx="46" cy="52" r="5" fill="#FFD93D" opacity="0.8"/>
+    </svg>
+  </div>
+
+  <!-- Decorative hibiscus top-right -->
+  <div class="deco-flower" style="top:5%; right:8%; animation-delay:-1s;">
+    <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
+      <ellipse cx="30" cy="12" rx="7" ry="12" fill="#FF6B6B" opacity="0.85" transform="rotate(0,30,30)"/>
+      <ellipse cx="30" cy="12" rx="7" ry="12" fill="#FF6B6B" opacity="0.85" transform="rotate(72,30,30)"/>
+      <ellipse cx="30" cy="12" rx="7" ry="12" fill="#FF922B" opacity="0.85" transform="rotate(144,30,30)"/>
+      <ellipse cx="30" cy="12" rx="7" ry="12" fill="#FF6B6B" opacity="0.85" transform="rotate(216,30,30)"/>
+      <ellipse cx="30" cy="12" rx="7" ry="12" fill="#FF922B" opacity="0.85" transform="rotate(288,30,30)"/>
+      <circle cx="30" cy="30" r="8" fill="#FFD93D"/>
+      <circle cx="30" cy="30" r="4" fill="#FF922B"/>
+    </svg>
+  </div>
+
+  <!-- Decorative hibiscus top-left -->
+  <div class="deco-flower" style="top:8%; left:6%; animation-delay:-2.5s; animation-duration:5s;">
+    <svg width="48" height="48" viewBox="0 0 60 60" fill="none">
+      <ellipse cx="30" cy="12" rx="7" ry="12" fill="#FFD93D" opacity="0.85" transform="rotate(0,30,30)"/>
+      <ellipse cx="30" cy="12" rx="7" ry="12" fill="#FFD93D" opacity="0.85" transform="rotate(72,30,30)"/>
+      <ellipse cx="30" cy="12" rx="7" ry="12" fill="#FF922B" opacity="0.85" transform="rotate(144,30,30)"/>
+      <ellipse cx="30" cy="12" rx="7" ry="12" fill="#FFD93D" opacity="0.85" transform="rotate(216,30,30)"/>
+      <ellipse cx="30" cy="12" rx="7" ry="12" fill="#FF922B" opacity="0.85" transform="rotate(288,30,30)"/>
+      <circle cx="30" cy="30" r="8" fill="#FF6B6B"/>
+      <circle cx="30" cy="30" r="4" fill="#FF922B"/>
+    </svg>
+  </div>
+
+  <!-- Hero copy -->
+  <div class="hero-eyebrow">¡Estás invitad@ a la fiesta más hot del año!</div>
+  <p class="hero-tagline">Celebrando a</p>
+  <h1 class="hero-name">Dania Estefany<br>Cruz Rodríguez</h1>
+  <p class="hero-subtitle">¡Cumple un año más! 🎂</p>
+  <div class="hero-emojis">🌴 &nbsp;🌺 &nbsp;🦩 &nbsp;🍹 &nbsp;🎉</div>
+
+  <!-- Wave bottom of hero -->
+  <div class="wave-bottom">
+    <svg viewBox="0 0 1440 80" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <path d="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,80 L0,80 Z" fill="#1A0A2E"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     COUNTDOWN
+══════════════════════════════════════════════════════ -->
+<section class="body-section countdown-section">
+  <p class="section-label">Tiempo para la fiesta</p>
+  <h2 class="section-title">¡La cuenta regresiva ha comenzado!</h2>
+
+  <div class="countdown-grid">
+    <div class="tile">
+      <div class="tile-digit tile-d" id="cd-days">00</div>
+      <span class="tile-label">Días</span>
+    </div>
+    <div class="tile">
+      <div class="tile-digit tile-h" id="cd-hours">00</div>
+      <span class="tile-label">Horas</span>
+    </div>
+    <div class="tile">
+      <div class="tile-digit tile-m" id="cd-mins">00</div>
+      <span class="tile-label">Minutos</span>
+    </div>
+    <div class="tile">
+      <div class="tile-digit tile-s" id="cd-secs">00</div>
+      <span class="tile-label">Segundos</span>
+    </div>
+  </div>
+
+  <div id="cd-done" style="display:none; margin-top:1.5rem;">
+    <p style="font-family:'Pacifico',cursive; font-size:1.8rem; color:var(--amber);">¡¡La fiesta ya comenzó!! 🎉🥳🎊</p>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     EVENT DETAILS
+══════════════════════════════════════════════════════ -->
+<section class="body-section cards-section" style="padding-top:0;">
+  <p class="section-label">Los detalles</p>
+  <h2 class="section-title">¿Cuándo y dónde? 📍</h2>
+
+  <div class="cards-grid">
+    <div class="card">
+      <div class="card-icon">📅</div>
+      <div class="card-eyebrow">Fecha</div>
+      <div class="card-value">Miércoles<br>15 de julio del 2026</div>
+      <div class="card-sub">¡Marca tu calendario ya!</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🕖</div>
+      <div class="card-eyebrow">Hora</div>
+      <div class="card-value">7:00 PM</div>
+      <div class="card-sub">¡No llegues tarde,<br>la fiesta empieza puntual!</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🏡</div>
+      <div class="card-eyebrow">Lugar</div>
+      <div class="card-value">Casa de Dania</div>
+      <div class="card-sub">¡Pide la dirección<br>por WhatsApp!</div>
+    </div>
+    <div class="card">
+      <div class="card-icon">🎂</div>
+      <div class="card-eyebrow">La festejada</div>
+      <div class="card-value">Dania Estefany<br>Cruz Rodríguez</div>
+      <div class="card-sub">¡Un año más de ser<br>increíble! ✨</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     DRESS CODE / VIBE
+══════════════════════════════════════════════════════ -->
+<section class="body-section dress-section">
+  <p class="section-label">El ambiente</p>
+  <h2 class="section-title">¡Viste tropical! 🌺</h2>
+
+  <div class="dress-strip">
+    <div class="color-chip" style="background:#FF6B6B;" title="Coral"></div>
+    <div class="color-chip" style="background:#FFD93D;" title="Amarillo tropical"></div>
+    <div class="color-chip" style="background:#6BCB77;" title="Verde selva"></div>
+    <div class="color-chip" style="background:#4D96FF;" title="Azul cielo"></div>
+    <div class="color-chip" style="background:#FF922B;" title="Naranja atardecer"></div>
+    <div class="color-chip" style="background:#FF922B;" title="Rosa flamenco" style="background:#FF85C2;"></div>
+  </div>
+
+  <p class="dress-note">
+    Colores vivos, flores, estampados tropicales — ¡todo vale! Ven lista/o para bailar y disfrutar la noche más tropical del año. 🌴🍹
+  </p>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     WAVE TRANSITION
+══════════════════════════════════════════════════════ -->
+<div class="footer-wave-section">
+  <div class="wave-top">
+    <svg viewBox="0 0 1440 60" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <path d="M0,30 C240,60 480,0 720,30 C960,60 1200,0 1440,30 L1440,60 L0,60 Z" fill="#2D1854"/>
+    </svg>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     RSVP / CTA
+══════════════════════════════════════════════════════ -->
+<section class="body-section cta-section" style="background: linear-gradient(180deg, #2D1854, #1A0A2E);">
+  <div class="hibiscus-row">🌺 🌸 🌺 🌸 🌺</div>
+
+  <p class="section-label">Confirmación</p>
+  <p class="cta-tagline">¡No te puedes perder esto!</p>
+  <p class="cta-body">
+    Confirma tu asistencia antes del <strong style="color:var(--coral);">12 de julio</strong>.<br>
+    ¡Te esperamos con los brazos abiertos y las bebidas listas! 🍹
+  </p>
+
+  <a
+    class="btn-confirm"
+    href="https://wa.me/59171446398?text=¡Hola%20Dania!%20Confirmo%20mi%20asistencia%20a%20tu%20cumpleaños%20el%2015%20de%20julio%20🎉🌴"
+    target="_blank"
+    rel="noopener"
+  >
+    <span class="btn-icon">💬</span>
+    ¡Confirmar asistencia!
+  </a>
+
+  <p style="margin-top:1rem; font-family:'Nunito',sans-serif; font-weight:600; font-size:0.85rem; color:var(--text-muted);">
+    WhatsApp: +591 71446398
+  </p>
+
+  <div class="hibiscus-row" style="margin-top:2rem;">🦩 🌴 🍍 🌴 🦩</div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════════════ -->
+<footer class="footer">
+  <p class="footer-name">Dania Estefany Cruz Rodríguez</p>
+  <p class="footer-note">¡Miércoles 15 de julio, 2026 · 7:00 PM · Casa de Dania!</p>
+</footer>
+
+<!-- ══════════════════════════════════════════════════════
+     SCRIPTS
+══════════════════════════════════════════════════════ -->
+<script>
+/* ── CONFETTI ── */
+(function() {
+  const colors = ['#FF6B6B','#FFD93D','#6BCB77','#4D96FF','#FF922B','#FF85C2','#fff'];
+  const container = document.getElementById('confetti-container');
+  const COUNT = 55;
+
+  for (let i = 0; i < COUNT; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const left = Math.random() * 100;
+    const delay = Math.random() * 8;
+    const dur = 5 + Math.random() * 7;
+    const size = 6 + Math.random() * 8;
+    const rot = Math.random() > 0.5 ? 'skewX(10deg)' : 'skewY(10deg)';
+    el.style.cssText = `
+      left: ${left}vw;
+      width: ${size}px;
+      height: ${size * 1.6}px;
+      background: ${color};
+      animation-duration: ${dur}s;
+      animation-delay: ${delay}s;
+      transform: ${rot};
+      border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+    `;
+    container.appendChild(el);
+  }
+})();
+
+/* ── COUNTDOWN ── */
+(function() {
+  const target = new Date('2026-07-15T19:00:00').getTime();
+  const dEl = document.getElementById('cd-days');
+  const hEl = document.getElementById('cd-hours');
+  const mEl = document.getElementById('cd-mins');
+  const sEl = document.getElementById('cd-secs');
+  const doneEl = document.getElementById('cd-done');
+  const grid = document.querySelector('.countdown-grid');
+
+  function pad(n) { return String(n).padStart(2, '0'); }
+
+  function tick() {
+    const now = Date.now();
+    const diff = target - now;
+    if (diff <= 0) {
+      if (grid) grid.style.display = 'none';
+      doneEl.style.display = 'block';
+      return;
+    }
+    const days  = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const mins  = Math.floor((diff % 3600000) / 60000);
+    const secs  = Math.floor((diff % 60000) / 1000);
+    dEl.textContent = pad(days);
+    hEl.textContent = pad(hours);
+    mEl.textContent = pad(mins);
+    sEl.textContent = pad(secs);
+  }
+
+  tick();
+  setInterval(tick, 1000);
+})();
+</script>
+</body>
+</html>
