@@ -1,0 +1,115 @@
+@startuml DiagramaClases_SARQUE
+skinparam backgroundColor #FFFFFF
+skinparam class {
+  BackgroundColor #E1F5FE
+  BorderColor #01579B
+  ArrowColor #424242
+  AttributeFontSize 12
+  FontSize 13
+}
+skinparam shadowing false
+skinparam padding 6
+hide circle
+
+title <b>Diagrama de Clases — Plataforma SARQUE</b>\n<i>Modelo orientado a objetos de la aplicación web</i>
+
+class Sector {
+  - id : UUID
+  - nombre : String
+  - duracion_minutos : int
+  - color : String
+  - descripcion : String
+  - activo : boolean
+  - created_at : DateTime
+  --
+  + crear() : void
+  + editar() : void
+  + eliminar() : void
+  + listarTodos() : List<Sector>
+  + asignarHorario(h : Horario) : void
+  + calcularVolumenAgua(caudal : float) : float
+}
+
+class HorarioRiego {
+  - id : UUID
+  - sector_id : UUID
+  - dia_semana : int
+  - hora_inicio : int
+  - minuto_inicio : int
+  - activo : boolean
+  - created_at : DateTime
+  --
+  + crear() : void
+  + editar() : void
+  + eliminar() : void
+  + activar() : void
+  + desactivar() : void
+  + obtenerHorariosPorDia(dia : int) : List<HorarioRiego>
+}
+
+class Cronograma {
+  - dias : Map<int, List<HorarioRiego>>
+  --
+  + agregarHorario(h : HorarioRiego) : void
+  + quitarHorario(h : HorarioRiego) : void
+  + obtenerSemana() : Map<int, List<HorarioRiego>>
+  + obtenerHoy() : List<HorarioRiego>
+  + obtenerSectorActivo(hora : Time) : Sector
+  + obtenerProximoRiego() : HorarioRiego
+}
+
+class Reporte {
+  - fecha_inicio : Date
+  - fecha_fin : Date
+  - caudal : float
+  --
+  + calcularConsumoDiario() : float
+  + calcularConsumoSemanal() : float
+  + calcularConsumoMensual() : float
+  + obtenerRankingSectores() : List<Sector>
+  + exportar(formato : String) : File
+}
+
+class ControladorBLKR {
+  - id : UUID
+  - nombre : String
+  - modelo : String
+  - num_estaciones : int
+  - ubicacion : String
+  --
+  + listarEstaciones() : List<int>
+  + asignarSector(estacion : int, s : Sector) : void
+  + verificarBateria() : int
+}
+
+class Bomba {
+  - marca : String
+  - potencia_hp : float
+  - caudal_lps : float
+  - presion_nominal : float
+  - profundidad_pozo : int
+  --
+  + obtenerCaudal() : float
+  + calcularVolumen(tiempo_seg : int) : float
+}
+
+class Usuario {
+  - id : UUID
+  - nombre : String
+  - email : String
+  - rol : String
+  --
+  + login(email, pass) : boolean
+  + tieneRol(r : String) : boolean
+}
+
+' Relaciones
+Sector "1" -- "0..*" HorarioRiego : tiene >
+ControladorBLKR "1" -- "1..*" Sector : controla >
+Cronograma "1" o-- "*" HorarioRiego : agrupa
+Reporte ..> Sector : analiza
+Reporte ..> Bomba : usa caudal
+Reporte ..> Cronograma : consulta
+Usuario ..> Cronograma : gestiona
+
+@enduml

@@ -1,169 +1,285 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { History, Droplets, TrendingUp } from "lucide-react";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
+import { Droplets, Calendar, TrendingUp, Trophy } from "lucide-react";
+
+const DIAS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+const CAUDAL_LPS = 4;
+
+interface Sector {
+  id: string;
+  nombre: string;
+  duracion_minutos: number;
+  color: string;
+}
+
+interface Horario {
+  id: string;
+  sector_id: string;
+  dia_semana: number;
+  hora_inicio: number;
+  minuto_inicio: number;
+  activo: boolean;
+  sectores: Sector;
+}
 
 const Historial = () => {
-  const [historial, setHistorial] = useState<any[]>([]);
-  const [filtroTipo, setFiltroTipo] = useState<string>("todos");
-  const [estadisticas, setEstadisticas] = useState({
-    totalRiegos: 0,
-    tiempoTotal: 0,
-    promedioTiempo: 0,
-  });
+  const [horarios, setHorarios] = useState<Horario[]>([]);
 
   useEffect(() => {
-    fetchHistorial();
-  }, [filtroTipo]);
+    fetchHorarios();
+  }, []);
 
-  const fetchHistorial = async () => {
-    let query = supabase
-      .from("historial_riego")
-      .select("*, horarios_riego(hora, minuto)")
-      .order("fecha_hora_inicio", { ascending: false })
-      .limit(50);
-
-    if (filtroTipo !== "todos") {
-      query = query.eq("tipo", filtroTipo);
-    }
-
-    const { data } = await query;
-
-    if (data) {
-      setHistorial(data);
-      
-      const stats = data.reduce(
-        (acc, item) => ({
-          totalRiegos: acc.totalRiegos + 1,
-          tiempoTotal: acc.tiempoTotal + (item.duracion_real || 0),
-          promedioTiempo: 0,
-        }),
-        { totalRiegos: 0, tiempoTotal: 0, promedioTiempo: 0 }
-      );
-      
-      stats.promedioTiempo = stats.totalRiegos > 0 
-        ? Math.floor(stats.tiempoTotal / stats.totalRiegos) 
-        : 0;
-      
-      setEstadisticas(stats);
-    }
+  const fetchHorarios = async () => {
+    const { data } = await supabase
+      .from("horarios_riego")
+      .select("*, sectores(*)")
+      .eq("activo", true)
+      .order("dia_semana");
+    if (data) setHorarios(data as any);
   };
 
-  const formatDuracion = (segundos: number) => {
-    const minutos = Math.floor(segundos / 60);
-    const segs = segundos % 60;
-    return `${minutos}m ${segs}s`;
+  const ahora = new Date();
+  const diaActual = ahora.getDay();
+
+  const horariosHoy = horarios.filter((h) => h.dia_semana === diaActual);
+  const minutosHoy = horariosHoy.reduce((acc, h) => acc + h.sectores.duracion_minutos, 0);
+  const litrosHoy = minutosHoy * 60 * CAUDAL_LPS;
+
+  const minutosSemana = horarios.reduce((acc, h) => acc + h.sectores.duracion_minutos, 0);
+  const litrosSemana = minutosSemana * 60 * CAUDAL_LPS;
+
+  const litrosMes = litrosSemana * 4.3;
+  const minutosMes = minutosSemana * 4.3;
+
+  const datosPorDia = DIAS.map((dia, idx) => {
+    const horariosDia = horarios.filter((h) => h.dia_semana === idx);
+    const minutos = horariosDia.reduce((acc, h) => acc + h.sectores.duracion_minutos, 0);
+    return {
+      dia: dia.substring(0, 3),
+      minutos,
+      litros: minutos * 60 * CAUDAL_LPS,
+      sectores: horariosDia.length,
+    };
+  });
+
+  const estadisticasPorSector = horarios.reduce((acc, h) => {
+    const key = h.sectores.nombre;
+    if (!acc[key]) {
+      acc[key] = {
+        nombre: key,
+        color: h.sectores.color,
+        duracion: h.sectores.duracion_minutos,
+        veces_semana: 0,
+        minutos_semana: 0,
+        litros_semana: 0,
+      };
+    }
+    acc[key].veces_semana += 1;
+    acc[key].minutos_semana += h.sectores.duracion_minutos;
+    acc[key].litros_semana += h.sectores.duracion_minutos * 60 * CAUDAL_LPS;
+    return acc;
+  }, {} as Record<string, any>);
+
+  const sectoresOrdenados = Object.values(estadisticasPorSector).sort(
+    (a: any, b: any) => b.litros_semana - a.litros_semana
+  );
+
+  const distribucionDuracion = horarios.reduce((acc, h) => {
+    const key = `${h.sectores.duracion_minutos} min`;
+    acc[key] = (acc[key] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+  const datosPie = Object.entries(distribucionDuracion).map(([name, value]) => ({
+    name,
+    value,
+  }));
+
+  const COLORS_PIE = ["#fbbf24", "#22c55e", "#3b82f6"];
+
+  const colorBadge = (color: string) => {
+    switch (color) {
+      case "amarillo":
+        return "bg-yellow-100 text-yellow-900 border-yellow-400";
+      case "verde":
+        return "bg-green-100 text-green-900 border-green-400";
+      case "azul":
+        return "bg-blue-100 text-blue-900 border-blue-400";
+      default:
+        return "";
+    }
   };
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Historial de Riego</h1>
-        <p className="text-muted-foreground">Registro de todos los eventos de riego</p>
+        <h1 className="text-3xl font-bold">Reportes de Riego</h1>
+        <p className="text-muted-foreground">
+          Estadísticas simuladas según cronograma — Caudal: {CAUDAL_LPS} L/s
+        </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
         <Card className="shadow-elegant">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total de Riegos</CardTitle>
-            <Droplets className="h-4 w-4 text-primary" />
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Calendar className="w-5 h-5" />
+              Resumen de Hoy
+            </CardTitle>
+            <CardDescription>{DIAS[diaActual]}</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{estadisticas.totalRiegos}</div>
+          <CardContent className="space-y-1">
+            <p className="text-3xl font-bold">{horariosHoy.length}</p>
+            <p className="text-sm text-muted-foreground">sectores programados</p>
+            <p className="text-sm mt-2">
+              <span className="font-semibold">{minutosHoy} min</span> de riego
+            </p>
+            <p className="text-sm">
+              <span className="font-semibold">{litrosHoy.toLocaleString()} L</span> estimados
+            </p>
           </CardContent>
         </Card>
 
         <Card className="shadow-elegant">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Tiempo Total</CardTitle>
-            <History className="h-4 w-4 text-secondary" />
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <TrendingUp className="w-5 h-5" />
+              Resumen Semanal
+            </CardTitle>
+            <CardDescription>7 días</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {Math.floor(estadisticas.tiempoTotal / 60)} min
-            </div>
+          <CardContent className="space-y-1">
+            <p className="text-3xl font-bold">{horarios.length}</p>
+            <p className="text-sm text-muted-foreground">riegos semanales</p>
+            <p className="text-sm mt-2">
+              <span className="font-semibold">
+                {Math.floor(minutosSemana / 60)} h {minutosSemana % 60} min
+              </span>
+            </p>
+            <p className="text-sm">
+              <span className="font-semibold">{litrosSemana.toLocaleString()} L</span> estimados
+            </p>
           </CardContent>
         </Card>
 
         <Card className="shadow-elegant">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Promedio</CardTitle>
-            <TrendingUp className="h-4 w-4 text-accent" />
+          <CardHeader className="pb-2">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Droplets className="w-5 h-5" />
+              Estimación Mensual
+            </CardTitle>
+            <CardDescription>~30 días</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {formatDuracion(estadisticas.promedioTiempo)}
-            </div>
+          <CardContent className="space-y-1">
+            <p className="text-3xl font-bold">
+              {Math.round(litrosMes / 1000).toLocaleString()}k
+            </p>
+            <p className="text-sm text-muted-foreground">litros estimados</p>
+            <p className="text-sm mt-2">
+              <span className="font-semibold">{Math.floor(minutosMes / 60)} h</span> de riego
+            </p>
+            <p className="text-sm">
+              <span className="font-semibold">{Math.round(litrosMes).toLocaleString()} L</span> total
+            </p>
           </CardContent>
         </Card>
       </div>
 
-      <Card className="shadow-water">
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card className="shadow-elegant">
+          <CardHeader>
+            <CardTitle>Consumo por día de la semana</CardTitle>
+            <CardDescription>Litros estimados (caudal {CAUDAL_LPS} L/s)</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart data={datosPorDia}>
+                <XAxis dataKey="dia" />
+                <YAxis />
+                <Tooltip
+                  formatter={(value: any, name: string) =>
+                    name === "litros"
+                      ? [`${value.toLocaleString()} L`, "Litros"]
+                      : [value, name]
+                  }
+                />
+                <Bar dataKey="litros" fill="hsl(var(--primary))" radius={[8, 8, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        <Card className="shadow-elegant">
+          <CardHeader>
+            <CardTitle>Distribución por duración</CardTitle>
+            <CardDescription>Cantidad de riegos por duración</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={250}>
+              <PieChart>
+                <Pie
+                  data={datosPie}
+                  dataKey="value"
+                  nameKey="name"
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  label
+                >
+                  {datosPie.map((_, index) => (
+                    <Cell key={index} fill={COLORS_PIE[index % COLORS_PIE.length]} />
+                  ))}
+                </Pie>
+                <Legend />
+                <Tooltip />
+              </PieChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card className="shadow-elegant">
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>Registro de Eventos</CardTitle>
-            <Select value={filtroTipo} onValueChange={setFiltroTipo}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Filtrar por tipo" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="todos">Todos</SelectItem>
-                <SelectItem value="manual">Manual</SelectItem>
-                <SelectItem value="automatico">Automático</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <CardTitle className="flex items-center gap-2">
+            <Trophy className="w-5 h-5" />
+            Estadísticas por Sector
+          </CardTitle>
+          <CardDescription>
+            Ordenados por consumo semanal estimado de mayor a menor
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Fecha y Hora</TableHead>
-                  <TableHead>Tipo</TableHead>
-                  <TableHead>Duración</TableHead>
-                  <TableHead>Estado</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {historial.map((item) => (
-                  <TableRow key={item.id}>
-                    <TableCell>
-                      {format(new Date(item.fecha_hora_inicio), "dd MMM yyyy, HH:mm", { locale: es })}
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={item.tipo === "manual" ? "default" : "secondary"}>
-                        {item.tipo === "manual" ? "Manual" : "Automático"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      {item.duracion_real ? formatDuracion(item.duracion_real) : "N/A"}
-                    </TableCell>
-                    <TableCell>
-                      <Badge 
-                        variant={item.estado === "completado" ? "default" : "destructive"}
-                        className={item.estado === "completado" ? "bg-success" : ""}
-                      >
-                        {item.estado === "completado" ? "Completado" : 
-                         item.estado === "error" ? "Error" : "Cancelado"}
-                      </Badge>
-                    </TableCell>
-                  </TableRow>
-                ))}
-                {historial.length === 0 && (
-                  <TableRow>
-                    <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
-                      No hay registros de riego
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
+          <div className="space-y-2">
+            {sectoresOrdenados.map((s: any, idx) => (
+              <div
+                key={s.nombre}
+                className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-xl font-bold text-muted-foreground w-8">
+                    #{idx + 1}
+                  </span>
+                  <div>
+                    <p className="font-semibold">{s.nombre}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {s.veces_semana} {s.veces_semana === 1 ? "vez" : "veces"} por semana — {s.duracion} min cada una
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 text-right">
+                  <div>
+                    <p className="font-bold">{s.litros_semana.toLocaleString()} L</p>
+                    <p className="text-xs text-muted-foreground">por semana</p>
+                  </div>
+                  <Badge variant="outline" className={colorBadge(s.color)}>
+                    {s.duracion} min
+                  </Badge>
+                </div>
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>

@@ -1,214 +1,199 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Droplets, Power, Clock, Activity, Zap } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { Progress } from "@/components/ui/progress";
+import { Droplets, Clock, Calendar, MapPin, Sparkles } from "lucide-react";
+
+const DIAS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+const CAUDAL_LPS = 4; // 4 litros por segundo
+
+interface Sector {
+  id: string;
+  nombre: string;
+  duracion_minutos: number;
+  color: string;
+}
+
+interface Horario {
+  id: string;
+  sector_id: string;
+  dia_semana: number;
+  hora_inicio: number;
+  minuto_inicio: number;
+  activo: boolean;
+  sectores: Sector;
+}
 
 const Dashboard = () => {
-  const [estadoDispositivo, setEstadoDispositivo] = useState<any>(null);
-  const [proximoRiego, setProximoRiego] = useState<any>(null);
-  const [estadisticasHoy, setEstadisticasHoy] = useState({ total: 0, tiempo: 0 });
-  const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
+  const [horarios, setHorarios] = useState<Horario[]>([]);
+  const [ahora, setAhora] = useState(new Date());
 
   useEffect(() => {
-    fetchEstado();
-    fetchProximoRiego();
-    fetchEstadisticasHoy();
-    
-    const interval = setInterval(() => {
-      fetchEstado();
-    }, 5000);
-
+    fetchHorarios();
+    const interval = setInterval(() => setAhora(new Date()), 1000);
     return () => clearInterval(interval);
   }, []);
 
-  const fetchEstado = async () => {
-    const { data } = await supabase
-      .from("estado_dispositivo")
-      .select("*")
-      .eq("esp32_id", "ESP32_QUINTA_ESTACION")
-      .single();
-    
-    if (data) setEstadoDispositivo(data);
-  };
-
-  const fetchProximoRiego = async () => {
-    const now = new Date();
-    const diaActual = now.getDay();
-    const horaActual = now.getHours();
-    const minutoActual = now.getMinutes();
-
+  const fetchHorarios = async () => {
     const { data } = await supabase
       .from("horarios_riego")
-      .select("*")
+      .select("*, sectores(*)")
       .eq("activo", true)
-      .contains("dias_semana", [diaActual])
-      .order("hora", { ascending: true })
-      .order("minuto", { ascending: true });
+      .order("dia_semana")
+      .order("hora_inicio");
 
-    if (data) {
-      const proximo = data.find(h => 
-        h.hora > horaActual || (h.hora === horaActual && h.minuto > minutoActual)
-      );
-      setProximoRiego(proximo);
-    }
+    if (data) setHorarios(data as any);
   };
 
-  const fetchEstadisticasHoy = async () => {
-    const hoy = new Date().toISOString().split('T')[0];
-    const { data } = await supabase
-      .from("historial_riego")
-      .select("*")
-      .gte("fecha_hora_inicio", `${hoy}T00:00:00`)
-      .lte("fecha_hora_inicio", `${hoy}T23:59:59`);
+  // Calcular sector activo (riego en curso ahora)
+  const diaActual = ahora.getDay();
+  const minutosActuales = ahora.getHours() * 60 + ahora.getMinutes();
 
-    if (data) {
-      const total = data.length;
-      const tiempo = data.reduce((acc, r) => acc + (r.duracion_real || 0), 0);
-      setEstadisticasHoy({ total, tiempo });
-    }
-  };
+  const riegoActivo = horarios.find((h) => {
+    if (h.dia_semana !== diaActual) return false;
+    const inicioMin = h.hora_inicio * 60 + h.minuto_inicio;
+    const finMin = inicioMin + h.sectores.duracion_minutos;
+    return minutosActuales >= inicioMin && minutosActuales < finMin;
+  });
 
-  const toggleBomba = async () => {
-    if (!estadoDispositivo) return;
-
-    setLoading(true);
-    try {
-      const nuevoEstado = estadoDispositivo.estado_bomba === "encendido" ? "apagado" : "encendido";
-      
-      const { error: updateError } = await supabase
-        .from("estado_dispositivo")
-        .update({
-          estado_bomba: nuevoEstado,
-          tiempo_inicio_riego: nuevoEstado === "encendido" ? new Date().toISOString() : null,
-        })
-        .eq("esp32_id", "ESP32_QUINTA_ESTACION");
-
-      if (updateError) throw updateError;
-
-      if (nuevoEstado === "encendido") {
-        const { error: historialError } = await supabase
-          .from("historial_riego")
-          .insert({
-            tipo: "manual",
-            estado: "completado",
-            fecha_hora_inicio: new Date().toISOString(),
-          });
-
-        if (historialError) throw historialError;
-      } else {
-        const { data: historialData } = await supabase
-          .from("historial_riego")
-          .select("*")
-          .eq("tipo", "manual")
-          .is("fecha_hora_fin", null)
-          .order("fecha_hora_inicio", { ascending: false })
-          .limit(1)
-          .single();
-
-        if (historialData) {
-          const duracion = Math.floor(
-            (new Date().getTime() - new Date(historialData.fecha_hora_inicio).getTime()) / 1000
-          );
-
-          await supabase
-            .from("historial_riego")
-            .update({
-              fecha_hora_fin: new Date().toISOString(),
-              duracion_real: duracion,
-            })
-            .eq("id", historialData.id);
-        }
+  // Próximo riego (hoy o futuro)
+  const proximoRiego = horarios
+    .filter((h) => {
+      if (h.dia_semana > diaActual) return true;
+      if (h.dia_semana === diaActual) {
+        const inicioMin = h.hora_inicio * 60 + h.minuto_inicio;
+        return inicioMin > minutosActuales;
       }
+      return false;
+    })
+    .sort((a, b) => {
+      const da = (a.dia_semana - diaActual + 7) % 7;
+      const db = (b.dia_semana - diaActual + 7) % 7;
+      if (da !== db) return da - db;
+      return a.hora_inicio * 60 + a.minuto_inicio - (b.hora_inicio * 60 + b.minuto_inicio);
+    })[0];
 
-      fetchEstado();
-      fetchEstadisticasHoy();
-      
-      toast({
-        title: nuevoEstado === "encendido" ? "Bomba encendida" : "Bomba apagada",
-        description: `El sistema de riego ha sido ${nuevoEstado}`,
-      });
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setLoading(false);
+  // Riegos de hoy
+  const riegosHoy = horarios.filter((h) => h.dia_semana === diaActual);
+  const segundosTotalesHoy = riegosHoy.reduce(
+    (acc, h) => acc + h.sectores.duracion_minutos * 60,
+    0
+  );
+  const litrosTotalesHoy = segundosTotalesHoy * CAUDAL_LPS;
+
+  // Progreso del riego activo
+  const progresoActivo = riegoActivo
+    ? Math.min(
+        100,
+        ((minutosActuales - (riegoActivo.hora_inicio * 60 + riegoActivo.minuto_inicio)) /
+          riegoActivo.sectores.duracion_minutos) *
+          100
+      )
+    : 0;
+
+  const minutosRestantes = riegoActivo
+    ? Math.max(
+        0,
+        riegoActivo.hora_inicio * 60 +
+          riegoActivo.minuto_inicio +
+          riegoActivo.sectores.duracion_minutos -
+          minutosActuales
+      )
+    : 0;
+
+  const colorClase = (color: string) => {
+    switch (color) {
+      case "amarillo":
+        return "bg-yellow-100 border-yellow-400 text-yellow-900";
+      case "verde":
+        return "bg-green-100 border-green-400 text-green-900";
+      case "azul":
+        return "bg-blue-100 border-blue-400 text-blue-900";
+      default:
+        return "bg-gray-100 border-gray-400 text-gray-900";
     }
-  };
-
-  const getTiempoTranscurrido = () => {
-    if (!estadoDispositivo?.tiempo_inicio_riego) return "0s";
-    const inicio = new Date(estadoDispositivo.tiempo_inicio_riego).getTime();
-    const ahora = new Date().getTime();
-    const segundos = Math.floor((ahora - inicio) / 1000);
-    const minutos = Math.floor(segundos / 60);
-    const segundosRestantes = segundos % 60;
-    return `${minutos}m ${segundosRestantes}s`;
   };
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Panel de Control</h1>
-        <p className="text-muted-foreground">Sistema de riego automatizado</p>
+        <h1 className="text-3xl font-bold">Sistema de Riego — Quinta Estación</h1>
+        <p className="text-muted-foreground">
+          {DIAS[diaActual]},{" "}
+          {ahora.toLocaleTimeString("es-BO", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
+        </p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card className="col-span-full lg:col-span-2 shadow-water">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Power className="w-5 h-5" />
-              Control Manual
-            </CardTitle>
-            <CardDescription>Encender o apagar la bomba de riego</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between p-6 rounded-lg bg-gradient-subtle border">
-              <div className="space-y-2">
-                <p className="text-sm font-medium">Estado de la bomba</p>
-                <Badge 
-                  variant={estadoDispositivo?.estado_bomba === "encendido" ? "default" : "secondary"}
-                  className={estadoDispositivo?.estado_bomba === "encendido" ? "bg-success" : ""}
-                >
-                  {estadoDispositivo?.estado_bomba === "encendido" ? "Encendido" : "Apagado"}
-                </Badge>
-                {estadoDispositivo?.estado_bomba === "encendido" && (
-                  <p className="text-sm text-muted-foreground">
-                    Tiempo: {getTiempoTranscurrido()}
-                  </p>
-                )}
+      {/* RIEGO EN CURSO */}
+      <Card className={`shadow-water border-2 ${riegoActivo ? "border-primary animate-pulse" : ""}`}>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Droplets className={`w-5 h-5 ${riegoActivo ? "text-primary" : "text-muted-foreground"}`} />
+            Riego en Curso
+          </CardTitle>
+          <CardDescription>
+            {riegoActivo
+              ? "Sector siendo regado en este momento"
+              : "No hay riegos activos en este momento"}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {riegoActivo ? (
+            <div className="space-y-4">
+              <div className={`p-6 rounded-lg border-2 ${colorClase(riegoActivo.sectores.color)}`}>
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <p className="text-xs font-medium opacity-75">SECTOR ACTIVO</p>
+                    <h2 className="text-2xl font-bold">{riegoActivo.sectores.nombre}</h2>
+                  </div>
+                  <Badge className="bg-success">
+                    <Sparkles className="w-3 h-3 mr-1" />
+                    Regando
+                  </Badge>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>Progreso del riego</span>
+                    <span className="font-semibold">{progresoActivo.toFixed(0)}%</span>
+                  </div>
+                  <Progress value={progresoActivo} className="h-3" />
+                  <div className="flex justify-between text-xs opacity-75">
+                    <span>
+                      Inicio: {String(riegoActivo.hora_inicio).padStart(2, "0")}:
+                      {String(riegoActivo.minuto_inicio).padStart(2, "0")}
+                    </span>
+                    <span>{minutosRestantes} min restantes</span>
+                  </div>
+                </div>
               </div>
-              <Button
-                size="lg"
-                onClick={toggleBomba}
-                disabled={loading}
-                className={estadoDispositivo?.estado_bomba === "encendido" 
-                  ? "bg-destructive hover:bg-destructive/90" 
-                  : "bg-success hover:bg-success/90"}
-              >
-                {loading ? "Procesando..." : estadoDispositivo?.estado_bomba === "encendido" ? "Apagar" : "Encender"}
-              </Button>
+              <div className="grid grid-cols-2 gap-3 text-sm">
+                <div className="p-3 rounded-lg bg-muted">
+                  <p className="text-xs text-muted-foreground">Duración programada</p>
+                  <p className="font-semibold">{riegoActivo.sectores.duracion_minutos} min</p>
+                </div>
+                <div className="p-3 rounded-lg bg-muted">
+                  <p className="text-xs text-muted-foreground">Volumen estimado</p>
+                  <p className="font-semibold">
+                    {(riegoActivo.sectores.duracion_minutos * 60 * CAUDAL_LPS).toLocaleString()} L
+                  </p>
+                </div>
+              </div>
             </div>
-            
-            <div className="flex items-center gap-2 text-sm">
-              <Activity className="w-4 h-4" />
-              <span>Estado de conexión:</span>
-              <Badge variant={estadoDispositivo?.estado_conexion === "online" ? "default" : "secondary"}>
-                {estadoDispositivo?.estado_conexion === "online" ? "En línea" : "Sin conexión"}
-              </Badge>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              <Droplets className="w-12 h-12 mx-auto mb-2 opacity-30" />
+              <p>El sistema está en espera del próximo horario programado</p>
             </div>
-          </CardContent>
-        </Card>
+          )}
+        </CardContent>
+      </Card>
 
+      {/* GRID DE TARJETAS */}
+      <div className="grid gap-6 md:grid-cols-3">
         <Card className="shadow-elegant">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+            <CardTitle className="flex items-center gap-2 text-lg">
               <Clock className="w-5 h-5" />
               Próximo Riego
             </CardTitle>
@@ -216,53 +201,106 @@ const Dashboard = () => {
           <CardContent>
             {proximoRiego ? (
               <div className="space-y-2">
+                <p className="text-xs text-muted-foreground">{DIAS[proximoRiego.dia_semana]}</p>
                 <p className="text-2xl font-bold">
-                  {String(proximoRiego.hora).padStart(2, '0')}:{String(proximoRiego.minuto).padStart(2, '0')}
+                  {String(proximoRiego.hora_inicio).padStart(2, "0")}:
+                  {String(proximoRiego.minuto_inicio).padStart(2, "0")}
                 </p>
-                <p className="text-sm text-muted-foreground">
-                  Duración: {Math.floor(proximoRiego.duracion_segundos / 60)} minutos
-                </p>
+                <p className="text-sm font-medium">{proximoRiego.sectores.nombre}</p>
+                <Badge variant="outline" className="text-xs">
+                  {proximoRiego.sectores.duracion_minutos} min
+                </Badge>
               </div>
             ) : (
-              <p className="text-sm text-muted-foreground">No hay riegos programados</p>
+              <p className="text-sm text-muted-foreground">Sin riegos programados</p>
             )}
           </CardContent>
         </Card>
 
         <Card className="shadow-elegant">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Droplets className="w-5 h-5" />
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Calendar className="w-5 h-5" />
               Riegos Hoy
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold">{estadisticasHoy.total}</p>
+            <p className="text-3xl font-bold">{riegosHoy.length}</p>
             <p className="text-sm text-muted-foreground">
-              Total: {Math.floor(estadisticasHoy.tiempo / 60)} min
+              {Math.floor(segundosTotalesHoy / 60)} min totales
+            </p>
+            <p className="text-xs text-muted-foreground mt-2">
+              ~{litrosTotalesHoy.toLocaleString()} L estimados
             </p>
           </CardContent>
         </Card>
 
         <Card className="shadow-elegant">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Zap className="w-5 h-5" />
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <MapPin className="w-5 h-5" />
               Sistema
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              <p className="text-sm">
-                <span className="font-medium">Dispositivo:</span> ESP32
+            <div className="space-y-1 text-sm">
+              <p>
+                <span className="text-muted-foreground">Bomba:</span> Grundfos 5 HP
               </p>
-              <p className="text-sm">
-                <span className="font-medium">IP:</span> {estadoDispositivo?.ip_address || "N/A"}
+              <p>
+                <span className="text-muted-foreground">Caudal:</span> {CAUDAL_LPS} L/s
+              </p>
+              <p>
+                <span className="text-muted-foreground">Sectores:</span> {new Set(horarios.map((h) => h.sector_id)).size}
               </p>
             </div>
           </CardContent>
         </Card>
       </div>
+
+      {/* RIEGOS DEL DÍA */}
+      <Card className="shadow-elegant">
+        <CardHeader>
+          <CardTitle>Riegos programados para hoy — {DIAS[diaActual]}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {riegosHoy.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No hay riegos programados hoy</p>
+          ) : (
+            <div className="space-y-2">
+              {riegosHoy
+                .sort((a, b) => a.hora_inicio * 60 + a.minuto_inicio - (b.hora_inicio * 60 + b.minuto_inicio))
+                .map((h) => {
+                  const inicioMin = h.hora_inicio * 60 + h.minuto_inicio;
+                  const finMin = inicioMin + h.sectores.duracion_minutos;
+                  const enCurso = minutosActuales >= inicioMin && minutosActuales < finMin;
+                  const completado = minutosActuales >= finMin;
+                  return (
+                    <div
+                      key={h.id}
+                      className={`flex items-center justify-between p-3 rounded-lg border ${colorClase(
+                        h.sectores.color
+                      )} ${enCurso ? "ring-2 ring-primary" : ""} ${completado ? "opacity-50" : ""}`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <span className="font-mono text-sm font-semibold">
+                          {String(h.hora_inicio).padStart(2, "0")}:
+                          {String(h.minuto_inicio).padStart(2, "0")}
+                        </span>
+                        <span className="font-medium">{h.sectores.nombre}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm">
+                        <span>{h.sectores.duracion_minutos} min</span>
+                        {enCurso && <Badge className="bg-success">En curso</Badge>}
+                        {completado && <Badge variant="secondary">Completado</Badge>}
+                      </div>
+                    </div>
+                  );
+                })}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };

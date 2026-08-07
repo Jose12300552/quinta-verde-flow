@@ -1,173 +1,139 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Clock, Plus, Trash2, Edit } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Trash2, Plus, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Badge } from "@/components/ui/badge";
-import { z } from "zod";
 
-const DIAS_SEMANA = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+const DIAS = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
+const HORAS = [8, 10, 12, 14, 16, 18];
 
-const scheduleSchema = z.object({
-  hora: z.number().int().min(0, { message: "La hora debe ser entre 0 y 23" }).max(23, { message: "La hora debe ser entre 0 y 23" }),
-  minuto: z.number().int().min(0, { message: "El minuto debe ser entre 0 y 59" }).max(59, { message: "El minuto debe ser entre 0 y 59" }),
-  duracion: z.number().int().min(1, { message: "La duración debe ser al menos 1 minuto" }).max(120, { message: "La duración no puede exceder 120 minutos" }),
-  diasSeleccionados: z.array(z.number()).min(1, { message: "Debe seleccionar al menos un día" }),
-});
+interface Sector {
+  id: string;
+  nombre: string;
+  duracion_minutos: number;
+  color: string;
+}
+
+interface Horario {
+  id: string;
+  sector_id: string;
+  dia_semana: number;
+  hora_inicio: number;
+  minuto_inicio: number;
+  activo: boolean;
+  sectores: Sector;
+}
 
 const Horarios = () => {
-  const [horarios, setHorarios] = useState<any[]>([]);
+  const [sectores, setSectores] = useState<Sector[]>([]);
+  const [horarios, setHorarios] = useState<Horario[]>([]);
   const [open, setOpen] = useState(false);
-  const [editando, setEditando] = useState<any>(null);
-  const [hora, setHora] = useState("08");
-  const [minuto, setMinuto] = useState("00");
-  const [duracion, setDuracion] = useState("10");
-  const [diasSeleccionados, setDiasSeleccionados] = useState<number[]>([0, 1, 2, 3, 4, 5, 6]);
-  const [user, setUser] = useState<any>(null);
+  const [sectorId, setSectorId] = useState("");
+  const [diaSemana, setDiaSemana] = useState("");
+  const [horaInicio, setHoraInicio] = useState("");
   const { toast } = useToast();
 
   useEffect(() => {
+    fetchSectores();
     fetchHorarios();
-    fetchUser();
   }, []);
 
-  const fetchUser = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    setUser(user);
+  const fetchSectores = async () => {
+    const { data } = await supabase
+      .from("sectores")
+      .select("*")
+      .eq("activo", true)
+      .order("nombre");
+    if (data) setSectores(data);
   };
 
   const fetchHorarios = async () => {
     const { data } = await supabase
       .from("horarios_riego")
-      .select("*")
-      .order("hora", { ascending: true })
-      .order("minuto", { ascending: true });
-    
-    if (data) setHorarios(data);
+      .select("*, sectores(*)")
+      .order("dia_semana")
+      .order("hora_inicio");
+    if (data) setHorarios(data as any);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user) return;
-
-    // Validate input
-    const validation = scheduleSchema.safeParse({
-      hora: parseInt(hora),
-      minuto: parseInt(minuto),
-      duracion: parseInt(duracion),
-      diasSeleccionados,
-    });
-
-    if (!validation.success) {
-      const firstError = validation.error.errors[0];
+  const handleCreate = async () => {
+    if (!sectorId || !diaSemana || !horaInicio) {
       toast({
-        title: "Error de validación",
-        description: firstError.message,
+        title: "Error",
+        description: "Completa todos los campos",
         variant: "destructive",
       });
       return;
     }
 
-    const horarioData = {
-      hora: validation.data.hora,
-      minuto: validation.data.minuto,
-      duracion_segundos: validation.data.duracion * 60,
-      dias_semana: validation.data.diasSeleccionados,
-      created_by: user.id,
-    };
+    const { error } = await supabase.from("horarios_riego").insert({
+      sector_id: sectorId,
+      dia_semana: parseInt(diaSemana),
+      hora_inicio: parseInt(horaInicio),
+      minuto_inicio: 0,
+      activo: true,
+    });
 
-    try {
-      if (editando) {
-        const { error } = await supabase
-          .from("horarios_riego")
-          .update(horarioData)
-          .eq("id", editando.id);
-
-        if (error) throw error;
-        toast({ title: "Horario actualizado" });
-      } else {
-        const { error } = await supabase
-          .from("horarios_riego")
-          .insert(horarioData);
-
-        if (error) throw error;
-        toast({ title: "Horario creado" });
-      }
-
-      fetchHorarios();
-      handleClose();
-    } catch (error: any) {
+    if (error) {
       toast({
         title: "Error",
         description: error.message,
         variant: "destructive",
       });
+      return;
     }
-  };
 
-  const handleEdit = (horario: any) => {
-    setEditando(horario);
-    setHora(String(horario.hora).padStart(2, '0'));
-    setMinuto(String(horario.minuto).padStart(2, '0'));
-    setDuracion(String(horario.duracion_segundos / 60));
-    setDiasSeleccionados(horario.dias_semana);
-    setOpen(true);
+    toast({ title: "Horario creado" });
+    setOpen(false);
+    setSectorId("");
+    setDiaSemana("");
+    setHoraInicio("");
+    fetchHorarios();
   };
 
   const handleDelete = async (id: string) => {
-    try {
-      const { error } = await supabase
-        .from("horarios_riego")
-        .delete()
-        .eq("id", id);
+    const { error } = await supabase.from("horarios_riego").delete().eq("id", id);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: "Horario eliminado" });
+    fetchHorarios();
+  };
 
-      if (error) throw error;
-      toast({ title: "Horario eliminado" });
-      fetchHorarios();
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+  const colorClase = (color: string) => {
+    switch (color) {
+      case "amarillo":
+        return "bg-yellow-100 border-yellow-400 text-yellow-900 hover:bg-yellow-200";
+      case "verde":
+        return "bg-green-100 border-green-400 text-green-900 hover:bg-green-200";
+      case "azul":
+        return "bg-blue-100 border-blue-400 text-blue-900 hover:bg-blue-200";
+      default:
+        return "bg-gray-100 border-gray-400 text-gray-900";
     }
   };
 
-  const toggleActivo = async (id: string, activo: boolean) => {
-    try {
-      const { error } = await supabase
-        .from("horarios_riego")
-        .update({ activo: !activo })
-        .eq("id", id);
-
-      if (error) throw error;
-      fetchHorarios();
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-    setEditando(null);
-    setHora("08");
-    setMinuto("00");
-    setDuracion("10");
-    setDiasSeleccionados([0, 1, 2, 3, 4, 5, 6]);
-  };
-
-  const toggleDia = (dia: number) => {
-    setDiasSeleccionados(prev =>
-      prev.includes(dia) ? prev.filter(d => d !== dia) : [...prev, dia]
+  const getHorariosCelda = (dia: number, hora: number) => {
+    return horarios.filter(
+      (h) => h.dia_semana === dia && h.hora_inicio === hora
     );
   };
 
@@ -175,145 +141,162 @@ const Horarios = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Horarios de Riego</h1>
-          <p className="text-muted-foreground">Programa los riegos automáticos</p>
+          <h1 className="text-3xl font-bold flex items-center gap-2">
+            <Calendar className="w-8 h-8" />
+            Cronograma de Riego
+          </h1>
+          <p className="text-muted-foreground">
+            Horarios semanales de riego por sector
+          </p>
         </div>
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={() => handleClose()}>
-              <Plus className="w-4 h-4 mr-2" />
-              Nuevo Horario
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{editando ? "Editar" : "Nuevo"} Horario</DialogTitle>
-              <DialogDescription>
-                Configura un horario de riego automático
-              </DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="hora">Hora</Label>
-                  <Input
-                    id="hora"
-                    type="number"
-                    min="0"
-                    max="23"
-                    value={hora}
-                    onChange={(e) => setHora(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="minuto">Minuto</Label>
-                  <Input
-                    id="minuto"
-                    type="number"
-                    min="0"
-                    max="59"
-                    value={minuto}
-                    onChange={(e) => setMinuto(e.target.value)}
-                    required
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="duracion">Duración (minutos)</Label>
-                <Input
-                  id="duracion"
-                  type="number"
-                  min="1"
-                  max="120"
-                  value={duracion}
-                  onChange={(e) => setDuracion(e.target.value)}
-                  required
-                />
-                <p className="text-xs text-muted-foreground">
-                  Máximo 120 minutos
-                </p>
-              </div>
-              <div className="space-y-2">
-                <Label>Días de la semana</Label>
-                <div className="flex gap-2">
-                  {DIAS_SEMANA.map((dia, index) => (
-                    <Button
-                      key={index}
-                      type="button"
-                      variant={diasSeleccionados.includes(index) ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => toggleDia(index)}
-                    >
-                      {dia}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-              <Button type="submit" className="w-full">
-                {editando ? "Actualizar" : "Crear"} Horario
-              </Button>
-            </form>
-          </DialogContent>
-        </Dialog>
+        <Button onClick={() => setOpen(true)}>
+          <Plus className="w-4 h-4 mr-2" />
+          Nuevo Horario
+        </Button>
       </div>
 
-      <div className="grid gap-4">
-        {horarios.map((horario) => (
-          <Card key={horario.id} className="shadow-elegant">
-            <CardContent className="flex items-center justify-between p-6">
-              <div className="flex items-center gap-6">
-                <div className="flex items-center gap-2">
-                  <Clock className="w-5 h-5 text-primary" />
-                  <span className="text-2xl font-bold">
-                    {String(horario.hora).padStart(2, '0')}:{String(horario.minuto).padStart(2, '0')}
-                  </span>
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium">
-                    Duración: {Math.floor(horario.duracion_segundos / 60)} minutos
-                  </p>
-                  <div className="flex gap-1">
-                    {horario.dias_semana.map((dia: number) => (
-                      <Badge key={dia} variant="secondary" className="text-xs">
-                        {DIAS_SEMANA[dia]}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <Switch
-                  checked={horario.activo}
-                  onCheckedChange={() => toggleActivo(horario.id, horario.activo)}
-                />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleEdit(horario)}
-                >
-                  <Edit className="w-4 h-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => handleDelete(horario.id)}
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-        {horarios.length === 0 && (
-          <Card>
-            <CardContent className="flex flex-col items-center justify-center py-12">
-              <Clock className="w-12 h-12 text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">No hay horarios programados</p>
-            </CardContent>
-          </Card>
-        )}
-      </div>
+      {/* Leyenda */}
+      <Card>
+        <CardContent className="pt-6">
+          <div className="flex flex-wrap gap-4 text-sm">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded bg-yellow-100 border-2 border-yellow-400" />
+              <span>Riego 2 horas</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded bg-green-100 border-2 border-green-400" />
+              <span>Riego 1:30 horas</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded bg-blue-100 border-2 border-blue-400" />
+              <span>Riego 1 hora</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Tabla del cronograma */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Cronograma semanal</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr>
+                  <th className="border p-2 bg-muted font-semibold text-sm">Hora</th>
+                  {DIAS.map((dia, idx) => (
+                    <th key={idx} className="border p-2 bg-muted font-semibold text-sm">
+                      {dia}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {HORAS.map((hora) => (
+                  <tr key={hora}>
+                    <td className="border p-2 font-mono text-sm font-semibold bg-muted">
+                      {String(hora).padStart(2, "0")}:00 - {String(hora + 2).padStart(2, "0")}:00
+                    </td>
+                    {DIAS.map((_, dia) => {
+                      const celdas = getHorariosCelda(dia, hora);
+                      return (
+                        <td key={dia} className="border p-1 align-top min-w-[120px]">
+                          {celdas.map((h) => (
+                            <div
+                              key={h.id}
+                              className={`p-2 mb-1 rounded border-2 group relative ${colorClase(
+                                h.sectores.color
+                              )}`}
+                            >
+                              <p className="text-xs font-semibold pr-6">{h.sectores.nombre}</p>
+                              <p className="text-xs opacity-75">
+                                {h.sectores.duracion_minutos} min
+                              </p>
+                              <button
+                                onClick={() => handleDelete(h.id)}
+                                className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </button>
+                            </div>
+                          ))}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Modal de nuevo horario */}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Nuevo Horario</DialogTitle>
+            <DialogDescription>
+              Asigna un sector a un día y franja horaria
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label>Sector</Label>
+              <Select value={sectorId} onValueChange={setSectorId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecciona un sector" />
+                </SelectTrigger>
+                <SelectContent>
+                  {sectores.map((s) => (
+                    <SelectItem key={s.id} value={s.id}>
+                      {s.nombre} ({s.duracion_minutos} min)
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Día de la semana</Label>
+              <Select value={diaSemana} onValueChange={setDiaSemana}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecciona un día" />
+                </SelectTrigger>
+                <SelectContent>
+                  {DIAS.map((dia, idx) => (
+                    <SelectItem key={idx} value={String(idx)}>
+                      {dia}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Hora de inicio</Label>
+              <Select value={horaInicio} onValueChange={setHoraInicio}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecciona la hora" />
+                </SelectTrigger>
+                <SelectContent>
+                  {HORAS.map((h) => (
+                    <SelectItem key={h} value={String(h)}>
+                      {String(h).padStart(2, "0")}:00
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Button onClick={handleCreate} className="w-full">
+              Crear Horario
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

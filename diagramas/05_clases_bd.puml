@@ -1,0 +1,95 @@
+@startuml ClasesBD_SARQUE
+skinparam backgroundColor #FFFFFF
+skinparam class {
+  BackgroundColor #E1F5FE
+  BorderColor #01579B
+  ArrowColor #424242
+  AttributeFontColor #424242
+}
+skinparam shadowing false
+
+title <b>Modelo Entidad-Relación — Base de Datos SARQUE</b>\n<i>PostgreSQL + Row Level Security en Supabase</i>
+
+entity "profiles" as profiles {
+  + id : UUID <<PK>>
+  --
+  nombre : TEXT
+  email : TEXT
+  created_at : TIMESTAMPTZ
+}
+
+entity "user_roles" as roles {
+  + id : UUID <<PK>>
+  --
+  # user_id : UUID <<FK>>
+  rol : TEXT
+}
+
+entity "controladores" as controladores {
+  + id : UUID <<PK>>
+  --
+  nombre : TEXT
+  modelo : TEXT
+  mac_bluetooth : TEXT
+  num_estaciones : INTEGER
+  online : BOOLEAN
+  bateria_pct : INTEGER
+  ultima_conexion : TIMESTAMPTZ
+}
+
+entity "sectores" as sectores {
+  + id : UUID <<PK>>
+  --
+  nombre : TEXT
+  descripcion : TEXT
+  # controlador_id : UUID <<FK>>
+  numero_estacion : INTEGER
+  activo : BOOLEAN
+  created_at : TIMESTAMPTZ
+}
+
+entity "horarios_riego" as horarios {
+  + id : UUID <<PK>>
+  --
+  # sector_id : UUID <<FK>>
+  hora : INTEGER
+  minuto : INTEGER
+  duracion_min : INTEGER
+  dias_semana : INTEGER[]
+  activo : BOOLEAN
+  # created_by : UUID <<FK>>
+  created_at : TIMESTAMPTZ
+}
+
+entity "historial_riego" as historial {
+  + id : UUID <<PK>>
+  --
+  # sector_id : UUID <<FK>>
+  inicio : TIMESTAMPTZ
+  fin : TIMESTAMPTZ
+  duracion_real_seg : INTEGER
+  volumen_litros : NUMERIC
+  tipo : TEXT
+  estado : TEXT
+  registrado_por : TEXT
+}
+
+entity "estado_dispositivo" as estado {
+  + id : UUID <<PK>>
+  --
+  # controlador_id : UUID <<FK>>
+  online : BOOLEAN
+  estacion_activa : INTEGER
+  bateria_pct : INTEGER
+  rssi : INTEGER
+  updated_at : TIMESTAMPTZ
+}
+
+profiles ||--o{ roles : tiene
+profiles ||--o{ horarios : crea
+controladores ||--o{ sectores : aloja
+controladores ||--|| estado : reporta
+sectores ||--o{ horarios : programa
+sectores ||--o{ historial : registra
+
+@enduml
